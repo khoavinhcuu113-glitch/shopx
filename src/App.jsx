@@ -8,6 +8,7 @@ import DeliveryScreen from './screens/DeliveryScreen';
 import Chat3WayScreen from './screens/Chat3WayScreen';
 import NotifScreen from './screens/NotifScreen';
 import ShipperRegisterScreen from './screens/ShipperRegisterScreen';
+import ShipperOrdersScreen from './screens/ShipperOrdersScreen';
 import ShipperCommunityScreen, { ShipperSuccessScreen } from './screens/ShipperScreens';
 
 // ─── CATEGORIES SCREEN ───────────────────────────────────────────────
@@ -621,6 +622,7 @@ export default function App() {
       case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
       case 's-notif':            return <NotifScreen            go={go} />;
       case 's-shipper-register': return <ShipperRegisterScreen  go={go} />;
+      case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
       case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
       case 's-cv-register':      return <div><Shdr title="Đăng ký làm thợ" onBack={() => go('s-service')} /><div style={{padding:24,textAlign:'center'}}><div style={{fontSize:13,color:C.m}}>Form đăng ký 8 phần — đang hoàn thiện</div><Btn onClick={()=>go('s-service')} style={{marginTop:16}}>← Quay lại</Btn></div></div>;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
