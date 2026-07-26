@@ -7,9 +7,10 @@ import HomeScreen from './screens/HomeScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
 import Chat3WayScreen from './screens/Chat3WayScreen';
 import NotifScreen from './screens/NotifScreen';
+import ShipperRegisterScreen from './screens/ShipperRegisterScreen';
+import ShipperCommunityScreen, { ShipperSuccessScreen } from './screens/ShipperScreens';
 
-// ─── SCREENS NHỎ INLINE ──────────────────────────────────────────────
-
+// ─── CATEGORIES SCREEN ───────────────────────────────────────────────
 function CategoriesScreen({ go, nav }) {
   return (
     <div>
@@ -28,9 +29,10 @@ function CategoriesScreen({ go, nav }) {
   );
 }
 
+// ─── PRODUCT SCREEN ───────────────────────────────────────────────────
 function ProductScreen({ go, chkLogin, type }) {
   const data = {
-    p1: { icon: '📱', bg: C.pl,    title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)',    loc: 'Biên Hòa', av: 'NT', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh' },
+    p1: { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'NT', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh' },
     p2: { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'MH', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh' },
   };
   const p = data[type] || data.p1;
@@ -50,7 +52,7 @@ function ProductScreen({ go, chkLogin, type }) {
         <VidPlaceholder title="Clip giới thiệu sản phẩm" desc="Sắp ra mắt — người bán quay clip 15-30s thực tế" />
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
-          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>Người bán tại {p.loc}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc} (cũ), Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div></div>
+          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>Người bán tại {p.loc}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div></div>
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Mô tả</h3>
@@ -72,10 +74,11 @@ function ProductScreen({ go, chkLogin, type }) {
   );
 }
 
+// ─── CHAT SCREEN ─────────────────────────────────────────────────────
 function ChatScreen({ go, type }) {
   const cfg = {
     buy: {
-      title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB • Mua bán hàng hóa',
+      title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB',
       t1: 'Người mua (bạn)', v1: 'SX-00001', t2: 'Người bán', v2: 'SX-00127',
       ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e',
       ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa',
@@ -84,7 +87,6 @@ function ChatScreen({ go, type }) {
         { me: true, text: 'Dạ, máy còn bảo hành không anh? Ship về Hố Nai được không?', time: '10:31' },
         { me: false, from: 'SX-00127 (Người bán)', text: 'Còn BH Apple đến 3/2025. Ship được, dùng giao hàng ShopX cho an toàn nhé!', time: '10:32' },
       ],
-      confirm: { text: '18.500.000đ giữ trong Escrow. Chuyển cho người bán khi bạn xác nhận nhận hàng bằng OTP.', btn: 'Đồng ý giao dịch qua ShopX Pay' },
     },
     job: {
       title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh',
@@ -94,9 +96,7 @@ function ChatScreen({ go, type }) {
       msgs: [
         { me: false, from: 'SX-00089', text: 'Chào anh/chị, máy lạnh nhà mình không lạnh, cần vệ sinh và nạp gas.', time: '14:05' },
         { me: true, text: 'Dạ chào bạn! Mình chuyên sửa máy lạnh 5 năm KN. Cho mình địa chỉ nhé!', time: '14:07' },
-        { me: false, from: 'SX-00089', text: 'Nhà ở phường Tân Hiệp, Biên Hòa. Chiều tối sau 17h.', time: '14:09' },
       ],
-      confirm: { text: 'Khi 2 bên đồng ý, bấm xác nhận để ShopX ghi lại cam kết công việc.', btn: 'Xác nhận nhận việc này' },
     },
     worker: {
       title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện dân dụng',
@@ -106,10 +106,7 @@ function ChatScreen({ go, type }) {
       msgs: [
         { me: true, text: 'Chào anh, nhà mình bị mất điện 1 phòng ngủ. Anh có thể đến xem không?', time: '09:15' },
         { me: false, from: 'SX-00127 (Thợ điện)', text: 'Chào bạn! Có thể do cầu dao phụ hỏng. Bạn ở khu vực nào?', time: '09:17' },
-        { me: true, text: 'Mình ở Trảng Bom. Chiều nay được không anh? Khoảng 15h-17h.', time: '09:18' },
-        { me: false, from: 'SX-00127 (Thợ điện)', text: 'Được bạn! Mình qua lúc 15h. Phí xem 50k, sửa tính theo thực tế.', time: '09:20' },
       ],
-      confirm: { text: 'Lịch hẹn 15h hôm nay. Tiền công giữ trong app đến khi bạn xác nhận hoàn thành.', btn: 'Xác nhận đặt lịch' },
     },
   };
   const c = cfg[type] || cfg.buy;
@@ -120,7 +117,7 @@ function ChatScreen({ go, type }) {
           <button onClick={() => go('s-service')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
           <div style={{ flex: 1 }}><div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{c.title}</div><div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>{c.sub}</div></div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between' }}>
           <div><div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t1}</div><div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{c.v1}</div></div>
           <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 18 }}>↔</span>
           <div style={{ textAlign: 'right' }}><div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t2}</div><div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{c.v2}</div></div>
@@ -139,11 +136,17 @@ function ChatScreen({ go, type }) {
             <div style={{ fontSize: 10, color: C.m, marginTop: 3 }}>{m.time}</div>
           </div>
         ))}
-        <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #c8e6c9' }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>✅ Xác nhận qua ShopX</div>
-          <div style={{ fontSize: 11, color: '#388e3c', marginBottom: 8 }}>{c.confirm.text}</div>
-          <button style={{ background: '#2e7d32', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>{c.confirm.btn}</button>
-        </div>
+        {/* Nút tìm shipper — chỉ hiện trong chat mua bán */}
+        {type === 'buy' && (
+          <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #c8e6c9' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>🚚 Chọn hình thức giao hàng</div>
+            <div style={{ fontSize: 11, color: '#388e3c', marginBottom: 8 }}>2 bên đã chốt giá. Chọn cách giao hàng tiếp theo:</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              <button style={{ background: '#fff', color: C.t, border: '1px solid #ccc', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>🤝 Gặp trực tiếp</button>
+              <button style={{ background: C.p, color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }} onClick={() => go('s-delivery')}>🚚 Dùng Shipper ShopX</button>
+            </div>
+          </div>
+        )}
       </div>
       <div style={{ background: C.w, borderTop: `1px solid ${C.b}`, padding: '10px 12px', display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
         <input style={{ flex: 1, border: `1.5px solid ${C.b}`, borderRadius: 20, padding: '8px 14px', fontSize: 13, outline: 'none' }} placeholder="Nhập tin nhắn..." />
@@ -153,30 +156,39 @@ function ChatScreen({ go, type }) {
   );
 }
 
+// ─── SERVICE SCREEN (Fix E: 3 tab mới) ────────────────────────────────
 function ServiceScreen({ go, chkLogin }) {
   const [tab, setTab] = useState('cv');
   const [nganh, setNganh] = useState('');
   const workers = [
-    { av: 'VN', name: 'Anh Văn Nhân',  trade: 'Thợ điện dân dụng • 8 năm',      price: '80.000đ/giờ',  stars: '⭐⭐⭐⭐⭐ 4.9', badge: '✅ CCCD xác minh', bg: C.p },
-    { av: 'TL', name: 'Anh Thanh Long', trade: 'Thợ sửa máy lạnh • 5 năm',       price: '150.000đ/ca',  stars: '⭐⭐⭐⭐⭐ 4.7', badge: '⭐ Chứng chỉ nghề', bg: C.pm },
-    { av: 'HD', name: 'Chị Hoa Đào',   trade: 'Cá cảnh & hồ thủy sinh',          price: '200.000đ/lần', stars: '⭐⭐⭐⭐⭐ 5.0', badge: '🌟 Bán thời gian',  bg: C.pd },
-    { av: 'QH', name: 'Anh Quốc Hùng', trade: 'Thợ sơn & chống thấm • 10 năm',  price: '400.000đ/ngày',stars: '⭐⭐⭐⭐ 4.8',  badge: '✅ CCCD xác minh', bg: '#6B2F9E' },
+    { av: 'VN', name: 'Anh Văn Nhân',  trade: 'Thợ điện dân dụng • 8 năm',     price: '80.000đ/giờ',  stars: '⭐⭐⭐⭐⭐ 4.9', badge: '✅ CCCD xác minh', bg: C.p },
+    { av: 'TL', name: 'Anh Thanh Long', trade: 'Thợ sửa máy lạnh • 5 năm',      price: '150.000đ/ca',  stars: '⭐⭐⭐⭐⭐ 4.7', badge: '⭐ Chứng chỉ nghề', bg: C.pm },
+    { av: 'HD', name: 'Chị Hoa Đào',   trade: 'Cá cảnh & hồ thủy sinh',         price: '200.000đ/lần', stars: '⭐⭐⭐⭐⭐ 5.0', badge: '🌟 Bán thời gian',  bg: C.pd },
+    { av: 'QH', name: 'Anh Quốc Hùng', trade: 'Thợ sơn & chống thấm • 10 năm', price: '400.000đ/ngày', stars: '⭐⭐⭐⭐ 4.8',  badge: '✅ CCCD xác minh', bg: '#6B2F9E' },
   ];
   const jobs = [
-    { title: 'Cần thợ sửa máy lạnh tại nhà', desc: 'Máy lạnh Daikin 1.5HP không lạnh, cần vệ sinh và nạp gas. Làm được buổi tối hoặc cuối tuần.', price: '200.000đ', loc: 'Biên Hòa' },
-    { title: 'Cần thợ sơn nhà 3 phòng ngủ',  desc: 'Sơn lại nội thất ~80m2, có sẵn sơn. Ưu tiên thợ làm cuối tuần.',                               price: 'Thỏa thuận', loc: 'Trảng Bom' },
-    { title: 'Cần người chăm sóc cá cảnh định kỳ', desc: 'Hồ thủy sinh 1.2m, cần người có kinh nghiệm 2 lần/tuần.',                                price: '150.000đ/lần', loc: 'Hố Nai' },
+    { title: 'Cần thợ sửa máy lạnh tại nhà', desc: 'Máy lạnh Daikin 1.5HP không lạnh, cần vệ sinh và nạp gas.', price: '200.000đ', loc: 'Biên Hòa' },
+    { title: 'Cần thợ sơn nhà 3 phòng ngủ',  desc: 'Sơn lại nội thất ~80m2, có sẵn sơn. Ưu tiên thợ làm cuối tuần.', price: 'Thỏa thuận', loc: 'Trảng Bom' },
+    { title: 'Cần người chăm sóc cá cảnh',   desc: 'Hồ thủy sinh 1.2m, cần người có kinh nghiệm 2 lần/tuần.', price: '150.000đ/lần', loc: 'Hố Nai' },
+  ];
+  const tabs = [
+    { id: 'cv',      label: 'Đăng ký nghề cần việc' },
+    { id: 'job',     label: 'Tin tìm thợ' },
+    { id: 'shipper', label: 'Đăng ký nhận Shipper' },
   ];
   return (
     <div>
       <Shdr title="Dịch vụ & Việc làm" onBack={() => go('s-home')} />
-      <div style={{ display: 'flex', background: '#f0ebfa', padding: 4, borderRadius: 10, margin: '10px 12px 6px' }}>
-        {['cv','job'].map(t => (
-          <button key={t} onClick={() => setTab(t)} style={{ flex: 1, textAlign: 'center', padding: 7, borderRadius: 8, fontSize: 12, fontWeight: 500, cursor: 'pointer', border: 'none', background: tab===t ? C.w : 'none', color: tab===t ? C.p : C.m }}>
-            {t === 'cv' ? 'Hồ sơ thợ' : 'Tin tìm thợ'}
+      {/* 3 tab mới */}
+      <div style={{ display: 'flex', background: '#f0ebfa', padding: 4, margin: '10px 12px 6px', borderRadius: 10, gap: 2 }}>
+        {tabs.map(t => (
+          <button key={t.id} onClick={() => setTab(t.id)} style={{ flex: 1, textAlign: 'center', padding: '7px 4px', borderRadius: 8, fontSize: 10, fontWeight: 500, cursor: 'pointer', border: 'none', background: tab === t.id ? C.w : 'none', color: tab === t.id ? C.p : C.m, lineHeight: 1.2 }}>
+            {t.label}
           </button>
         ))}
       </div>
+
+      {/* Tab 1 — Đăng ký nghề cần việc */}
       {tab === 'cv' && (
         <div>
           <div style={{ position: 'relative', margin: '0 12px 10px' }}>
@@ -190,14 +202,14 @@ function ServiceScreen({ go, chkLogin }) {
             <div style={{ margin: '0 12px 10px' }}>
               <select style={{ width: '100%', background: C.pl, border: `1px solid ${C.b}`, borderRadius: 10, padding: '9px 14px', fontSize: 12, color: C.t, appearance: 'none', outline: 'none' }}>
                 <option>-- Chọn nghề cụ thể --</option>
-                {(NGHES[nganh]||[]).map(n => <option key={n}>{n}</option>)}
+                {(NGHES[nganh] || []).map(n => <option key={n}>{n}</option>)}
               </select>
             </div>
           )}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 12px 12px' }}>
             {workers.map((w, i) => (
               <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <Avatar initials={w.av} bg={w.bg} size={48} style={{ marginBottom: 8 }} />
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8, color: '#fff', fontSize: 15, fontWeight: 700 }}>{w.av}</div>
                 <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{w.name}</div>
                 <div style={{ fontSize: 10, color: C.m, marginBottom: 6, lineHeight: 1.3 }}>{w.trade}</div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: C.p, marginBottom: 4 }}>{w.price}</div>
@@ -212,6 +224,8 @@ function ServiceScreen({ go, chkLogin }) {
           </div>
         </div>
       )}
+
+      {/* Tab 2 — Tin tìm thợ */}
       {tab === 'job' && (
         <div style={{ paddingTop: 4 }}>
           {jobs.map((j, i) => (
@@ -233,17 +247,24 @@ function ServiceScreen({ go, chkLogin }) {
           </div>
         </div>
       )}
+
+      {/* Tab 3 — Đăng ký nhận Shipper */}
+      {tab === 'shipper' && (
+        <ShipperCommunityScreen go={go} chkLogin={chkLogin} />
+      )}
+
       <div style={{ height: 80 }} />
     </div>
   );
 }
 
-function PostScreen({ go }) {
-  const [method, setMethod] = useState('ship');
+// ─── POST SCREEN (Fix B: nhiều ảnh + Fix D: hình thức bán) ───────────
+function PostScreen({ go, chkLogin }) {
+  const [method, setMethod] = useState('both');
   const [photos, setPhotos] = useState([]);
-  const [title, setTitle]   = useState('');
-  const [price, setPrice]   = useState('');
-  const [cat, setCat]       = useState('');
+  const [title, setTitle] = useState('');
+  const [price, setPrice] = useState('');
+  const [cat, setCat] = useState('');
   const emojis = ['📱','📦','🛋️','👕','🚗','❄️','🔧','🏡'];
 
   function addPhoto() {
@@ -252,33 +273,40 @@ function PostScreen({ go }) {
   }
 
   function submitPost() {
-    go(method === 'direct' ? 's-direct' : 's-delivery');
+    if (method === 'direct') {
+      go('s-direct');
+    } else {
+      go('s-post-success');
+    }
   }
 
   return (
     <div>
       <Shdr title="Đăng tin bán" onBack={() => go('s-home')} />
       <div style={{ background: '#e8f5e9', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #c8e6c9' }}>
-        <Avatar initials="KV" size={28} style={{ flexShrink: 0 }} />
+        <Avatar initials="KV" size={28} />
         <div><div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32' }}>Đăng tin với tư cách: SX-00001</div><div style={{ fontSize: 10, color: '#388e3c' }}>Khoavinhcuu113 • Đã xác minh CCCD</div></div>
       </div>
       <div style={{ padding: 12 }}>
+        {/* Fix B: Ảnh thêm được nhiều lần */}
         <Fg label="Ảnh sản phẩm" req>
           <div onClick={addPhoto} style={{ border: '2px dashed #c4a8e8', borderRadius: 12, padding: 14, textAlign: 'center', cursor: 'pointer', background: '#faf7ff' }}>
             <div style={{ fontSize: 26, marginBottom: 4 }}>📷</div>
-            <p style={{ fontSize: 12, color: C.m }}>Bấm để thêm ảnh • Tối đa 8 ảnh</p>
+            <p style={{ fontSize: 12, color: C.m }}>Bấm để thêm ảnh ({photos.length}/8)</p>
           </div>
           {photos.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6, marginTop: 8 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6, marginTop: 8 }}>
               {photos.map((e, i) => (
                 <div key={i} style={{ background: C.pl, borderRadius: 8, aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, position: 'relative' }}>
                   {e}
-                  <button onClick={() => setPhotos(p => p.filter((_,j) => j !== i))} style={{ position: 'absolute', top: -4, right: -4, background: '#e53935', color: '#fff', borderRadius: '50%', width: 16, height: 16, fontSize: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none' }}>×</button>
+                  <button onClick={() => setPhotos(p => p.filter((_, j) => j !== i))} style={{ position: 'absolute', top: -4, right: -4, background: '#e53935', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: 11, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', border: 'none' }}>×</button>
                 </div>
               ))}
             </div>
           )}
+          <div style={{ fontSize: 10, color: C.m, marginTop: 4 }}>Tối đa 8 ảnh • Ảnh thật của sản phẩm</div>
         </Fg>
+
         <Fg label="Clip giới thiệu sản phẩm">
           <VidPlaceholder title="Quay clip 15-30 giây" desc="Giới thiệu sản phẩm thực tế — sắp ra mắt" />
         </Fg>
@@ -292,23 +320,33 @@ function PostScreen({ go }) {
         <Fg label="Tình trạng" req>
           <Fs><option>-- Chọn --</option><option>Mới (còn nguyên seal)</option><option>Như mới (99%)</option><option>Đã dùng (còn tốt)</option><option>Cần sửa chữa nhỏ</option></Fs>
         </Fg>
-        <Fg label="Mô tả chi tiết" req><textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }} rows={3} placeholder="Mô tả tình trạng thực tế..." /></Fg>
-        <Fg label="Khuyết điểm" req><textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }} rows={2} placeholder="Ghi rõ (nếu không có, ghi 'Không có')" /></Fg>
+        <Fg label="Mô tả chi tiết" req>
+          <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }} rows={3} placeholder="Mô tả tình trạng thực tế..." />
+        </Fg>
+        <Fg label="Khuyết điểm" req>
+          <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }} rows={2} placeholder="Ghi rõ (nếu không có, ghi 'Không có')" />
+        </Fg>
         <Fg label="Giá bán" req><Fi value={price} onChange={e => setPrice(e.target.value)} type="number" placeholder="VD: 5.000.000" /></Fg>
-        <Fg label="Phương thức giao dịch" req>
+
+        {/* Fix D: Hình thức bán thay phương thức giao dịch */}
+        <Fg label="Hình thức bán" req>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {[
-              { val: 'direct', label: '🤝 Gặp trực tiếp',          sub: '(app không can thiệp)', sel: false },
-              { val: 'ship',   label: '🚚 Giao hàng cộng đồng',    sub: '(app bảo vệ ship)',    sel: true  },
-              { val: 'full',   label: '🛡️ Giao dịch toàn phần',   sub: '(bảo vệ tối đa)',      sel: false },
+              { val: 'direct', label: '🤝 Gặp trực tiếp', desc: 'ShopX không can thiệp — 2 bên tự thỏa thuận' },
+              { val: 'ship',   label: '🚚 Có thể ship',    desc: 'Người mua có thể dùng Shipper ShopX' },
+              { val: 'both',   label: '✅ Cả hai đều được', desc: 'Người mua tự chọn hình thức phù hợp' },
             ].map(m => (
-              <label key={m.val} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, background: method===m.val ? C.pl : C.w, border: `${method===m.val?'1.5px':'1px'} solid ${method===m.val?C.p:C.b}`, padding: '8px 10px', borderRadius: 8, cursor: 'pointer' }}>
-                <input type="radio" name="method" checked={method===m.val} onChange={() => setMethod(m.val)} style={{ accentColor: C.p }} />
-                {m.label} <span style={{ fontSize: 10, color: method===m.val?C.pd:C.m }}>{m.sub}</span>
+              <label key={m.val} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12, background: method === m.val ? C.pl : C.w, border: `${method === m.val ? '1.5px' : '1px'} solid ${method === m.val ? C.p : C.b}`, padding: '10px 12px', borderRadius: 10, cursor: 'pointer' }}>
+                <input type="radio" name="method" checked={method === m.val} onChange={() => setMethod(m.val)} style={{ accentColor: C.p, marginTop: 2, flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontWeight: 600, color: method === m.val ? C.p : C.t }}>{m.label}</div>
+                  <div style={{ fontSize: 11, color: C.m, marginTop: 2 }}>{m.desc}</div>
+                </div>
               </label>
             ))}
           </div>
         </Fg>
+
         <Btn onClick={submitPost} style={{ marginBottom: 8 }}>✅ Hoàn tất đăng tin</Btn>
         <Btn2 onClick={submitPost}>👁️ Xem trước tin đăng</Btn2>
         <div style={{ height: 80 }} />
@@ -317,6 +355,7 @@ function PostScreen({ go }) {
   );
 }
 
+// ─── DIRECT SCREEN (Fix C: bỏ nút xem tin nhắn) ─────────────────────
 function DirectScreen({ go }) {
   return (
     <div>
@@ -326,27 +365,58 @@ function DirectScreen({ go }) {
         <div style={{ fontSize: 16, fontWeight: 700, color: C.t, marginBottom: 8 }}>Tin đăng đã lên ShopX!</div>
         <div style={{ fontSize: 13, color: C.m, marginBottom: 20, lineHeight: 1.6, textAlign: 'left', background: C.pl, padding: 14, borderRadius: 12 }}>
           <strong>Người mua sẽ liên hệ qua chat để thỏa thuận gặp trực tiếp.</strong><br /><br />
-          ⚠️ ShopX không can thiệp vào giao dịch trực tiếp.<br /><br />
+          ⚠️ ShopX không can thiệp vào giao dịch trực tiếp. Mọi thỏa thuận do 2 bên tự chịu trách nhiệm.<br /><br />
           💡 Lịch sử chat vẫn được lưu làm bằng chứng nếu có tranh chấp về sau.
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 16, textAlign: 'left' }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 8 }}>📋 Lời khuyên giao dịch an toàn:</div>
-          {['✅ Gặp ở nơi công cộng, ban ngày','✅ Kiểm tra hàng kỹ trước khi trả tiền','✅ Chụp ảnh hàng khi giao nhận','✅ Không chuyển khoản trước khi nhận hàng'].map((t,i) => (
+          {['✅ Gặp ở nơi công cộng, ban ngày', '✅ Kiểm tra hàng kỹ trước khi trả tiền', '✅ Chụp ảnh hàng khi giao nhận', '✅ Không chuyển khoản trước khi nhận hàng'].map((t, i) => (
             <div key={i} style={{ fontSize: 12, color: C.m, marginBottom: 4 }}>{t}</div>
           ))}
         </div>
+        {/* Fix C: Chỉ có nút Về trang chủ — bỏ nút xem tin nhắn */}
         <Btn onClick={() => go('s-home')}>🏠 Về trang chủ</Btn>
-        <Btn2 onClick={() => go('s-chat-buy')}>💬 Xem chat với người mua</Btn2>
         <div style={{ height: 80 }} />
       </div>
     </div>
   );
 }
 
+// ─── POST SUCCESS (có ship) ───────────────────────────────────────────
+function PostSuccessScreen({ go }) {
+  return (
+    <div>
+      <Shdr title="Đăng tin thành công" />
+      <div style={{ padding: 12, paddingTop: 32, textAlign: 'center' }}>
+        <div style={{ width: 72, height: 72, background: '#e8f5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 36 }}>🎉</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: C.t, marginBottom: 6 }}>Tin đăng đã lên ShopX!</div>
+        <div style={{ fontSize: 13, color: C.m, marginBottom: 20, lineHeight: 1.6 }}>
+          Tin của bạn đã xuất hiện trên ShopX. Người mua có thể tìm thấy và liên hệ bạn ngay.
+        </div>
+        <div style={{ background: C.pl, borderRadius: 12, padding: 14, marginBottom: 20, textAlign: 'left' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: C.pd, marginBottom: 8 }}>📋 Khi có người mua liên hệ:</div>
+          {[
+            '💬 Bạn nhận thông báo trong mục Tài khoản',
+            '🔔 Bấm vào tin đăng có thông báo → vào chat',
+            '🤝 2 bên thỏa thuận giá và hình thức giao',
+            '🚚 Nếu dùng ship → người mua chọn Shipper ShopX',
+          ].map((t, i) => (
+            <div key={i} style={{ fontSize: 12, color: C.t, marginBottom: 6 }}>{t}</div>
+          ))}
+        </div>
+        <Btn onClick={() => go('s-home')}>🏠 Về trang chủ</Btn>
+        <Btn2 onClick={() => chkLogin('s-post')}>➕ Đăng thêm tin khác</Btn2>
+        <div style={{ height: 80 }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── LOGIN SCREEN ─────────────────────────────────────────────────────
 function LoginScreen({ go, doLogin }) {
   return (
     <div>
-      <Shdr title="Tài khoản" />
+      <Shdr title="Đăng nhập" />
       <div style={{ padding: 12, paddingTop: 32 }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{ fontSize: 40, fontWeight: 700, color: C.p, marginBottom: 6 }}>ShopX</div>
@@ -366,34 +436,68 @@ function LoginScreen({ go, doLogin }) {
   );
 }
 
+// ─── ACCOUNT SCREEN (Fix A: chỉ hiện khi đã đăng nhập + Fix I: nhật ký tin đăng) ──
 function AccountScreen({ go, nav, doLogout }) {
+  const listings = [
+    { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH', price: '18.500.000đ', date: '26/07/2026', hasMsg: true,  msgCount: 2 },
+    { icon: '🏍️', title: 'Honda SH 125i 2021 đen bóng', price: '62.000.000đ', date: '25/07/2026', hasMsg: false, msgCount: 0 },
+  ];
   return (
     <div>
       <Shdr title="Tài khoản của tôi" />
       <div style={{ padding: 12 }}>
+        {/* Thông tin tài khoản */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14, background: C.w, padding: 12, borderRadius: 12, border: '1px solid #e8def8' }}>
-          <Avatar initials="KV" size={52} style={{ flexShrink: 0 }} />
+          <Avatar initials="KV" size={52} />
           <div>
             <div style={{ fontSize: 15, fontWeight: 600, color: C.t }}>Khoavinhcuu113</div>
             <div style={{ fontSize: 12, color: C.m }}>SX-00001 • Người mua/bán</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
-              <Badge label="✅ SĐT" type="ok" /><Badge label="🪪 CCCD" type="ok" /><Badge label="🔵 Pi KYC" type="pend" />
+              <Badge label="✅ SĐT" type="ok" />
+              <Badge label="🪪 CCCD" type="ok" />
+              <Badge label="🔵 Pi KYC" type="pend" />
             </div>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
-          {[{ val: '1.250', lbl: 'SX Points' },{ val: '⭐ 4.8', lbl: 'Đánh giá', color: '#f59e0b' }].map((st,i) => (
+
+        {/* SX Points */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+          {[{ val: '1.250', lbl: 'SX Points' }, { val: '⭐ 4.8', lbl: 'Đánh giá', color: '#f59e0b' }].map((st, i) => (
             <div key={i} style={{ background: C.pl, borderRadius: 10, padding: 10, textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 700, color: st.color || C.p }}>{st.val}</div>
               <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>{st.lbl}</div>
             </div>
           ))}
         </div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>📋 Nhật ký giao dịch</div>
+
+        {/* Fix I: Nhật ký tin đăng — hiện thông báo khi có người nhắn */}
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>📋 Tin đăng của tôi</div>
+        {listings.map((l, i) => (
+          <div key={i} style={{ background: C.w, border: `1.5px solid ${l.hasMsg ? C.p : '#e8def8'}`, borderRadius: 12, padding: 12, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
+            onClick={() => l.hasMsg && go('s-chat-buy')}>
+            <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{l.icon}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{l.title}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: C.p, marginBottom: 2 }}>{l.price}</div>
+              <div style={{ fontSize: 10, color: C.m }}>Đăng ngày {l.date}</div>
+            </div>
+            {l.hasMsg ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, marginBottom: 4 }}>{l.msgCount}</div>
+                <div style={{ fontSize: 10, color: C.p, fontWeight: 600 }}>Tin nhắn</div>
+              </div>
+            ) : (
+              <div style={{ flexShrink: 0, fontSize: 10, color: C.m, alignSelf: 'center' }}>Chưa có tin</div>
+            )}
+          </div>
+        ))}
+
+        {/* Nhật ký giao dịch */}
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8, marginTop: 8 }}>🧾 Nhật ký giao dịch</div>
         {[
-          { icon: '📱', name: 'iPhone 12 Pro 128GB',  date: '15/03/2026 • SX-00089', price: '15.500.000đ', badge: 'Đã nhận' },
-          { icon: '🔧', name: 'Sửa điện phòng ngủ',   date: '10/06/2026 • SX-00127', price: '150.000đ',    badge: 'Hoàn thành' },
-        ].map((tx,i) => (
+          { icon: '📱', name: 'iPhone 12 Pro 128GB', date: '15/03/2026 • SX-00089', price: '15.500.000đ', badge: 'Đã nhận' },
+          { icon: '🔧', name: 'Sửa điện phòng ngủ',  date: '10/06/2026 • SX-00127', price: '150.000đ',    badge: 'Hoàn thành' },
+        ].map((tx, i) => (
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 8, display: 'flex', gap: 10 }}>
             <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{tx.icon}</div>
             <div style={{ flex: 1 }}>
@@ -404,6 +508,7 @@ function AccountScreen({ go, nav, doLogout }) {
             </div>
           </div>
         ))}
+
         <Btn2 onClick={() => { go('s-home'); nav('ni-home'); }} style={{ marginTop: 0, marginBottom: 8 }}>🛍️ Tiếp tục mua sắm</Btn2>
         <button onClick={doLogout} style={{ width: '100%', background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 10, borderRadius: 10, fontSize: 13, cursor: 'pointer', marginTop: 8 }}>🚪 Đăng xuất</button>
         <div style={{ height: 80 }} />
@@ -412,6 +517,7 @@ function AccountScreen({ go, nav, doLogout }) {
   );
 }
 
+// ─── REGISTER + PLEDGE ────────────────────────────────────────────────
 function RegisterScreen({ go }) {
   const [role, setRole] = useState(0);
   return (
@@ -430,9 +536,7 @@ function RegisterScreen({ go }) {
         <Fg label="Họ và tên" req><Fi placeholder="Nhập họ và tên đầy đủ" /></Fg>
         <Fg label="Số điện thoại" req><Fi placeholder="0901234567" type="tel" /></Fg>
         <Fg label="Mật khẩu" req><Fi placeholder="Tối thiểu 8 ký tự" type="password" /></Fg>
-        <Fg label="Khu vực" req>
-          <Fs><option>-- Chọn Tỉnh / Thành phố --</option><option>Đồng Nai</option><option>TP. Hồ Chí Minh</option><option>Bình Dương</option></Fs>
-        </Fg>
+        <Fg label="Khu vực" req><Fs><option>-- Chọn Tỉnh / Thành phố --</option><option>Đồng Nai</option><option>TP. Hồ Chí Minh</option><option>Bình Dương</option></Fs></Fg>
         <Btn onClick={() => go('s-pledge')}>Tiếp theo: Đọc cam kết ➡️</Btn>
         <div style={{ height: 80 }} />
       </div>
@@ -472,7 +576,7 @@ export default function App() {
   const [showPopup,  setShowPopup]  = useState(false);
   const [pendingScr, setPendingScr] = useState('');
 
-  const go = (id) => { if (!id) return; setScreen(id); setShowPopup(false); };
+  const go  = (id) => { if (!id) return; setScreen(id); setShowPopup(false); };
   const nav = (id) => setNavActive(id);
 
   const chkLogin = (target) => {
@@ -490,27 +594,36 @@ export default function App() {
 
   const doLogout = () => { setIsLoggedIn(false); go('s-home'); nav('ni-home'); };
 
+  // Fix A: Tài khoản chưa đăng nhập → redirect đến màn đăng nhập
+  const goAccount = () => {
+    if (isLoggedIn) { go('s-account'); nav('ni-acc'); }
+    else { setPendingScr('s-account'); go('s-login'); nav('ni-acc'); }
+  };
+
   const renderScreen = () => {
     switch (screen) {
-      case 's-home':        return <HomeScreen       go={go} chkLogin={chkLogin} nav={nav} />;
-      case 's-categories':  return <CategoriesScreen go={go} nav={nav} />;
-      case 's-prod1':       return <ProductScreen    go={go} chkLogin={chkLogin} type="p1" />;
-      case 's-prod2':       return <ProductScreen    go={go} chkLogin={chkLogin} type="p2" />;
-      case 's-chat-buy':    return <ChatScreen       go={go} type="buy" />;
-      case 's-chat-job':    return <ChatScreen       go={go} type="job" />;
-      case 's-chat-worker': return <ChatScreen       go={go} type="worker" />;
-      case 's-chat-3way':   return <Chat3WayScreen   go={go} />;
-      case 's-service':     return <ServiceScreen    go={go} chkLogin={chkLogin} />;
-      case 's-cv-register': return <div><Shdr title="Đăng ký làm thợ" onBack={() => go('s-service')} /><div style={{padding:12,textAlign:'center',paddingTop:32}}><div style={{fontSize:13,color:C.m}}>Form đăng ký CV thợ 8 phần — tích hợp đầy đủ</div><Btn onClick={()=>go('s-service')} style={{marginTop:16}}>← Quay lại</Btn></div></div>;
-      case 's-post':        return <PostScreen       go={go} chkLogin={chkLogin} />;
-      case 's-direct':      return <DirectScreen     go={go} />;
-      case 's-delivery':    return <DeliveryScreen   go={go} chkLogin={chkLogin} />;
-      case 's-login':       return <LoginScreen      go={go} doLogin={doLogin} />;
-      case 's-account':     return <AccountScreen    go={go} nav={nav} doLogout={doLogout} />;
-      case 's-register':    return <RegisterScreen   go={go} />;
-      case 's-pledge':      return <PledgeScreen     go={go} doLogin={doLogin} />;
-      case 's-notif':       return <NotifScreen      go={go} />;
-      default:              return <HomeScreen       go={go} chkLogin={chkLogin} nav={nav} />;
+      case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
+      case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
+      case 's-prod1':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p1" />;
+      case 's-prod2':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p2" />;
+      case 's-chat-buy':         return <ChatScreen             go={go} type="buy" />;
+      case 's-chat-job':         return <ChatScreen             go={go} type="job" />;
+      case 's-chat-worker':      return <ChatScreen             go={go} type="worker" />;
+      case 's-chat-3way':        return <Chat3WayScreen         go={go} />;
+      case 's-service':          return <ServiceScreen          go={go} chkLogin={chkLogin} />;
+      case 's-post':             return <PostScreen             go={go} chkLogin={chkLogin} />;
+      case 's-direct':           return <DirectScreen           go={go} />;
+      case 's-post-success':     return <PostSuccessScreen      go={go} />;
+      case 's-delivery':         return <DeliveryScreen         go={go} chkLogin={chkLogin} />;
+      case 's-login':            return <LoginScreen            go={go} doLogin={doLogin} />;
+      case 's-account':          return <AccountScreen          go={go} nav={nav} doLogout={doLogout} />;
+      case 's-register':         return <RegisterScreen         go={go} />;
+      case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
+      case 's-notif':            return <NotifScreen            go={go} />;
+      case 's-shipper-register': return <ShipperRegisterScreen  go={go} />;
+      case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
+      case 's-cv-register':      return <div><Shdr title="Đăng ký làm thợ" onBack={() => go('s-service')} /><div style={{padding:24,textAlign:'center'}}><div style={{fontSize:13,color:C.m}}>Form đăng ký 8 phần — đang hoàn thiện</div><Btn onClick={()=>go('s-service')} style={{marginTop:16}}>← Quay lại</Btn></div></div>;
+      default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
   };
 
@@ -521,7 +634,21 @@ export default function App() {
           {renderScreen()}
         </div>
       </div>
-      <BottomNav active={navActive} go={go} nav={nav} chkLogin={chkLogin} />
+      {/* Fix A: BottomNav dùng goAccount */}
+      <nav style={{ background: C.w, borderTop: `1px solid ${C.b}`, display: 'flex', padding: '6px 0 2px', flexShrink: 0 }}>
+        {[
+          { id: 'ni-home', icon: '🏠', label: 'Trang chủ', action: () => { go('s-home'); nav('ni-home'); } },
+          { id: 'ni-cat',  icon: '⊞',  label: 'Danh mục',  action: () => { go('s-categories'); nav('ni-cat'); } },
+          { id: 'ni-post', icon: '➕',  label: 'Đăng tin',  action: () => { chkLogin('s-post'); nav('ni-post'); } },
+          { id: 'ni-bell', icon: '🔔', label: 'Thông báo', action: () => { go('s-notif'); nav('ni-bell'); } },
+          { id: 'ni-acc',  icon: '👤', label: 'Tài khoản', action: goAccount },
+        ].map(it => (
+          <button key={it.id} onClick={it.action} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, cursor: 'pointer', padding: 4, border: 'none', background: 'none', color: navActive === it.id ? C.p : C.m }}>
+            <span style={{ fontSize: 20 }}>{it.icon}</span>
+            <span style={{ fontSize: 10 }}>{it.label}</span>
+          </button>
+        ))}
+      </nav>
       {showPopup && (
         <LoginPopup
           onLogin={doLogin}
