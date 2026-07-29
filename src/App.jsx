@@ -4,6 +4,7 @@ import { Shdr, Btn, Btn2, Fg, Fi, Fs, Sechdr, VidPlaceholder, Upbox, Warnbox, In
 import BottomNav from './components/BottomNav';
 import LoginPopup from './components/LoginPopup';
 import HomeScreen from './screens/HomeScreen';
+import ChatScreen from './screens/ChatScreen';
 import DeliveryScreen from './screens/DeliveryScreen';
 import Chat3WayScreen from './screens/Chat3WayScreen';
 import NotifScreen from './screens/NotifScreen';
@@ -76,87 +77,6 @@ function ProductScreen({ go, chkLogin, type }) {
 }
 
 // ─── CHAT SCREEN ─────────────────────────────────────────────────────
-function ChatScreen({ go, type }) {
-  const cfg = {
-    buy: {
-      title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB',
-      t1: 'Người mua (bạn)', v1: 'SX-00001', t2: 'Người bán', v2: 'SX-00127',
-      ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e',
-      ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa',
-      msgs: [
-        { me: false, from: 'SX-00127 (Người bán)', text: 'Xin chào! Bạn quan tâm đến iPhone 13 Pro của mình ạ?', time: '10:30' },
-        { me: true, text: 'Dạ, máy còn bảo hành không anh? Ship về Hố Nai được không?', time: '10:31' },
-        { me: false, from: 'SX-00127 (Người bán)', text: 'Còn BH Apple đến 3/2025. Ship được, dùng giao hàng ShopX cho an toàn nhé!', time: '10:32' },
-      ],
-    },
-    job: {
-      title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh',
-      t1: 'Thợ nhận việc (bạn)', v1: 'SX-00001', t2: 'Người đăng việc', v2: 'SX-00089',
-      ctxBg: '#fff3e0', ctxBorder: '#ffe0b2', ctxColor: '#e65100',
-      ctxTitle: '🔧 Tin tìm thợ — Sửa máy lạnh Daikin 1.5HP', ctxDesc: 'Ngân sách: 200.000đ • Khu vực: Biên Hòa',
-      msgs: [
-        { me: false, from: 'SX-00089', text: 'Chào anh/chị, máy lạnh nhà mình không lạnh, cần vệ sinh và nạp gas.', time: '14:05' },
-        { me: true, text: 'Dạ chào bạn! Mình chuyên sửa máy lạnh 5 năm KN. Cho mình địa chỉ nhé!', time: '14:07' },
-      ],
-    },
-    worker: {
-      title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện dân dụng',
-      t1: 'Người cần thợ (bạn)', v1: 'SX-00001', t2: 'Thợ điện', v2: 'SX-00127',
-      ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c',
-      ctxTitle: '✅ Liên hệ từ Hồ sơ thợ — Thợ điện dân dụng', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ • ⭐ 4.9',
-      msgs: [
-        { me: true, text: 'Chào anh, nhà mình bị mất điện 1 phòng ngủ. Anh có thể đến xem không?', time: '09:15' },
-        { me: false, from: 'SX-00127 (Thợ điện)', text: 'Chào bạn! Có thể do cầu dao phụ hỏng. Bạn ở khu vực nào?', time: '09:17' },
-      ],
-    },
-  };
-  const c = cfg[type] || cfg.buy;
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'absolute', inset: 0 }}>
-      <div style={{ background: C.p, padding: '10px 16px', flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <button onClick={() => go('s-service')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
-          <div style={{ flex: 1 }}><div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{c.title}</div><div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>{c.sub}</div></div>
-        </div>
-        <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between' }}>
-          <div><div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t1}</div><div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{c.v1}</div></div>
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 18 }}>↔</span>
-          <div style={{ textAlign: 'right' }}><div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t2}</div><div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{c.v2}</div></div>
-        </div>
-      </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: 12, background: C.g }}>
-        <div style={{ background: c.ctxBg, border: `1px solid ${c.ctxBorder}`, borderRadius: 10, padding: 10, marginBottom: 12 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: c.ctxColor, marginBottom: 4 }}>{c.ctxTitle}</div>
-          <div style={{ fontSize: 11, color: c.ctxColor }}>{c.ctxDesc}</div>
-          <div style={{ fontSize: 10, color: c.ctxColor, marginTop: 4 }}>🛡️ ShopX ghi lại cuộc trò chuyện làm bằng chứng pháp lý.</div>
-        </div>
-        {c.msgs.map((m, i) => (
-          <div key={i} style={{ display: 'flex', flexDirection: 'column', marginBottom: 10, alignItems: m.me ? 'flex-end' : 'flex-start' }}>
-            {!m.me && <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>{m.from}</div>}
-            <div style={{ maxWidth: '78%', padding: '8px 12px', borderRadius: m.me ? '14px 14px 4px 14px' : '14px 14px 14px 4px', fontSize: 13, lineHeight: 1.4, background: m.me ? C.p : C.w, color: m.me ? '#fff' : C.t, border: m.me ? 'none' : '1px solid #e8def8' }}>{m.text}</div>
-            <div style={{ fontSize: 10, color: C.m, marginTop: 3 }}>{m.time}</div>
-          </div>
-        ))}
-        {/* Nút tìm shipper — chỉ hiện trong chat mua bán */}
-        {type === 'buy' && (
-          <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #c8e6c9' }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>🚚 Chọn hình thức giao hàng</div>
-            <div style={{ fontSize: 11, color: '#388e3c', marginBottom: 8 }}>2 bên đã chốt giá. Chọn cách giao hàng tiếp theo:</div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <button style={{ background: '#fff', color: C.t, border: '1px solid #ccc', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>🤝 Gặp trực tiếp</button>
-              <button style={{ background: C.p, color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }} onClick={() => go('s-delivery')}>🚚 Dùng Shipper ShopX</button>
-            </div>
-          </div>
-        )}
-      </div>
-      <div style={{ background: C.w, borderTop: `1px solid ${C.b}`, padding: '10px 12px', display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-        <input style={{ flex: 1, border: `1.5px solid ${C.b}`, borderRadius: 20, padding: '8px 14px', fontSize: 13, outline: 'none' }} placeholder="Nhập tin nhắn..." />
-        <button style={{ background: C.p, color: '#fff', border: 'none', width: 36, height: 36, borderRadius: '50%', cursor: 'pointer', fontSize: 16 }}>➤</button>
-      </div>
-    </div>
-  );
-}
-
 // ─── SERVICE SCREEN (Fix E: 3 tab mới) ────────────────────────────────
 function ServiceScreen({ go, chkLogin }) {
   const [tab, setTab] = useState('cv');
