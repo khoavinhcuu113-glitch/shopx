@@ -16,7 +16,7 @@ export function CvSuccessScreen({ go }) {
           <div style={{ fontSize: 12, fontWeight: 600, color: C.pd, marginBottom: 8 }}>Bước tiếp theo:</div>
           {[
             '🪪 Xác minh Căn cước KYC → nhận badge KYC',
-            '🔵 Kết nối Pi Network → nhận badge Pi',
+            '🟣 Kết nối Pi Network → nhận badge Pi',
             '⭐ Upload chứng chỉ → nhận badge Chứng chỉ',
             '🎬 Sắp có: Quay clip giới thiệu kỹ năng',
           ].map((t, i) => (
@@ -202,7 +202,7 @@ export default function CvRegisterScreen({ go }) {
             { done: true,  icon: '✅', lbl: 'Mức 1 — Số điện thoại',         desc: 'Đã xác minh qua OTP khi đăng ký',            btn: 'Đã xong',         btnBg: '#e8f5e9', btnColor: '#2e7d32', action: null },
             { done: false, icon: '🪪', lbl: 'Mức 2 — Căn cước KYC',          desc: 'Chụp 2 mặt + ảnh chân dung cầm Căn cước',    btn: 'Xác minh',        btnBg: C.p,       btnColor: '#fff',    action: () => go('s-cccd') },
             { done: false, icon: '⭐', lbl: 'Mức 3 — Chứng chỉ nghề',        desc: 'Upload chứng chỉ → Admin xác minh 24h',      btn: 'Upload ở Phần 5', btnBg: '#f59e0b', btnColor: '#fff',    action: null },
-            { done: false, icon: '🔵', lbl: 'Mức 4 — Pi Network đã xác minh', desc: 'Kết nối tài khoản Pi Network đã KYC',        btn: 'Kết nối Pi',      btnBg: C.p,       btnColor: '#fff',    action: null },
+            { done: false, icon: '🟣', lbl: 'Mức 4 — Pi Network đã xác minh', desc: 'Kết nối tài khoản Pi Network đã KYC',        btn: 'Kết nối Pi',      btnBg: C.p,       btnColor: '#fff',    action: null },
             { done: false, icon: '🟣', lbl: 'Mức 5 — Thanh toán Pi Network',  desc: 'Cho phép nhận thanh toán bằng Pi coin',      btn: 'Sắp có',          btnBg: '#ccc',    btnColor: '#666',    action: null },
           ].map((v, i) => (
             <div key={i} style={{ background: v.done ? '#f1f8e9' : C.w, border: `1.5px solid ${v.done ? '#4caf50' : C.b}`, borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>

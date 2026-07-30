@@ -106,7 +106,7 @@ export function ShipperSuccessScreen({ go }) {
           <div style={{ fontSize: 12, fontWeight: 600, color: C.pd, marginBottom: 8 }}>Bước tiếp theo:</div>
           {[
             '🪪 Xác minh CCCD → được đề xuất đơn ưu tiên',
-            '🔵 Kết nối Pi Network đã xác minh → nhận badge Pi',
+            '🟣 Kết nối Pi Network đã xác minh → nhận badge Pi',
             '📦 Nhận đơn đầu tiên → bắt đầu tích lũy điểm',
             '⭐ Tích lũy đủ → lên cấp Sao Vàng',
           ].map((t, i) => (

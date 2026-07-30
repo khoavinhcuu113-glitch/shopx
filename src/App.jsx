@@ -93,7 +93,7 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: true  },
-        { label: '🔵 Pi Network',       ok: false },
+        { label: '🟣 Pi Network',       ok: false },
       ],
     },
     {
@@ -103,7 +103,7 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: true  },
-        { label: '🔵 Pi Network',       ok: false },
+        { label: '🟣 Pi Network',       ok: false },
       ],
     },
     {
@@ -113,7 +113,7 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: false },
-        { label: '🔵 Pi Network',       ok: true  },
+        { label: '🟣 Pi Network',       ok: true  },
       ],
     },
     {
@@ -123,7 +123,7 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: false },
-        { label: '🔵 Pi Network',       ok: false },
+        { label: '🟣 Pi Network',       ok: false },
       ],
     },
   ];
@@ -200,27 +200,17 @@ function ServiceScreen({ go, chkLogin }) {
                   <span style={{ color: C.pd, fontWeight: 600 }}>👍 {w.thumbsUp}% hài lòng</span>
                 </div>
 
-                {/* Hàng 3: Xác minh danh tính */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {/* Hàng 3: Xác minh — ngang gọn */}
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {w.badges.map((b, j) => {
                     const isPi = b.label.includes('Pi');
                     const bg   = isPi ? '#f3e5f5' : b.ok ? '#e8f5e9' : '#ffebee';
                     const clr  = isPi ? '#6a1b9a' : b.ok ? '#2e7d32' : '#c62828';
                     const bdr  = isPi ? '#ce93d8' : b.ok ? '#c8e6c9' : '#ef9a9a';
                     return (
-                      <div key={j} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 10px', borderRadius: 8, background: bg, border: `1px solid ${bdr}` }}>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: clr }}>
-                          {b.label}
-                        </span>
-                        <span style={{ fontSize: 12 }}>
-                          {isPi
-                            ? (b.ok ? '✅ Xác minh' : <span style={{ color: '#e53935', fontSize: 11, fontWeight: 600 }}>❌ Chưa xác minh</span>)
-                            : b.ok
-                              ? <span style={{ color: '#2e7d32', fontSize: 11, fontWeight: 600 }}>✅ Xác minh</span>
-                              : <span style={{ color: '#e53935', fontSize: 11, fontWeight: 600 }}>❌ Chưa xác minh</span>
-                          }
-                        </span>
-                      </div>
+                      <span key={j} style={{ fontSize: 10, padding: '3px 8px', borderRadius: 8, background: bg, border: `1px solid ${bdr}`, color: clr, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                        {b.label} {b.ok ? '✅' : '❌'}
+                      </span>
                     );
                   })}
                 </div>
@@ -552,7 +542,7 @@ function LoginScreen({ go, doLogin }) {
         <Fg label="Mật khẩu" req><Fi placeholder="Nhập mật khẩu" type="password" /></Fg>
         <div style={{ textAlign: 'right', marginBottom: 14 }}><span style={{ fontSize: 12, color: C.p, cursor: 'pointer' }}>Quên mật khẩu?</span></div>
         <Btn onClick={doLogin} style={{ marginBottom: 8 }}>Đăng nhập</Btn>
-        <Btn2 onClick={doLogin}>🔵 Đăng nhập bằng Pi Network</Btn2>
+        <Btn2 onClick={doLogin}>🟣 Đăng nhập bằng Pi Network</Btn2>
         <div style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: C.m }}>
           Chưa có tài khoản? <span style={{ color: C.p, cursor: 'pointer', fontWeight: 600 }} onClick={() => go('s-register')}>Đăng ký ngay</span>
         </div>
@@ -587,7 +577,7 @@ function AccountScreen({ go, nav, doLogout }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             <span style={{ fontSize: 11, background: '#e8f5e9', color: '#2e7d32', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>✅ SĐT</span>
             <span style={{ fontSize: 11, background: '#e8f5e9', color: '#2e7d32', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🪪 Căn cước KYC</span>
-            <span style={{ fontSize: 11, background: '#fff3e0', color: '#e65100', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🔵 Pi chưa xác minh</span>
+            <span style={{ fontSize: 11, background: '#fff3e0', color: '#e65100', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🟣 Pi chưa xác minh</span>
             <span style={{ fontSize: 11, background: '#f5f0ff', color: C.p, padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🟣 Pi Payment sắp có</span>
           </div>
         </div>

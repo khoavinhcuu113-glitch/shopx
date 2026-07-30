@@ -136,7 +136,7 @@ export default function ShipperRegisterScreen({ go }) {
           {[
             { done: true,  icon: '✅', lbl: 'Mức 1 — Số điện thoại', desc: 'Đã xác minh qua OTP', btn: 'Đã xong', ok: true },
             { done: false, icon: '🪪', lbl: 'Mức 2 — CCCD',          desc: 'Chụp 2 mặt + ảnh cầm CCCD', btn: 'Xác minh', ok: false },
-            { done: false, icon: '🔵', lbl: 'Mức 3 — Pi Network đã xác minh', desc: 'Kết nối tài khoản Pi Network đã KYC — tăng uy tín', btn: 'Kết nối Pi', ok: false },
+            { done: false, icon: '🟣', lbl: 'Mức 3 — Pi Network đã xác minh', desc: 'Kết nối tài khoản Pi Network đã KYC — tăng uy tín', btn: 'Kết nối Pi', ok: false },
             { done: false, icon: '🟣', lbl: 'Mức 4 — Thanh toán Pi Network', desc: 'Cho phép nhận thanh toán bằng Pi coin — sắp có khi Pi mainnet ổn định', btn: 'Sắp có', ok: null },
           ].map((v, i) => (
             <div key={i} style={{ background: v.done ? '#f1f8e9' : '#fff', border: `1.5px solid ${v.done ? '#4caf50' : C.b}`, borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
