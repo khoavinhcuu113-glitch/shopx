@@ -86,10 +86,21 @@ export default function CvRegisterScreen({ go }) {
 
         {/* PHẦN 1 */}
         <Sechdr num="1" title="Thông tin cá nhân" />
-        <Fg label="Họ và tên đầy đủ" req><Fi placeholder="Đúng theo Căn cước" onChange={() => setProgress(p => Math.min(p + 2, 100))} /></Fg>
-        <Fg label="Số điện thoại liên hệ" req><Fi placeholder="0901234567" type="tel" /></Fg>
+        <Fg label="Họ và tên đầy đủ" req><Fi placeholder="Đúng theo Căn cước công dân" onChange={() => setProgress(p => Math.min(p + 2, 100))} /></Fg>
+        <Fg label="Ngày tháng năm sinh" req><Fi type="date" /></Fg>
+        <Fg label="Số Căn cước công dân" req><Fi placeholder="VD: 079123456789" maxLength={12} /></Fg>
         <Fg label="Giới tính">
           <Fs><option>Nam</option><option>Nữ</option><option>Khác</option></Fs>
+        </Fg>
+        <Fg label="Số điện thoại liên hệ" req><Fi placeholder="0901234567" type="tel" /></Fg>
+        <Fg label="Email liên hệ phụ"><Fi placeholder="VD: example@gmail.com" type="email" /></Fg>
+        <Fg label="Nơi thường trú" req>
+          <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
+            rows={2} placeholder="VD: 123 Nguyễn Văn A, P. Tân Phong, TP. Biên Hòa, Đồng Nai" />
+        </Fg>
+        <Fg label="Nơi tạm trú (nếu khác thường trú)">
+          <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
+            rows={2} placeholder="Để trống nếu giống nơi thường trú" />
         </Fg>
         <Fg label="Ảnh đại diện"><Upbox icon="📷" text="Chụp ảnh chân dung rõ mặt" /></Fg>
 

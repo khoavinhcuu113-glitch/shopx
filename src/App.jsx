@@ -86,10 +86,46 @@ function ServiceScreen({ go, chkLogin }) {
   const [tab, setTab] = useState('cv');
   const [nganh, setNganh] = useState('');
   const workers = [
-    { av: 'VN', name: 'Anh Văn Nhân',  trade: 'Thợ điện dân dụng • 8 năm',     price: '80.000đ/giờ',  stars: '⭐⭐⭐⭐⭐ 4.9', badge: '✅ CCCD xác minh', bg: C.p },
-    { av: 'TL', name: 'Anh Thanh Long', trade: 'Thợ sửa máy lạnh • 5 năm',      price: '150.000đ/ca',  stars: '⭐⭐⭐⭐⭐ 4.7', badge: '⭐ Chứng chỉ nghề', bg: C.pm },
-    { av: 'HD', name: 'Chị Hoa Đào',   trade: 'Cá cảnh & hồ thủy sinh',         price: '200.000đ/lần', stars: '⭐⭐⭐⭐⭐ 5.0', badge: '🌟 Bán thời gian',  bg: C.pd },
-    { av: 'QH', name: 'Anh Quốc Hùng', trade: 'Thợ sơn & chống thấm • 10 năm', price: '400.000đ/ngày', stars: '⭐⭐⭐⭐ 4.8',  badge: '✅ CCCD xác minh', bg: '#6B2F9E' },
+    {
+      av: 'VN', name: 'Anh Văn Nhân', trade: 'Thợ điện dân dụng', exp: '8 năm',
+      price: '80.000đ/giờ', orders: 788, completeRate: 98, cancelRate: 2,
+      thumbsUp: 98.2, bg: C.p,
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '⭐ Chứng chỉ nghề',  ok: true  },
+        { label: '🔵 Pi Network',       ok: false },
+      ],
+    },
+    {
+      av: 'TL', name: 'Anh Thanh Long', trade: 'Thợ sửa máy lạnh', exp: '5 năm',
+      price: '150.000đ/ca', orders: 234, completeRate: 95, cancelRate: 5,
+      thumbsUp: 94.5, bg: C.pm,
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '⭐ Chứng chỉ nghề',  ok: true  },
+        { label: '🔵 Pi Network',       ok: false },
+      ],
+    },
+    {
+      av: 'HD', name: 'Chị Hoa Đào', trade: 'Cá cảnh & hồ thủy sinh', exp: '3 năm',
+      price: '200.000đ/lần', orders: 56, completeRate: 100, cancelRate: 0,
+      thumbsUp: 100, bg: C.pd,
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '⭐ Chứng chỉ nghề',  ok: false },
+        { label: '🔵 Pi Network',       ok: true  },
+      ],
+    },
+    {
+      av: 'QH', name: 'Anh Quốc Hùng', trade: 'Thợ sơn & chống thấm', exp: '10 năm',
+      price: '400.000đ/ngày', orders: 412, completeRate: 96, cancelRate: 4,
+      thumbsUp: 96.8, bg: '#6B2F9E',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '⭐ Chứng chỉ nghề',  ok: false },
+        { label: '🔵 Pi Network',       ok: false },
+      ],
+    },
   ];
   const jobs = [
     { title: 'Cần thợ sửa máy lạnh tại nhà', desc: 'Máy lạnh Daikin 1.5HP không lạnh, cần vệ sinh và nạp gas.', price: '200.000đ', loc: 'Biên Hòa' },
@@ -131,16 +167,60 @@ function ServiceScreen({ go, chkLogin }) {
               </select>
             </div>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 12px 12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 12px 12px' }}>
             {workers.map((w, i) => (
-              <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 8, color: '#fff', fontSize: 15, fontWeight: 700 }}>{w.av}</div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{w.name}</div>
-                <div style={{ fontSize: 10, color: C.m, marginBottom: 6, lineHeight: 1.3 }}>{w.trade}</div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: C.p, marginBottom: 4 }}>{w.price}</div>
-                <div style={{ fontSize: 11, color: '#f59e0b', marginBottom: 6 }}>{w.stars}</div>
-                <span style={{ fontSize: 10, background: C.pl, color: C.pd, padding: '2px 7px', borderRadius: 8, marginBottom: 8 }}>{w.badge}</span>
-                <button style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 7, borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-worker')}>Liên hệ ngay</button>
+              <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 12 }}>
+                {/* Hàng trên: Avatar + Tên + Nghề */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: 15, fontWeight: 700 }}>{w.av}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 2 }}>{w.name}</div>
+                    <div style={{ fontSize: 11, color: C.m }}>{w.trade} • {w.exp} kinh nghiệm</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: C.p, marginTop: 2 }}>{w.price}</div>
+                  </div>
+                </div>
+
+                {/* Thống kê hoạt động */}
+                <div style={{ background: '#f8f5ff', borderRadius: 10, padding: '8px 10px', marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, color: C.m, marginBottom: 4, fontWeight: 600 }}>
+                    📊 Thống kê hoạt động
+                  </div>
+                  <div style={{ fontSize: 11, color: C.t, marginBottom: 4 }}>
+                    {w.orders.toLocaleString('vi-VN')} lượt dịch vụ hoàn thành
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>
+                      ✅ {w.completeRate}% hoàn thành
+                    </span>
+                    <span style={{ fontSize: 11, color: '#e53935' }}>
+                      ✗ {w.cancelRate}% chưa hoàn thành
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11, color: C.pd, fontWeight: 600, marginTop: 4 }}>
+                    👍 Khách hài lòng: {w.thumbsUp}%
+                  </div>
+                </div>
+
+                {/* Xác minh danh tính */}
+                <div style={{ marginBottom: 10 }}>
+                  <div style={{ fontSize: 10, color: C.m, marginBottom: 5, fontWeight: 600 }}>Xác minh danh tính:</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                    {w.badges.map((b, j) => (
+                      <div key={j} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 8px', borderRadius: 8, background: b.ok ? '#e8f5e9' : '#f5f5f5', border: `1px solid ${b.ok ? '#c8e6c9' : '#e0e0e0'}` }}>
+                        <span style={{ fontSize: 11, color: b.ok ? '#2e7d32' : '#9e9e9e' }}>{b.label}</span>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: b.ok ? '#2e7d32' : '#9e9e9e' }}>
+                          {b.ok ? '✅ Đã xác minh' : '⭕ Chưa xác minh'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Nút liên hệ */}
+                <button style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+                  onClick={() => chkLogin('s-chat-worker')}>
+                  💬 Liên hệ ngay
+                </button>
               </div>
             ))}
           </div>
@@ -517,7 +597,7 @@ function AccountScreen({ go, nav, doLogout }) {
           const shipperLevel = getRatingLevel(SAMPLE_USER_RATINGS.shipper.totalOrders, SAMPLE_USER_RATINGS.shipper.onTimeRate);
           return (
             <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 12, marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>📊 Hệ thống uy tín</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>📊 Thống kê hoạt động</div>
               {/* Tabs */}
               <div style={{ display: 'flex', background: '#f0ebfa', padding: 3, borderRadius: 8, marginBottom: 10, gap: 3 }}>
                 {[

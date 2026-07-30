@@ -21,21 +21,21 @@ export function RatingBadge({ orders, rate, size = 'sm' }) {
   );
 }
 
-// Component hiển thị chỉ số uy tín kiểu P2P
+// Component hiển thị thống kê hoạt động
 export function RatingStats({ role = 'seller', data }) {
   const statsBySeller = [
-    { val: `${data.totalOrders}`,        lbl: 'Giao dịch',       color: C.p },
+    { val: `${data.totalOrders}`,        lbl: 'Lượt dịch vụ',       color: C.p },
     { val: `${data.completionRate}%`,    lbl: 'Hoàn thành',      color: '#2e7d32' },
     { val: `${data.thumbsUp}%`,          lbl: '👍 Tích cực',     color: '#f59e0b' },
     { val: data.responseTime || '< 1h',  lbl: 'Phản hồi',        color: C.pd },
   ];
   const statsByBuyer = [
-    { val: `${data.totalOrders}`,        lbl: 'Đã mua',          color: C.p },
+    { val: `${data.totalOrders}`,        lbl: 'Lượt mua',          color: C.p },
     { val: `${data.receiveRate}%`,       lbl: 'Nhận hàng đúng',  color: '#2e7d32' },
     { val: `${data.thumbsUp}%`,          lbl: '👍 Tích cực',     color: '#f59e0b' },
   ];
   const statsByShipper = [
-    { val: `${data.totalOrders}`,        lbl: 'Đã giao',         color: C.p },
+    { val: `${data.totalOrders}`,        lbl: 'Lượt giao',         color: C.p },
     { val: `${data.onTimeRate}%`,        lbl: 'Đúng giờ',        color: '#2e7d32' },
     { val: `${data.thumbsUp}%`,          lbl: '👍 Tích cực',     color: '#f59e0b' },
   ];
