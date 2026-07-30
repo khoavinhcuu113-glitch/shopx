@@ -146,3 +146,30 @@ export const SAMPLE_SHIPPERS = [
     maxValue: 5000000, color: '#6b6b8a', priority: false,
   },
 ];
+
+// ─── HỆ THỐNG UY TÍN (RATING) ────────────────────────────────────────
+export const RATING_LEVELS = {
+  moi:   { min: 0,  max: 4,    label: '🆕 Mới',    minRate: 0,  color: '#9e9e9e' },
+  uyTin: { min: 5,  max: 19,   label: '✅ Uy tín', minRate: 90, color: '#2e7d32' },
+  pro:   { min: 20, max: null, label: '🏅 Pro',    minRate: 95, color: '#f59e0b' },
+};
+
+export function getRatingLevel(totalOrders, completionRate) {
+  if (totalOrders >= 20 && completionRate >= 95) return RATING_LEVELS.pro;
+  if (totalOrders >= 5  && completionRate >= 90) return RATING_LEVELS.uyTin;
+  return RATING_LEVELS.moi;
+}
+
+// Dữ liệu mẫu uy tín người dùng
+export const SAMPLE_USER_RATINGS = {
+  seller: {
+    totalOrders: 34, completionRate: 97, thumbsUp: 96.2,
+    responseTime: '< 30 phút', disputes: 1,
+  },
+  buyer: {
+    totalOrders: 28, receiveRate: 98.5, thumbsUp: 95.0,
+  },
+  shipper: {
+    totalOrders: 156, onTimeRate: 96.8, thumbsUp: 97.5,
+  },
+};

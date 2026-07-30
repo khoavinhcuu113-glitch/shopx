@@ -125,8 +125,8 @@ export default function ShipperRegisterScreen({ go }) {
           {[
             { done: true,  icon: '✅', lbl: 'Mức 1 — Số điện thoại', desc: 'Đã xác minh qua OTP', btn: 'Đã xong', ok: true },
             { done: false, icon: '🪪', lbl: 'Mức 2 — CCCD',          desc: 'Chụp 2 mặt + ảnh cầm CCCD', btn: 'Xác minh', ok: false },
-            { done: false, icon: '🏅', lbl: 'Mức 3 — VNEID',          desc: 'Đăng nhập qua app VNEID', btn: 'Sắp có', ok: null },
-            { done: false, icon: '🔵', lbl: 'Mức 4 — Pi KYC',         desc: 'Kết nối tài khoản Pi Network', btn: 'Kết nối Pi', ok: false },
+            { done: false, icon: '🔵', lbl: 'Mức 3 — Pi Network đã xác minh', desc: 'Kết nối tài khoản Pi Network đã KYC — tăng uy tín', btn: 'Kết nối Pi', ok: false },
+            { done: false, icon: '🟣', lbl: 'Mức 4 — Thanh toán Pi Network', desc: 'Cho phép nhận thanh toán bằng Pi coin — sắp có khi Pi mainnet ổn định', btn: 'Sắp có', ok: null },
           ].map((v, i) => (
             <div key={i} style={{ background: v.done ? '#f1f8e9' : '#fff', border: `1.5px solid ${v.done ? '#4caf50' : C.b}`, borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: v.done ? '#e8f5e9' : C.pl, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{v.icon}</div>
