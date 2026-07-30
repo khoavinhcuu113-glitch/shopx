@@ -11,6 +11,7 @@ import NotifScreen from './screens/NotifScreen';
 import ShipperRegisterScreen from './screens/ShipperRegisterScreen';
 import ShipperOrdersScreen from './screens/ShipperOrdersScreen';
 import { RatingBadge, RatingStats } from './screens/RatingScreen';
+import CvRegisterScreen, { CvSuccessScreen, CccdScreen } from './screens/CvRegisterScreen';
 import RatingScreen from './screens/RatingScreen';
 import { SAMPLE_USER_RATINGS, getRatingLevel } from './constants';
 import ShipperCommunityScreen, { ShipperSuccessScreen } from './screens/ShipperScreens';
@@ -757,7 +758,9 @@ export default function App() {
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
       case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
       case 's-rating':           return <RatingScreen           go={go} />;
-      case 's-cv-register':      return <div><Shdr title="Đăng ký làm thợ" onBack={() => go('s-service')} /><div style={{padding:24,textAlign:'center'}}><div style={{fontSize:13,color:C.m}}>Form đăng ký 8 phần — đang hoàn thiện</div><Btn onClick={()=>go('s-service')} style={{marginTop:16}}>← Quay lại</Btn></div></div>;
+      case 's-cv-success':       return <CvSuccessScreen    go={go} />;
+      case 's-cccd':             return <CccdScreen         go={go} />;
+      case 's-cv-register':      return <CvRegisterScreen   go={go} />;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
   };
