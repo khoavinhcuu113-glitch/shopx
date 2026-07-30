@@ -167,60 +167,48 @@ function ServiceScreen({ go, chkLogin }) {
               </select>
             </div>
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '0 12px 12px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 12px 12px' }}>
             {workers.map((w, i) => (
-              <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 12 }}>
-                {/* Hàng trên: Avatar + Tên + Nghề */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: 15, fontWeight: 700 }}>{w.av}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 2 }}>{w.name}</div>
-                    <div style={{ fontSize: 11, color: C.m }}>{w.trade} • {w.exp} kinh nghiệm</div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: C.p, marginTop: 2 }}>{w.price}</div>
+              <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px' }}>
+
+                {/* Hàng 1: Avatar + Tên + Giá + Nút */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: 14, fontWeight: 700 }}>{w.av}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{w.name}</span>
+                      <span style={{ fontSize: 10, background: C.pl, color: C.pd, padding: '1px 6px', borderRadius: 8, flexShrink: 0 }}>
+                        {w.orders >= 20 ? '🏅 Pro' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới'}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 11, color: C.m, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {w.trade} • {w.exp} • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span>
+                    </div>
                   </div>
+                  <button onClick={() => chkLogin('s-chat-worker')}
+                    style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                    💬 Liên hệ
+                  </button>
                 </div>
 
-                {/* Thống kê hoạt động */}
-                <div style={{ background: '#f8f5ff', borderRadius: 10, padding: '8px 10px', marginBottom: 8 }}>
-                  <div style={{ fontSize: 11, color: C.m, marginBottom: 4, fontWeight: 600 }}>
-                    📊 Thống kê hoạt động
-                  </div>
-                  <div style={{ fontSize: 11, color: C.t, marginBottom: 4 }}>
-                    {w.orders.toLocaleString('vi-VN')} lượt dịch vụ hoàn thành
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>
-                      ✅ {w.completeRate}% hoàn thành
+                {/* Hàng 2: Thống kê + Badge gộp 1 dòng */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 10, color: C.m, background: '#f8f5ff', padding: '3px 7px', borderRadius: 8 }}>
+                    {w.orders.toLocaleString('vi-VN')} lượt
+                  </span>
+                  <span style={{ fontSize: 10, color: '#2e7d32', background: '#e8f5e9', padding: '3px 7px', borderRadius: 8 }}>
+                    ✅ {w.completeRate}%
+                  </span>
+                  <span style={{ fontSize: 10, color: C.pd, background: C.pl, padding: '3px 7px', borderRadius: 8 }}>
+                    👍 {w.thumbsUp}%
+                  </span>
+                  {/* Badge xác minh inline */}
+                  {w.badges.map((b, j) => (
+                    <span key={j} style={{ fontSize: 10, padding: '3px 7px', borderRadius: 8, background: b.ok ? '#e8f5e9' : '#f5f5f5', color: b.ok ? '#2e7d32' : '#bbb', border: `1px solid ${b.ok ? '#c8e6c9' : '#e0e0e0'}` }}>
+                      {b.label.split(' ')[0]} {b.ok ? '✅' : '⭕'}
                     </span>
-                    <span style={{ fontSize: 11, color: '#e53935' }}>
-                      ✗ {w.cancelRate}% chưa hoàn thành
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 11, color: C.pd, fontWeight: 600, marginTop: 4 }}>
-                    👍 Khách hài lòng: {w.thumbsUp}%
-                  </div>
+                  ))}
                 </div>
-
-                {/* Xác minh danh tính */}
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 10, color: C.m, marginBottom: 5, fontWeight: 600 }}>Xác minh danh tính:</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {w.badges.map((b, j) => (
-                      <div key={j} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 8px', borderRadius: 8, background: b.ok ? '#e8f5e9' : '#f5f5f5', border: `1px solid ${b.ok ? '#c8e6c9' : '#e0e0e0'}` }}>
-                        <span style={{ fontSize: 11, color: b.ok ? '#2e7d32' : '#9e9e9e' }}>{b.label}</span>
-                        <span style={{ fontSize: 11, fontWeight: 600, color: b.ok ? '#2e7d32' : '#9e9e9e' }}>
-                          {b.ok ? '✅ Đã xác minh' : '⭕ Chưa xác minh'}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Nút liên hệ */}
-                <button style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-                  onClick={() => chkLogin('s-chat-worker')}>
-                  💬 Liên hệ ngay
-                </button>
               </div>
             ))}
           </div>
