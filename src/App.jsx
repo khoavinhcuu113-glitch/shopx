@@ -191,23 +191,38 @@ function ServiceScreen({ go, chkLogin }) {
                   </button>
                 </div>
 
-                {/* Hàng 2: Thống kê + Badge gộp 1 dòng */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 10, color: C.m, background: '#f8f5ff', padding: '3px 7px', borderRadius: 8 }}>
-                    {w.orders.toLocaleString('vi-VN')} lượt
-                  </span>
-                  <span style={{ fontSize: 10, color: '#2e7d32', background: '#e8f5e9', padding: '3px 7px', borderRadius: 8 }}>
-                    ✅ {w.completeRate}%
-                  </span>
-                  <span style={{ fontSize: 10, color: C.pd, background: C.pl, padding: '3px 7px', borderRadius: 8 }}>
-                    👍 {w.thumbsUp}%
-                  </span>
-                  {/* Badge xác minh inline */}
-                  {w.badges.map((b, j) => (
-                    <span key={j} style={{ fontSize: 10, padding: '3px 7px', borderRadius: 8, background: b.ok ? '#e8f5e9' : '#f5f5f5', color: b.ok ? '#2e7d32' : '#bbb', border: `1px solid ${b.ok ? '#c8e6c9' : '#e0e0e0'}` }}>
-                      {b.label.split(' ')[0]} {b.ok ? '✅' : '⭕'}
-                    </span>
-                  ))}
+                {/* Hàng 2: Thống kê hoạt động */}
+                <div style={{ fontSize: 11, color: C.m, marginBottom: 6, lineHeight: 1.6 }}>
+                  <span style={{ color: C.t, fontWeight: 600 }}>{w.orders.toLocaleString('vi-VN')} lượt</span>
+                  {' · '}
+                  <span style={{ color: '#2e7d32', fontWeight: 600 }}>{w.completeRate}% hoàn thành</span>
+                  {' · '}
+                  <span style={{ color: C.pd, fontWeight: 600 }}>👍 {w.thumbsUp}% hài lòng</span>
+                </div>
+
+                {/* Hàng 3: Xác minh danh tính */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {w.badges.map((b, j) => {
+                    const isPi = b.label.includes('Pi');
+                    const bg   = isPi ? '#f3e5f5' : b.ok ? '#e8f5e9' : '#ffebee';
+                    const clr  = isPi ? '#6a1b9a' : b.ok ? '#2e7d32' : '#c62828';
+                    const bdr  = isPi ? '#ce93d8' : b.ok ? '#c8e6c9' : '#ef9a9a';
+                    return (
+                      <div key={j} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '4px 10px', borderRadius: 8, background: bg, border: `1px solid ${bdr}` }}>
+                        <span style={{ fontSize: 11, fontWeight: 600, color: clr }}>
+                          {b.label}
+                        </span>
+                        <span style={{ fontSize: 12 }}>
+                          {isPi
+                            ? (b.ok ? '✅ Xác minh' : <span style={{ color: '#e53935', fontSize: 11, fontWeight: 600 }}>❌ Chưa xác minh</span>)
+                            : b.ok
+                              ? <span style={{ color: '#2e7d32', fontSize: 11, fontWeight: 600 }}>✅ Xác minh</span>
+                              : <span style={{ color: '#e53935', fontSize: 11, fontWeight: 600 }}>❌ Chưa xác minh</span>
+                          }
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             ))}
