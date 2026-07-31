@@ -125,14 +125,18 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal' }) {
           ))}
         </div>
 
-        {/* Nút theo dõi + Chat */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <button style={{ background: C.pl, color: C.p, border: `1.5px solid ${C.p}`, padding: 9, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-            🔔 Theo dõi gian hàng
+        {/* Nút theo dõi + Chat + QR */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+          <button style={{ background: C.pl, color: C.p, border: `1.5px solid ${C.p}`, padding: 9, borderRadius: 10, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+            🔔 Theo dõi
           </button>
           <button onClick={() => chkLogin('s-chat-buy')}
-            style={{ background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            style={{ background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 10, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
             💬 Nhắn tin
+          </button>
+          <button onClick={() => go('s-qr')}
+            style={{ background: '#e8f5e9', color: '#2e7d32', border: '1px solid #c8e6c9', padding: 9, borderRadius: 10, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+            📱 QR Code
           </button>
         </div>
       </div>

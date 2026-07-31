@@ -12,6 +12,7 @@ import ShipperRegisterScreen from './screens/ShipperRegisterScreen';
 import ShipperOrdersScreen from './screens/ShipperOrdersScreen';
 import { RatingBadge, RatingStats } from './screens/RatingScreen';
 import StoreScreen from './screens/StoreScreen';
+import QRScreen from './screens/QRScreen';
 import ServiceOrderScreen, { ServiceOrderAlert } from './screens/ServiceOrderScreen';
 import CvRegisterScreen, { CvSuccessScreen, CccdScreen } from './screens/CvRegisterScreen';
 import RatingScreen from './screens/RatingScreen';
@@ -740,7 +741,10 @@ function AccountScreen({ go, nav, doLogout }) {
           </div>
         ))}
 
-        <Btn2 onClick={() => { go('s-home'); nav('ni-home'); }} style={{ marginTop: 0, marginBottom: 8 }}>🛍️ Tiếp tục mua sắm</Btn2>
+        <Btn2 onClick={() => go('s-qr')} style={{ marginBottom: 8 }}>
+          📱 QR Code gian hàng của tôi
+        </Btn2>
+        <Btn2 onClick={() => { go('s-home'); nav('ni-home'); }} style={{ marginBottom: 8 }}>🛍️ Tiếp tục mua sắm</Btn2>
         <button onClick={doLogout} style={{ width: '100%', background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 10, borderRadius: 10, fontSize: 13, cursor: 'pointer', marginTop: 8 }}>🚪 Đăng xuất</button>
         <div style={{ height: 80 }} />
       </div>
@@ -916,6 +920,7 @@ export default function App() {
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
       case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
       case 's-rating':                  return <RatingScreen           go={go} />;
+      case 's-qr':                   return <QRScreen go={go} />;
       case 's-store-personal':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="personal" />;
       case 's-store-business':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="business" />;
       case 's-service-order-worker': return <ServiceOrderScreen go={go} role="worker" />;
