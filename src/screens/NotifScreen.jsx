@@ -36,6 +36,26 @@ export default function NotifScreen({ go }) {
       title: 'SX-00127 muốn giao hàng đến bạn',
       desc: 'iPhone 13 Pro 256GB • 18.500.000đ • Biên Hòa',
       time: '30 phút trước',
+      type: 'ship',
+      needAction: true,
+    },
+    {
+      id: 'buyer-contact',
+      icon: '💬',
+      title: 'Có người quan tâm tin đăng của bạn',
+      desc: 'SX-00089 hỏi về: iPhone 13 Pro 256GB còn BH',
+      time: '1 giờ trước',
+      type: 'seller',
+      needAction: true,
+      badge: 2,
+    },
+    {
+      id: 'service-done',
+      icon: '🔨',
+      title: 'Thợ báo đã hoàn thành công việc',
+      desc: 'Anh Văn Nhân • Sửa điện phòng ngủ • Chờ bạn xác nhận',
+      time: '2 giờ trước',
+      type: 'service',
       needAction: true,
     },
     {
@@ -44,6 +64,7 @@ export default function NotifScreen({ go }) {
       title: 'SX-00127 (Thợ điện) đã phản hồi',
       desc: 'Mình có thể qua chiều nay lúc 15h được bạn nhé.',
       time: '3 giờ trước',
+      type: 'chat',
       needAction: false,
     },
     {
@@ -52,6 +73,7 @@ export default function NotifScreen({ go }) {
       title: 'Giao hàng hoàn thành',
       desc: 'Shipper SP-001 đã giao iPhone 12 Pro thành công.',
       time: '5 giờ trước',
+      type: 'done',
       needAction: false,
     },
     {
@@ -60,6 +82,7 @@ export default function NotifScreen({ go }) {
       title: 'SX Points: Nhận được 20 điểm',
       desc: 'Giao dịch thành công. Tổng: 1.250 SX Points.',
       time: 'Hôm qua 18:30',
+      type: 'points',
       needAction: false,
     },
   ];
@@ -82,9 +105,25 @@ export default function NotifScreen({ go }) {
             </div>
 
             {/* Action cho đơn cần xác nhận địa chỉ */}
-            {n.needAction && !addrConfirmed && (
+            {n.type === 'ship' && !addrConfirmed && (
               <button onClick={() => setShowAddrForm(true)} style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, marginTop: 4 }}>
                 📍 Nhập địa chỉ nhận hàng
+              </button>
+            )}
+
+            {/* Action người bán có tin nhắn mới */}
+            {n.type === 'seller' && (
+              <button onClick={() => go('s-chat-buy')}
+                style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, marginTop: 4 }}>
+                💬 Xem tin nhắn ({n.badge} mới)
+              </button>
+            )}
+
+            {/* Action đơn dịch vụ thợ hoàn thành */}
+            {n.type === 'service' && (
+              <button onClick={() => go('s-service-order-hirer')}
+                style={{ background: '#2e7d32', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, marginTop: 4 }}>
+                ✅ Xác nhận hoàn thành
               </button>
             )}
 

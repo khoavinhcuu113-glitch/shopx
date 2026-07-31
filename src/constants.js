@@ -79,18 +79,50 @@ export const NGHES = {
   gd:   ['Gia sư Toán - Lý - Hóa','Gia sư Văn - Sử - Địa','Dạy tiếng Anh','Dạy tiếng Trung - Nhật','Dạy đàn - nhạc cụ','Dạy vẽ - mỹ thuật','Dạy kỹ năng sống'],
   cn:   ['Cài đặt phần mềm','Lắp đặt camera','Thiết kế đồ họa','Chụp ảnh sản phẩm','Kế toán theo giờ','Đánh máy - soạn thảo'],
   dam:  ['Chăm sóc cá cảnh - hồ thủy sinh','Chăm sóc chim cảnh','Trồng & chăm sóc cây cảnh','Tạo dáng bon sai','Chăm sóc thú cưng','Nấu ăn - làm bánh theo đặt','Thêu - móc len','Quay video - dựng phim ngắn'],
+
+  // DANH MỤC MỚI — Dịch vụ nội khu & Gia đình
+  noikhu: [
+    'Mua hộ - đi chợ hộ',
+    'Nhận hàng online hộ',
+    'Chạy việc vặt - đặt đồ ăn hộ',
+    'Giao cơm nhà - đồ ăn tự nấu',
+    'Bán ăn vặt nội khu',
+    'Giao hàng nội khu - nội tòa nhà',
+  ],
+  chamsoc: [
+    'Chăm sóc người cao tuổi tại nhà',
+    'Chăm sóc bệnh nhân tại bệnh viện',
+    'Trông người nhà thay ca',
+    'Hỗ trợ phục hồi chức năng',
+    'Đưa đón người cao tuổi - bệnh nhân',
+    'Chăm sóc sau sinh - ở cữ',
+    'Trông trẻ sơ sinh',
+  ],
+  vesinhgiatre: [
+    'Vệ sinh nhà theo giờ',
+    'Vệ sinh căn hộ chung cư',
+    'Vệ sinh văn phòng',
+    'Giặt ủi theo ký',
+    'Giặt chăn màn - rèm cửa',
+    'Dọn kho - dọn nhà sau chuyển',
+    'Vệ sinh nhà bếp chuyên sâu',
+  ],
 };
 
 export const NGANH_LIST = [
-  { value: 'nha',  label: '🏠 Nhà ở & Công trình' },
-  { value: 'dien', label: '❄️ Điện lạnh & Thiết bị' },
-  { value: 'xe',   label: '🚗 Xe cộ' },
-  { value: 'nha2', label: '🌿 Dịch vụ tại nhà' },
-  { value: 'van',  label: '🚚 Vận chuyển & Lao động' },
-  { value: 'dep',  label: '💇 Làm đẹp & Chăm sóc' },
-  { value: 'gd',   label: '📚 Giáo dục & Đào tạo' },
-  { value: 'cn',   label: '💻 Công nghệ & Văn phòng' },
-  { value: 'dam',  label: '🌟 Kỹ năng & Đam mê bán thời gian' },
+  { value: 'nha',         label: '🏠 Nhà ở & Công trình' },
+  { value: 'dien',        label: '❄️ Điện lạnh & Thiết bị' },
+  { value: 'xe',          label: '🚗 Xe cộ' },
+  { value: 'nha2',        label: '🌿 Dịch vụ tại nhà' },
+  { value: 'van',         label: '🚚 Vận chuyển & Lao động' },
+  { value: 'dep',         label: '💇 Làm đẹp & Chăm sóc' },
+  { value: 'gd',          label: '📚 Giáo dục & Đào tạo' },
+  { value: 'cn',          label: '💻 Công nghệ & Văn phòng' },
+  { value: 'dam',         label: '🌟 Kỹ năng & Đam mê bán thời gian' },
+  // Ngành mới — Nội khu & Gia đình
+  { value: 'noikhu',      label: '🏢 Dịch vụ nội khu & Chung cư' },
+  { value: 'chamsoc',     label: '❤️ Chăm sóc người thân & Y tế' },
+  { value: 'vesinhgiatre',label: '🧹 Vệ sinh & Giặt ủi theo giờ' },
 ];
 
 export const CATEGORIES = [
@@ -98,6 +130,9 @@ export const CATEGORIES = [
   { icon: '🚗', name: 'Xe cộ' },
   { icon: '📱', name: 'Đồ điện tử' },
   { icon: '🔧', name: 'Dịch vụ & Việc làm' },
+  { icon: '🏢', name: 'Dịch vụ nội khu & Chung cư' },
+  { icon: '❤️', name: 'Chăm sóc người thân' },
+  { icon: '🧹', name: 'Vệ sinh & Giặt ủi' },
   { icon: '🐾', name: 'Thú cưng' },
   { icon: '🍖', name: 'Đồ ăn & Thực phẩm' },
   { icon: '❄️', name: 'Tủ lạnh, máy lạnh, máy giặt' },

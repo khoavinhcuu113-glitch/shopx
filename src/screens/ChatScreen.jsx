@@ -153,9 +153,13 @@ export default function ChatScreen({ go, type }) {
             <div style={{ fontSize: 13, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>
               Đã xác nhận thuê thợ!
             </div>
-            <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận này. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
             </div>
+            <button onClick={() => go('s-service-order-hirer')}
+              style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+              📋 Theo dõi đơn dịch vụ
+            </button>
           </div>
         )}
 
@@ -193,9 +197,13 @@ export default function ChatScreen({ go, type }) {
             <div style={{ fontSize: 13, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>
               Đã xác nhận nhận việc!
             </div>
-            <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
             </div>
+            <button onClick={() => go('s-service-order-worker')}
+              style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+              📋 Vào đơn dịch vụ — Bắt đầu làm việc
+            </button>
           </div>
         )}
 

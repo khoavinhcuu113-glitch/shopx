@@ -11,6 +11,8 @@ import NotifScreen from './screens/NotifScreen';
 import ShipperRegisterScreen from './screens/ShipperRegisterScreen';
 import ShipperOrdersScreen from './screens/ShipperOrdersScreen';
 import { RatingBadge, RatingStats } from './screens/RatingScreen';
+import StoreScreen from './screens/StoreScreen';
+import ServiceOrderScreen, { ServiceOrderAlert } from './screens/ServiceOrderScreen';
 import CvRegisterScreen, { CvSuccessScreen, CccdScreen } from './screens/CvRegisterScreen';
 import RatingScreen from './screens/RatingScreen';
 import { SAMPLE_USER_RATINGS, getRatingLevel } from './constants';
@@ -58,7 +60,7 @@ function ProductScreen({ go, chkLogin, type }) {
         <VidPlaceholder title="Clip giới thiệu sản phẩm" desc="Sắp ra mắt — người bán quay clip 15-30s thực tế" />
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
-          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>Người bán tại {p.loc}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div></div>
+          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>Người bán tại {p.loc}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div><div onClick={() => go('s-store-personal')} style={{ fontSize: 11, color: C.pd, marginTop: 2, cursor: 'pointer', textDecoration: 'underline' }}>🏪 Xem gian hàng</div></div>
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Mô tả</h3>
@@ -128,9 +130,12 @@ function ServiceScreen({ go, chkLogin }) {
     },
   ];
   const jobs = [
-    { title: 'Cần thợ sửa máy lạnh tại nhà', desc: 'Máy lạnh Daikin 1.5HP không lạnh, cần vệ sinh và nạp gas.', price: '200.000đ', loc: 'Biên Hòa' },
-    { title: 'Cần thợ sơn nhà 3 phòng ngủ',  desc: 'Sơn lại nội thất ~80m2, có sẵn sơn. Ưu tiên thợ làm cuối tuần.', price: 'Thỏa thuận', loc: 'Trảng Bom' },
-    { title: 'Cần người chăm sóc cá cảnh',   desc: 'Hồ thủy sinh 1.2m, cần người có kinh nghiệm 2 lần/tuần.', price: '150.000đ/lần', loc: 'Hố Nai' },
+    { title: 'Cần thợ sửa máy lạnh tại nhà', desc: 'Máy lạnh Daikin 1.5HP không lạnh, cần vệ sinh và nạp gas.', price: '200.000đ', loc: 'Biên Hòa', icon: '❄️' },
+    { title: 'Cần người mua hộ đồ ăn sáng', desc: 'Cần mua hộ 3 phần bánh mì + cà phê, giao tại tầng 8 chung cư Pegasus.', price: '20.000đ + tiền đồ', loc: 'Biên Hòa', icon: '🍖' },
+    { title: 'Cần người chăm sóc mẹ tại bệnh viện', desc: 'Mẹ nằm viện Đồng Nai, cần người trông ca tối 18h-6h. 2 ngày/tuần.', price: '250.000đ/ca', loc: 'Biên Hòa', icon: '❤️' },
+    { title: 'Cần vệ sinh căn hộ 2PN', desc: 'Vệ sinh toàn bộ căn hộ 65m2, dọn sau sửa chữa. Có sẵn dụng cụ.', price: '300.000đ', loc: 'Hố Nai', icon: '🧹' },
+    { title: 'Cần thợ sơn nhà 3 phòng ngủ', desc: 'Sơn lại nội thất ~80m2, có sẵn sơn. Ưu tiên thợ làm cuối tuần.', price: 'Thỏa thuận', loc: 'Trảng Bom', icon: '🏠' },
+    { title: 'Cần nhận hàng online hộ', desc: 'Hay đặt hàng online nhưng không có nhà ban ngày. Cần người nhận và giữ hộ.', price: '15.000đ/lần', loc: 'Hố Nai', icon: '📦' },
   ];
   const tabs = [
     { id: 'cv',      label: 'Đăng ký nghề cần việc' },
@@ -229,11 +234,14 @@ function ServiceScreen({ go, chkLogin }) {
           {jobs.map((j, i) => (
             <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 14, margin: '0 12px 10px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                <span style={{ fontSize: 13, fontWeight: 600, color: C.t, flex: 1, paddingRight: 8 }}>{j.title}</span>
-                <span style={{ fontSize: 10, background: C.pl, color: C.p, padding: '3px 8px', borderRadius: 10, whiteSpace: 'nowrap' }}>Đang tìm</span>
+                <div style={{ display: 'flex', gap: 8, flex: 1 }}>
+                  <span style={{ fontSize: 20, flexShrink: 0 }}>{j.icon}</span>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: C.t, paddingRight: 8 }}>{j.title}</span>
+                </div>
+                <span style={{ fontSize: 10, background: C.pl, color: C.p, padding: '3px 8px', borderRadius: 10, whiteSpace: 'nowrap', flexShrink: 0 }}>Đang tìm</span>
               </div>
-              <div style={{ fontSize: 12, color: C.m, marginBottom: 10, lineHeight: 1.5 }}>{j.desc}</div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <div style={{ fontSize: 12, color: C.m, marginBottom: 10, lineHeight: 1.5, paddingLeft: 28 }}>{j.desc}</div>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', paddingLeft: 28 }}>
                 <span style={{ fontSize: 13, fontWeight: 700, color: C.p }}>{j.price}</span>
                 <span style={{ fontSize: 11, color: C.m }}>📍 {j.loc}</span>
                 <button style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', marginLeft: 'auto' }} onClick={() => chkLogin('s-chat-job')}>Nhận việc</button>
@@ -568,7 +576,7 @@ function AccountScreen({ go, nav, doLogout }) {
             <Avatar initials="KV" size={52} />
             <div>
               <div style={{ fontSize: 15, fontWeight: 600, color: C.t }}>Khoavinhcuu113</div>
-              <div style={{ fontSize: 12, color: C.m }}>SX-00001 • Người mua/bán</div>
+              <div style={{ fontSize: 12, color: C.m }}>SX-00001 • Người mua/bán · 👤 Cá nhân</div>
               <div style={{ fontSize: 11, color: '#f59e0b', marginTop: 2 }}>⭐⭐⭐⭐⭐ 4.8 (34 đánh giá)</div>
             </div>
           </div>
@@ -676,8 +684,25 @@ function AccountScreen({ go, nav, doLogout }) {
           ))}
         </div>
 
-        {/* Fix I: Nhật ký tin đăng — hiện thông báo khi có người nhắn */}
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>📋 Tin đăng của tôi</div>
+        {/* Cảnh báo đơn chưa cập nhật */}
+        <div style={{ marginBottom: 10 }}>
+          <ServiceOrderAlert hoursElapsed={25} status="waiting" />
+        </div>
+
+        {/* Đơn dịch vụ đang chờ */}
+        <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 12, marginBottom: 10 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>🔨 Đơn dịch vụ đang chạy</div>
+          <div style={{ background: '#e3f2fd', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#1565c0' }}>Sửa điện phòng ngủ</div>
+              <div style={{ fontSize: 11, color: '#1976d2' }}>⏳ Chờ thợ đến • +25h</div>
+            </div>
+            <button onClick={() => go('s-service-order-hirer')}
+              style={{ background: '#1565c0', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+              Xem đơn
+            </button>
+          </div>
+        </div>
         {listings.map((l, i) => (
           <div key={i} style={{ background: C.w, border: `1.5px solid ${l.hasMsg ? C.p : '#e8def8'}`, borderRadius: 12, padding: 12, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
             onClick={() => l.hasMsg && go('s-chat-buy')}>
@@ -725,24 +750,84 @@ function AccountScreen({ go, nav, doLogout }) {
 
 // ─── REGISTER + PLEDGE ────────────────────────────────────────────────
 function RegisterScreen({ go }) {
-  const [role, setRole] = useState(0);
+  const [role, setRole]       = useState(0);
+  const [accType, setAccType] = useState('personal'); // personal | business
+
   return (
     <div>
       <Shdr title="Tạo tài khoản" onBack={() => go('s-login')} />
       <div style={{ padding: 12 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 10 }}>Chọn vai trò chính</div>
+
+        {/* Toggle Cá nhân / Doanh nghiệp */}
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>Loại tài khoản</div>
+        <div style={{ display: 'flex', background: '#f0ebfa', borderRadius: 12, padding: 4, marginBottom: 16, gap: 4 }}>
+          {[
+            { val: 'personal', icon: '👤', label: 'Cá nhân', desc: 'Bán đồ cá nhân, dịch vụ tự do' },
+            { val: 'business', icon: '🏢', label: 'Doanh nghiệp', desc: 'Gian hàng chuyên nghiệp, quảng cáo' },
+          ].map(t => (
+            <button key={t.val} onClick={() => setAccType(t.val)}
+              style={{ flex: 1, padding: '10px 8px', borderRadius: 10, border: 'none', cursor: 'pointer', textAlign: 'center', background: accType === t.val ? C.w : 'none', boxShadow: accType === t.val ? '0 1px 4px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}>
+              <div style={{ fontSize: 22, marginBottom: 4 }}>{t.icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: accType === t.val ? C.p : C.m }}>{t.label}</div>
+              <div style={{ fontSize: 10, color: C.m, lineHeight: 1.3, marginTop: 2 }}>{t.desc}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Vai trò chính */}
+        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>Vai trò chính</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
           {[['🛒','Người mua / bán'],['🚚','Shipper cộng đồng'],['🔨','Thợ / Freelancer'],['👥','Kết hợp nhiều vai trò']].map(([icon,lbl],i) => (
-            <div key={i} onClick={() => setRole(i)} style={{ background: role===i?C.pl:C.w, border: `2px solid ${role===i?C.p:C.b}`, borderRadius: 12, padding: 12, cursor: 'pointer', textAlign: 'center' }}>
+            <div key={i} onClick={() => setRole(i)}
+              style={{ background: role===i?C.pl:C.w, border: `2px solid ${role===i?C.p:C.b}`, borderRadius: 12, padding: 12, cursor: 'pointer', textAlign: 'center' }}>
               <div style={{ fontSize: 24, marginBottom: 6 }}>{icon}</div>
               <span style={{ fontSize: 12, fontWeight: 500, color: C.t }}>{lbl}</span>
             </div>
           ))}
         </div>
+
+        {/* Thông tin cơ bản */}
         <Fg label="Họ và tên" req><Fi placeholder="Nhập họ và tên đầy đủ" /></Fg>
         <Fg label="Số điện thoại" req><Fi placeholder="0901234567" type="tel" /></Fg>
         <Fg label="Mật khẩu" req><Fi placeholder="Tối thiểu 8 ký tự" type="password" /></Fg>
-        <Fg label="Khu vực" req><Fs><option>-- Chọn Tỉnh / Thành phố --</option><option>Đồng Nai</option><option>TP. Hồ Chí Minh</option><option>Bình Dương</option></Fs></Fg>
+        <Fg label="Khu vực" req>
+          <Fs>
+            <option>-- Chọn Tỉnh / Thành phố --</option>
+            <option>Đồng Nai</option>
+            <option>TP. Hồ Chí Minh</option>
+            <option>Bình Dương</option>
+          </Fs>
+        </Fg>
+
+        {/* Thông tin bổ sung nếu là Doanh nghiệp */}
+        {accType === 'business' && (
+          <div style={{ background: '#e8f0fe', borderRadius: 12, padding: 12, marginBottom: 12, border: '1px solid #c5d8ff' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e', marginBottom: 10 }}>
+              🏢 Thông tin Doanh nghiệp
+            </div>
+            <Fg label="Tên công ty / Cơ sở kinh doanh" req>
+              <Fi placeholder="VD: Cửa hàng điện tử Minh Anh" />
+            </Fg>
+            <Fg label="Mã số thuế / Mã số doanh nghiệp">
+              <Fi placeholder="VD: 3602123456" />
+            </Fg>
+            <Fg label="Địa chỉ kinh doanh" req>
+              <Fi placeholder="VD: 123 Nguyễn Ái Quốc, Biên Hòa" />
+            </Fg>
+            <Fg label="Giấy phép kinh doanh">
+              <div style={{ border: `2px dashed ${C.b}`, borderRadius: 10, padding: 12, textAlign: 'center', cursor: 'pointer', background: '#f8f5ff' }}>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>📄</div>
+                <div style={{ fontSize: 12, color: C.m }}>Upload Giấy phép KD (tùy chọn)</div>
+                <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>Có giấy phép → được badge 🏢 Doanh nghiệp xác minh</div>
+              </div>
+            </Fg>
+            <div style={{ background: '#e3f2fd', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#1565c0' }}>
+              💡 Doanh nghiệp xác minh được:
+              Đăng quảng cáo trên ShopX · Hiển thị ưu tiên · Badge xác minh · Thống kê doanh thu
+            </div>
+          </div>
+        )}
+
         <Btn onClick={() => go('s-pledge')}>Tiếp theo: Đọc cam kết ➡️</Btn>
         <div style={{ height: 80 }} />
       </div>
@@ -830,7 +915,11 @@ export default function App() {
       case 's-shipper-register': return <ShipperRegisterScreen  go={go} />;
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
       case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
-      case 's-rating':           return <RatingScreen           go={go} />;
+      case 's-rating':                  return <RatingScreen           go={go} />;
+      case 's-store-personal':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="personal" />;
+      case 's-store-business':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="business" />;
+      case 's-service-order-worker': return <ServiceOrderScreen go={go} role="worker" />;
+      case 's-service-order-hirer':  return <ServiceOrderScreen go={go} role="hirer" />;
       case 's-cv-success':       return <CvSuccessScreen    go={go} />;
       case 's-cccd':             return <CccdScreen         go={go} />;
       case 's-cv-register':      return <CvRegisterScreen   go={go} />;
