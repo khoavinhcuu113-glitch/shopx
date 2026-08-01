@@ -13,6 +13,7 @@ import ShipperOrdersScreen from './screens/ShipperOrdersScreen';
 import { RatingBadge, RatingStats } from './screens/RatingScreen';
 import StoreScreen from './screens/StoreScreen';
 import QRScreen from './screens/QRScreen';
+import TermsScreen, { TermsMenuScreen } from './screens/TermsScreen';
 import ServiceOrderScreen, { ServiceOrderAlert } from './screens/ServiceOrderScreen';
 import CvRegisterScreen, { CvSuccessScreen, CccdScreen } from './screens/CvRegisterScreen';
 import RatingScreen from './screens/RatingScreen';
@@ -745,6 +746,7 @@ function AccountScreen({ go, nav, doLogout }) {
           📱 QR Code gian hàng của tôi
         </Btn2>
         <Btn2 onClick={() => { go('s-home'); nav('ni-home'); }} style={{ marginBottom: 8 }}>🛍️ Tiếp tục mua sắm</Btn2>
+        <button onClick={() => go('s-terms')} style={{ width: '100%', background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 10, borderRadius: 10, fontSize: 13, cursor: 'pointer', marginTop: 8 }}>📋 Quy chế & Điều khoản</button>
         <button onClick={doLogout} style={{ width: '100%', background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 10, borderRadius: 10, fontSize: 13, cursor: 'pointer', marginTop: 8 }}>🚪 Đăng xuất</button>
         <div style={{ height: 80 }} />
       </div>
@@ -847,6 +849,7 @@ function PledgeScreen({ go, doLogin }) {
       <Shdr title="Cam kết sử dụng" onBack={() => go('s-register')} />
       <div style={{ padding: 12 }}>
         <Infobox text="Kéo xuống đọc hết nội dung trước khi bấm Đồng ý." />
+        <button onClick={() => go('s-terms')} style={{ background: 'none', border: 'none', color: C.p, fontSize: 12, cursor: 'pointer', textDecoration: 'underline', marginBottom: 8 }}>📋 Xem đầy đủ quy chế theo vai trò</button>
         <div style={{ background: C.pl, border: `1px solid ${C.b}`, borderRadius: 12, padding: 14, fontSize: 12, color: C.t, lineHeight: 1.7, maxHeight: 200, overflowY: 'auto', marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.pd, marginBottom: 8 }}>CAM KẾT SỬ DỤNG DỊCH VỤ SHOPX</h3>
           <p><strong>Điều 1:</strong> Mô tả trung thực, ảnh thật, giá thật.</p>
@@ -920,6 +923,11 @@ export default function App() {
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
       case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
       case 's-rating':                  return <RatingScreen           go={go} />;
+      case 's-terms':           return <TermsMenuScreen go={go} />;
+      case 's-terms-buyer':   return <TermsScreen go={go} role="buyer" />;
+      case 's-terms-shipper': return <TermsScreen go={go} role="shipper" />;
+      case 's-terms-worker':  return <TermsScreen go={go} role="worker" />;
+      case 's-terms-business':return <TermsScreen go={go} role="business" />;
       case 's-qr':                   return <QRScreen go={go} />;
       case 's-store-personal':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="personal" />;
       case 's-store-business':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="business" />;
