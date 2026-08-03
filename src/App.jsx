@@ -897,14 +897,27 @@ function PledgeScreen({ go, doLogin }) {
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────
 export default function App() {
-  const [screen,     setScreen]     = useState('s-home');
-  const [navActive,  setNavActive]  = useState('ni-home');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [screen,     setScreen]     = useState(() => {
+    // F5: giữ lại màn hình hiện tại (trừ các màn cần login)
+    const saved = sessionStorage.getItem('sx_screen');
+    const noSave = ['s-login','s-register','s-pledge'];
+    return (saved && !noSave.includes(saved)) ? saved : 's-home';
+  });
+  const [navActive,  setNavActive]  = useState(() => sessionStorage.getItem('sx_nav') || 'ni-home');
+  const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('sx_login') === '1');
   const [showPopup,  setShowPopup]  = useState(false);
   const [pendingScr, setPendingScr] = useState('');
 
-  const go  = (id) => { if (!id) return; setScreen(id); setShowPopup(false); };
-  const nav = (id) => setNavActive(id);
+  const go  = (id) => {
+    if (!id) return;
+    setScreen(id);
+    setShowPopup(false);
+    sessionStorage.setItem('sx_screen', id);
+  };
+  const nav = (id) => {
+    setNavActive(id);
+    sessionStorage.setItem('sx_nav', id);
+  };
 
   const chkLogin = (target) => {
     if (isLoggedIn) { go(target); }
@@ -914,12 +927,19 @@ export default function App() {
   const doLogin = () => {
     setIsLoggedIn(true);
     setShowPopup(false);
+    sessionStorage.setItem('sx_login', '1');
     go(pendingScr && pendingScr !== 's-login' ? pendingScr : 's-home');
     nav('ni-acc');
     setPendingScr('');
   };
 
-  const doLogout = () => { setIsLoggedIn(false); go('s-home'); nav('ni-home'); };
+  const doLogout = () => {
+    setIsLoggedIn(false);
+    sessionStorage.removeItem('sx_login');
+    sessionStorage.removeItem('sx_screen');
+    go('s-home');
+    nav('ni-home');
+  };
 
   // Fix A: Tài khoản chưa đăng nhập → redirect đến màn đăng nhập
   const goAccount = () => {

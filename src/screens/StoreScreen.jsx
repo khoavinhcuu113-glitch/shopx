@@ -87,13 +87,15 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
   return (
     <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: C.g }}>
 
-      {/* Header — Phân biệt của tôi vs người khác */}
-      <div style={{ background: C.p, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* Header */}
+      <div style={{ background: store.type === 'business' ? '#1565c0' : C.p, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <button
           onClick={() => isOwner ? go('s-account') : go('s-prod1')}
           style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
         <div style={{ flex: 1, color: '#fff', fontSize: 14, fontWeight: 600 }}>
-          {isOwner ? 'Gian hàng của tôi' : 'Gian hàng'}
+          {isOwner
+            ? store.type === 'business' ? 'Gian hàng Doanh nghiệp' : 'Gian hàng của tôi'
+            : 'Gian hàng'}
         </div>
         {isOwner && (
           <button onClick={() => go('s-qr')}
@@ -144,6 +146,25 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
             </div>
           ))}
         </div>
+
+        {/* Thông tin doanh nghiệp — chỉ hiện khi là DN */}
+        {store.type === 'business' && (
+          <div style={{ background: '#e3f2fd', borderRadius: 10, padding: '10px 12px', marginBottom: 10, border: '1px solid #bbdefb' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1565c0', marginBottom: 6 }}>🏢 Thông tin doanh nghiệp</div>
+            {[
+              { label: 'Ngành nghề', val: 'Kinh doanh điện thoại, laptop, phụ kiện' },
+              { label: 'Địa chỉ KD',  val: '45 Đồng Khởi, Biên Hòa, Đồng Nai' },
+              { label: 'Mã số thuế',  val: '3602123456' },
+              { label: 'Giờ mở cửa', val: '8:00 - 21:00 (Thứ 2 - Chủ nhật)' },
+              { label: 'Chính sách', val: 'Bảo hành 12 tháng • Đổi trả 7 ngày' },
+            ].map((r, i) => (
+              <div key={i} style={{ display: 'flex', gap: 8, padding: '3px 0', borderBottom: i < 4 ? '1px solid #bbdefb' : 'none' }}>
+                <span style={{ fontSize: 11, color: '#1976d2', width: 84, flexShrink: 0 }}>{r.label}:</span>
+                <span style={{ fontSize: 11, color: '#0d47a1', fontWeight: 500 }}>{r.val}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Badge xác minh */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
@@ -250,6 +271,17 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
         {/* Tab Dịch vụ — chỉ hiện khi có CV */}
         {tab === 'services' && store.hasCV && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {/* Tiêu đề dịch vụ của ai */}
+            <div style={{ background: C.pl, borderRadius: 10, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: '50%', background: store.avatarBg, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>
+                {store.avatar}
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>{store.name}</div>
+                <div style={{ fontSize: 10, color: C.m }}>Đang cung cấp {store.services.length} dịch vụ • {store.location}</div>
+              </div>
+            </div>
+
             {store.services.map((s, i) => (
               <div key={s.id} style={{ background: C.w, borderRadius: 12, padding: 12, border: '1px solid #e8def8', display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
@@ -257,12 +289,13 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 2 }}>{s.name}</div>
-                  <div style={{ fontSize: 11, color: C.m, marginBottom: 2 }}>{s.cat}</div>
+                  <div style={{ fontSize: 11, color: C.m, marginBottom: 2 }}>{s.cat} • {store.name}</div>
                   <div style={{ fontSize: 13, fontWeight: 700, color: C.p }}>{s.price}</div>
                 </div>
                 {isOwner ? (
-                  <button style={{ background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '6px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
-                    ✏️ Sửa
+                  <button onClick={() => go('s-cv-register')}
+                    style={{ background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '6px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
+                    ✏️ Sửa CV
                   </button>
                 ) : (
                   <button onClick={() => chkLogin('s-chat-worker')}
