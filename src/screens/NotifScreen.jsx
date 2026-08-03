@@ -68,6 +68,15 @@ export default function NotifScreen({ go }) {
       needAction: false,
     },
     {
+      id: 'review-remind',
+      icon: '⭐',
+      title: 'Nhắc đánh giá — nhận 5 SX Points',
+      desc: 'Đơn hàng iPhone 12 Pro đã hoàn tất. Đánh giá người bán để nhận điểm thưởng.',
+      time: '4 giờ trước',
+      type: 'review',
+      needAction: false,
+    },
+    {
       id: 'done',
       icon: '✅',
       title: 'Giao hàng hoàn thành',
@@ -116,6 +125,14 @@ export default function NotifScreen({ go }) {
               <button onClick={() => go('s-chat-buy')}
                 style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, marginTop: 4 }}>
                 💬 Xem tin nhắn ({n.badge} mới)
+              </button>
+            )}
+
+            {/* Action nhắc đánh giá */}
+            {n.type === 'review' && (
+              <button onClick={() => go('s-rating')}
+                style={{ background: '#f59e0b', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, marginTop: 4 }}>
+                ⭐ Đánh giá ngay → +5 SX Points
               </button>
             )}
 

@@ -615,7 +615,7 @@ function AccountScreen({ go, nav, doLogout }) {
 
           {/* Nút xem gian hàng */}
           <button
-            onClick={() => go(accType === 'business' ? 's-store-business' : 's-store-personal')}
+            onClick={() => go('s-my-store')}
             style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             🏪 Xem gian hàng {accType === 'business' ? 'Doanh nghiệp' : 'Cá nhân'} của tôi
           </button>
@@ -958,6 +958,7 @@ export default function App() {
       case 's-terms-worker':  return <TermsScreen go={go} role="worker" />;
       case 's-terms-business':return <TermsScreen go={go} role="business" />;
       case 's-qr':                   return <QRScreen go={go} />;
+      case 's-my-store':             return <StoreScreen go={go} chkLogin={chkLogin} isOwner={true} />;
       case 's-store-personal':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="personal" />;
       case 's-store-business':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="business" />;
       case 's-service-order-worker': return <ServiceOrderScreen go={go} role="worker" />;
