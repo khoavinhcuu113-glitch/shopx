@@ -208,3 +208,41 @@ export const SAMPLE_USER_RATINGS = {
     totalOrders: 156, onTimeRate: 96.8, thumbsUp: 97.5,
   },
 };
+
+// ─── NHÂN VẬT DEMO ────────────────────────────────────────────────────
+export const DEMO_USERS = {
+  // Tài khoản đang đăng nhập (người dùng)
+  me: {
+    id: 'SX-00001', name: 'Lê Đăng Khoa', username: 'khoavinhcuu113',
+    initials: 'LK', bg: '#7c3aed', loc: 'Biên Hòa, Đồng Nai',
+  },
+
+  // Người bán hàng hóa
+  sellers: [
+    { id: 'SX-00089', name: 'Chị Nguyễn Thu Lan',  initials: 'NL', bg: '#f59e0b', loc: 'Hố Nai, Biên Hòa' },
+    { id: 'SX-00127', name: 'Anh Trần Minh Tuấn',  initials: 'TT', bg: '#2e7d32', loc: 'Trảng Bom, Đồng Nai' },
+    { id: 'BIZ-0001', name: 'Cửa hàng Điện tử Minh Anh', initials: 'MA', bg: '#1565c0', loc: 'Biên Hòa' },
+  ],
+
+  // Người mua
+  buyers: [
+    { id: 'SX-00234', name: 'Nguyễn Văn Bình',     initials: 'NB', bg: '#0891b2' },
+    { id: 'SX-00412', name: 'Trần Thị Mỹ Hạnh',    initials: 'MH', bg: '#db2777' },
+    { id: 'SX-00156', name: 'Lê Hoàng Nam',         initials: 'HN', bg: '#7c3aed' },
+  ],
+
+  // Shipper
+  shippers: [
+    { id: 'SP-001', name: 'Trần Văn Cường',  initials: 'VC', bg: '#059669', vehicle: 'Honda Wave 🏍️' },
+    { id: 'SP-002', name: 'Nguyễn Thành Long', initials: 'TL', bg: '#0284c7', vehicle: 'Exciter 🏍️' },
+    { id: 'SP-003', name: 'Phạm Văn Hùng',   initials: 'VH', bg: '#7c2d12', vehicle: 'Toyota Vios 🚗' },
+  ],
+
+  // Thợ / Freelancer
+  workers: [
+    { id: 'SX-00127', name: 'Anh Trần Văn Nhân',      initials: 'VN', bg: '#7c3aed', trade: 'Thợ điện dân dụng', exp: '8 năm',  price: '80.000đ/giờ',    orders: 788, rate: 98,  thumbsUp: 98.2 },
+    { id: 'SX-00143', name: 'Anh Nguyễn Thanh Long',  initials: 'TL', bg: '#0891b2', trade: 'Thợ sửa máy lạnh',  exp: '5 năm',  price: '150.000đ/ca',    orders: 234, rate: 95,  thumbsUp: 94.5 },
+    { id: 'SX-00198', name: 'Chị Nguyễn Thu Hương',   initials: 'TH', bg: '#db2777', trade: 'Dọn dẹp vệ sinh',   exp: '3 năm',  price: '80.000đ/giờ',    orders: 156, rate: 100, thumbsUp: 99.1 },
+    { id: 'SX-00215', name: 'Anh Lê Quốc Hùng',       initials: 'QH', bg: '#6B2F9E', trade: 'Thợ sơn & chống thấm', exp: '10 năm', price: '400.000đ/ngày', orders: 412, rate: 96,  thumbsUp: 96.8 },
+  ],
+};

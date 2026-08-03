@@ -189,9 +189,9 @@ function ShipperView({ setShipperArrived, shipperArrived, otpDone, msgs, setMsgs
 export default function Chat3WayScreen({ go }) {
   const [msgs, setMsgs]               = useState([
     { from: 'system',  text: '🚀 Chat 3 bên đã được tạo. Cả 3 bên cùng trao đổi tại đây.' },
-    { from: 'seller',  name: 'SX-00127 (Người bán)',      text: 'Chào Shipper! Hàng iPhone 13 Pro đóng gói kỹ rồi. Địa chỉ: 123 Nguyễn Ái Quốc, Biên Hòa.' },
-    { from: 'shipper', name: 'SP-001 (Chị Thu Hương)',     text: 'Dạ mình sẽ qua lấy lúc 18h. Người mua vui lòng có mặt tại Hố Nai nhé!' },
-    { from: 'buyer',   name: 'SX-00001 (Người mua)',       text: 'Mình ở nhà cả buổi tối. SĐT: 0901234567.' },
+    { from: 'seller',  name: 'Anh Trần Minh Tuấn • SX-00127 (Người bán)',  text: 'Chào Shipper! Hàng iPhone 13 Pro đóng gói kỹ rồi. Địa chỉ: 123 Nguyễn Ái Quốc, Biên Hòa.' },
+    { from: 'shipper', name: 'Trần Văn Cường • SP-001 (Shipper)',             text: 'Dạ mình sẽ qua lấy lúc 18h. Người mua vui lòng có mặt tại Hố Nai nhé!' },
+    { from: 'buyer',   name: 'Nguyễn Văn Bình • SX-00234 (Người mua)',       text: 'Mình ở nhà cả buổi tối. SĐT: 0901234567.' },
   ]);
   const [input, setInput]             = useState('');
   const [role, setRole]               = useState('buyer');
@@ -204,7 +204,7 @@ export default function Chat3WayScreen({ go }) {
 
   function sendMsg() {
     if (!input.trim()) return;
-    const nameMap = { buyer: 'SX-00001 (Người mua)', seller: 'SX-00127 (Người bán)', shipper: 'SP-001 (Chị Thu Hương)' };
+    const nameMap = { buyer: 'Nguyễn Văn Bình • SX-00234', seller: 'Anh Trần Minh Tuấn • SX-00127', shipper: 'Trần Văn Cường • SP-001' };
     setMsgs(m => [...m, { from: role, name: nameMap[role], text: input }]);
     setInput('');
   }
@@ -275,11 +275,11 @@ export default function Chat3WayScreen({ go }) {
           <button onClick={() => go('s-delivery')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Chat 3 bên</div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>iPhone 13 Pro • SX-00127 × SX-00001 × SP-001</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>iPhone 13 Pro • Người bán: SX-00127 × Người mua: SX-00234 × Shipper: SP-001</div>
           </div>
         </div>
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          {[{ tag: 'Người bán', val: 'SX-00127' }, { tag: 'Shipper', val: 'SP-001' }, { tag: 'Người mua', val: 'SX-00001' }].map((p, i) => (
+          {[{ tag: 'Người bán', val: 'Anh Tuấn SX-00127' }, { tag: 'Shipper', val: 'A.Cường SP-001' }, { tag: 'Người mua', val: 'A.Bình SX-00234' }].map((p, i) => (
             <div key={i} style={{ textAlign: i === 1 ? 'center' : i === 2 ? 'right' : 'left' }}>
               <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{p.tag}</div>
               <div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{p.val}</div>

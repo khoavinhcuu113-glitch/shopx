@@ -13,9 +13,9 @@ export default function ChatScreen({ go, type }) {
 
   function getInitMsgs(t) {
     if (t === 'buy') return [
-      { me: false, from: 'SX-00127 (Người bán)', text: 'Xin chào! Bạn quan tâm đến iPhone 13 Pro của mình ạ?', time: '10:30' },
+      { me: false, from: 'Anh Trần Minh Tuấn • SX-00127 (Người bán)', text: 'Xin chào! Bạn quan tâm đến iPhone 13 Pro của mình ạ?', time: '10:30' },
       { me: true,  text: 'Dạ, máy còn bảo hành không anh? Ship về Hố Nai được không?', time: '10:31' },
-      { me: false, from: 'SX-00127 (Người bán)', text: 'Còn BH Apple đến 3/2025. Ship được, dùng giao hàng ShopX cho an toàn nhé!', time: '10:32' },
+      { me: false, from: 'Anh Trần Minh Tuấn • SX-00127 (Người bán)', text: 'Còn BH Apple đến 3/2025. Ship được, dùng giao hàng ShopX cho an toàn nhé!', time: '10:32' },
     ];
     if (t === 'job') return [
       { me: false, from: 'SX-00089', text: 'Chào anh/chị, máy lạnh nhà mình không lạnh, cần vệ sinh và nạp gas.', time: '14:05' },
@@ -23,13 +23,13 @@ export default function ChatScreen({ go, type }) {
     ];
     return [
       { me: true,  text: 'Chào anh, nhà mình bị mất điện 1 phòng ngủ. Anh có thể đến xem không?', time: '09:15' },
-      { me: false, from: 'SX-00127 (Thợ điện)', text: 'Chào bạn! Có thể do cầu dao phụ hỏng. Bạn ở khu vực nào?', time: '09:17' },
+      { me: false, from: 'Anh Trần Văn Nhân • SX-00127 (Thợ điện)', text: 'Chào bạn! Có thể do cầu dao phụ hỏng. Bạn ở khu vực nào?', time: '09:17' },
     ];
   }
 
   const cfgMap = {
-    buy:    { title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB', t1: 'Người mua (bạn)', v1: 'SX-00001', t2: 'Người bán', v2: 'SX-00127', ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e', ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa' },
-    job:    { title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh', t1: 'Thợ nhận việc (bạn)', v1: 'SX-00001', t2: 'Người đăng việc', v2: 'SX-00089', ctxBg: '#fff3e0', ctxBorder: '#ffe0b2', ctxColor: '#e65100', ctxTitle: '🔧 Tin tìm thợ — Sửa máy lạnh', ctxDesc: 'Ngân sách: 200.000đ • Biên Hòa' },
+    buy:    { title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB', t1: 'Nguyễn Văn Bình (người mua)', v1: 'SX-00234', t2: 'Anh Trần Minh Tuấn (người bán)', v2: 'SX-00127', ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e', ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa' },
+    job:    { title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh', t1: 'Anh Trần Văn Nhân (thợ)', v1: 'SX-00127', t2: 'Nguyễn Văn Bình (người thuê)', v2: 'SX-00234', ctxBg: '#fff3e0', ctxBorder: '#ffe0b2', ctxColor: '#e65100', ctxTitle: '🔧 Tin tìm thợ — Sửa máy lạnh', ctxDesc: 'Ngân sách: 200.000đ • Biên Hòa' },
     worker: { title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện', t1: 'Người cần thợ (bạn)', v1: 'SX-00001', t2: 'Thợ điện', v2: 'SX-00127', ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: '✅ Liên hệ từ Hồ sơ thợ', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ' },
   };
   const c = cfgMap[type] || cfgMap.buy;

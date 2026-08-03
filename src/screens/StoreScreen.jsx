@@ -221,16 +221,74 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
         {tab === 'products' && (
           <div>
             {store.products.length === 0 ? (
-              // Gian hàng trống
               <div style={{ textAlign: 'center', padding: '40px 20px' }}>
                 <div style={{ fontSize: 40, marginBottom: 12 }}>🏪</div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: C.t, marginBottom: 8 }}>Chưa có sản phẩm nào</div>
                 <div style={{ fontSize: 12, color: C.m, marginBottom: 20 }}>Đăng tin bán để khách hàng thấy sản phẩm của bạn</div>
                 {isOwner && <Btn onClick={() => go('s-post')}>➕ Đăng tin ngay</Btn>}
               </div>
+            ) : store.type === 'business' ? (
+              // DOANH NGHIỆP: Nhóm danh mục — scroll ngang
+              <div>
+                {(() => {
+                  const groups = store.products.reduce((acc, p) => {
+                    if (!acc[p.cat]) acc[p.cat] = [];
+                    acc[p.cat].push(p);
+                    return acc;
+                  }, {});
+                  return Object.entries(groups).map(([cat, items]) => (
+                    <div key={cat} style={{ marginBottom: 20 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: C.t }}>{cat}</div>
+                        <span style={{ fontSize: 11, color: C.p }}>{items.length} SP</span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginRight: -12 }}>
+                        {items.map(p => (
+                          <div key={p.id} style={{ minWidth: 140, maxWidth: 140, background: C.w, borderRadius: 12, border: `1px solid ${p.status === 'out' ? '#f5f5f5' : '#e8def8'}`, overflow: 'hidden', flexShrink: 0, opacity: p.status === 'out' ? 0.6 : 1 }}>
+                            <div style={{ height: 90, background: C.pl, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36 }}>
+                              {p.icon}
+                            </div>
+                            <div style={{ padding: '8px 10px' }}>
+                              <div style={{ fontSize: 11, fontWeight: 600, color: C.t, marginBottom: 4, lineHeight: 1.3, height: 30, overflow: 'hidden' }}>{p.name}</div>
+                              <div style={{ fontSize: 12, fontWeight: 700, color: C.p, marginBottom: 6 }}>{p.price}</div>
+                              {p.status === 'out' ? (
+                                <div style={{ fontSize: 10, color: '#e53935', textAlign: 'center' }}>Hết hàng</div>
+                              ) : isOwner ? (
+                                <button onClick={() => go('s-post')}
+                                  style={{ width: '100%', background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '4px 0', borderRadius: 6, fontSize: 10, cursor: 'pointer' }}>
+                                  ✏️ Sửa
+                                </button>
+                              ) : (
+                                <button onClick={() => chkLogin('s-chat-buy')}
+                                  style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: '5px 0', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                                  Mua ngay
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                        {isOwner && (
+                          <div onClick={() => go('s-post')}
+                            style={{ minWidth: 90, background: '#f8f5ff', borderRadius: 12, border: '1.5px dashed #d4b8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', padding: 10, flexShrink: 0 }}>
+                            <span style={{ fontSize: 20 }}>➕</span>
+                            <span style={{ fontSize: 10, color: C.p, textAlign: 'center', lineHeight: 1.3 }}>Thêm vào {cat}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ));
+                })()}
+                {isOwner && (
+                  <button onClick={() => go('s-post')}
+                    style={{ width: '100%', background: '#e8f5e9', color: '#2e7d32', border: '1.5px dashed #c8e6c9', padding: 12, borderRadius: 12, fontSize: 13, cursor: 'pointer' }}>
+                    ➕ Thêm sản phẩm vào danh mục mới
+                  </button>
+                )}
+              </div>
             ) : (
+              // CÁ NHÂN: Danh sách dọc đơn giản
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {store.products.map((p, i) => (
+                {store.products.map(p => (
                   <div key={p.id} style={{ background: C.w, borderRadius: 12, padding: 12, border: `1px solid ${p.status === 'out' ? '#f5f5f5' : '#e8def8'}`, display: 'flex', alignItems: 'center', gap: 10, opacity: p.status === 'out' ? 0.6 : 1 }}>
                     <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
                       {p.icon}
@@ -242,14 +300,11 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
                       {p.status === 'out' && <div style={{ fontSize: 10, color: '#e53935' }}>Tạm hết hàng</div>}
                     </div>
                     {isOwner ? (
-                      // Chủ gian hàng: nút chỉnh sửa
                       <button style={{ background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '6px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
                         ✏️ Sửa
                       </button>
                     ) : (
-                      // Khách: nút mua
-                      <button
-                        onClick={() => p.status !== 'out' && chkLogin('s-chat-buy')}
+                      <button onClick={() => p.status !== 'out' && chkLogin('s-chat-buy')}
                         disabled={p.status === 'out'}
                         style={{ background: p.status === 'out' ? '#ccc' : C.p, color: '#fff', border: 'none', padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: p.status === 'out' ? 'default' : 'pointer', flexShrink: 0 }}>
                         {p.status === 'out' ? 'Hết' : 'Mua'}

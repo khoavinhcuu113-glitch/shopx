@@ -91,7 +91,7 @@ function ServiceScreen({ go, chkLogin }) {
   const [nganh, setNganh] = useState('');
   const workers = [
     {
-      av: 'VN', name: 'Anh Văn Nhân', trade: 'Thợ điện dân dụng', exp: '8 năm',
+      av: 'VN', name: 'Anh Trần Văn Nhân', trade: 'Thợ điện dân dụng', exp: '8 năm',
       price: '80.000đ/giờ', orders: 788, completeRate: 98, cancelRate: 2,
       thumbsUp: 98.2, bg: C.p,
       badges: [
@@ -101,7 +101,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'TL', name: 'Anh Thanh Long', trade: 'Thợ sửa máy lạnh', exp: '5 năm',
+      av: 'TL', name: 'Anh Nguyễn Thanh Long', trade: 'Thợ sửa máy lạnh', exp: '5 năm',
       price: '150.000đ/ca', orders: 234, completeRate: 95, cancelRate: 5,
       thumbsUp: 94.5, bg: C.pm,
       badges: [
@@ -111,7 +111,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'HD', name: 'Chị Hoa Đào', trade: 'Cá cảnh & hồ thủy sinh', exp: '3 năm',
+      av: 'TH', name: 'Chị Nguyễn Thu Hương', trade: 'Dọn dẹp vệ sinh nhà', exp: '3 năm',
       price: '200.000đ/lần', orders: 56, completeRate: 100, cancelRate: 0,
       thumbsUp: 100, bg: C.pd,
       badges: [
@@ -121,7 +121,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'QH', name: 'Anh Quốc Hùng', trade: 'Thợ sơn & chống thấm', exp: '10 năm',
+      av: 'QH', name: 'Anh Lê Quốc Hùng', trade: 'Thợ sơn & chống thấm', exp: '10 năm',
       price: '400.000đ/ngày', orders: 412, completeRate: 96, cancelRate: 4,
       thumbsUp: 96.8, bg: '#6B2F9E',
       badges: [
@@ -295,7 +295,8 @@ function PostScreen({ go, chkLogin }) {
       <Shdr title="Đăng tin bán" onBack={() => go('s-home')} />
       <div style={{ background: '#e8f5e9', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #c8e6c9' }}>
         <Avatar initials="KV" size={28} />
-        <div><div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32' }}>Đăng tin với tư cách: SX-00001</div><div style={{ fontSize: 10, color: '#388e3c' }}>Khoavinhcuu113 • Đã xác minh CCCD</div></div>
+        <div><div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32' }}>Đăng tin với tư cách: SX-00001
+					<div style={{ fontSize: 10, color: '#388e3c' }}>Lê Đăng Khoa (khoavinhcuu113) • Đã xác minh CCCD</div></div>
       </div>
       <div style={{ padding: 12 }}>
         {/* Fix B: Ảnh thêm được nhiều lần */}
@@ -599,8 +600,57 @@ function AccountScreen({ go, nav, doLogout }) {
               ))}
             </div>
             {accType === 'business' && (
-              <div style={{ background: '#e3f2fd', borderRadius: 8, padding: '6px 10px', marginTop: 6, fontSize: 11, color: '#1565c0' }}>
-                🏢 Doanh nghiệp: Cần upload Giấy phép KD để được badge xác minh
+              <div style={{ background: '#e3f2fd', borderRadius: 10, padding: 12, marginTop: 8, border: '1px solid #bbdefb' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#1565c0', marginBottom: 8 }}>🏢 Thông tin Doanh nghiệp</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Tên công ty / Cơ sở KD *</div>
+                    <input placeholder="VD: Cửa hàng điện tử Minh Anh"
+                      style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Mã số thuế *</div>
+                    <input placeholder="VD: 3602123456" maxLength={13}
+                      style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Địa chỉ kinh doanh *</div>
+                    <input placeholder="VD: 45 Đồng Khởi, Biên Hòa, Đồng Nai"
+                      style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Ngành hàng chính *</div>
+                    <select style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', background: '#fff' }}>
+                      <option>-- Chọn ngành hàng --</option>
+                      <option>Điện thoại & Phụ kiện</option>
+                      <option>Máy tính & Laptop</option>
+                      <option>Thời trang</option>
+                      <option>Thực phẩm & Đồ uống</option>
+                      <option>Nội thất & Gia dụng</option>
+                      <option>Xe cộ & Phụ tùng</option>
+                      <option>Dịch vụ</option>
+                      <option>Khác</option>
+                    </select>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Email DN</div>
+                      <input placeholder="contact@company.vn" type="email"
+                        style={{ width: '100%', border: '1.5px solid #bbdefb', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Website</div>
+                      <input placeholder="shopx.vn/store/..."
+                        style={{ width: '100%', border: '1.5px solid #bbdefb', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+                    </div>
+                  </div>
+                  <div style={{ background: '#fff3e0', borderRadius: 8, padding: '6px 10px', fontSize: 11, color: '#e65100' }}>
+                    ℹ️ ShopX xác minh MST qua Cổng ĐKKD quốc gia. Không cần upload giấy phép. Admin xét duyệt trong 24h.
+                  </div>
+                  <button style={{ background: '#1565c0', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                    📤 Gửi yêu cầu nâng cấp Doanh nghiệp
+                  </button>
+                </div>
               </div>
             )}
           </div>
