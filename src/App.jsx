@@ -564,6 +564,7 @@ function LoginScreen({ go, doLogin }) {
 
 // ─── ACCOUNT SCREEN (Fix A: chỉ hiện khi đã đăng nhập + Fix I: nhật ký tin đăng) ──
 function AccountScreen({ go, nav, doLogout }) {
+  const [accType, setAccType] = React.useState('personal');
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH', price: '18.500.000đ', date: '26/07/2026', hasMsg: true,  msgCount: 2 },
     { icon: '🏍️', title: 'Honda SH 125i 2021 đen bóng', price: '62.000.000đ', date: '25/07/2026', hasMsg: false, msgCount: 0 },
@@ -576,20 +577,48 @@ function AccountScreen({ go, nav, doLogout }) {
         <div style={{ background: C.w, padding: 12, borderRadius: 12, border: '1px solid #e8def8', marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
             <Avatar initials="KV" size={52} />
-            <div>
+            <div style={{ flex: 1 }}>
               <div style={{ fontSize: 15, fontWeight: 600, color: C.t }}>Khoavinhcuu113</div>
-              <div style={{ fontSize: 12, color: C.m }}>SX-00001 • Người mua/bán · 👤 Cá nhân</div>
+              <div style={{ fontSize: 12, color: C.m }}>SX-00001</div>
               <div style={{ fontSize: 11, color: '#f59e0b', marginTop: 2 }}>⭐⭐⭐⭐⭐ 4.8 (34 đánh giá)</div>
             </div>
           </div>
-          {/* Badge xác minh mới */}
+
+          {/* Toggle Cá nhân / Doanh nghiệp */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.m, marginBottom: 6 }}>Loại tài khoản:</div>
+            <div style={{ display: 'flex', background: '#f0ebfa', borderRadius: 10, padding: 3, gap: 3 }}>
+              {[
+                { val: 'personal', icon: '👤', label: 'Cá nhân' },
+                { val: 'business', icon: '🏢', label: 'Doanh nghiệp' },
+              ].map(t => (
+                <button key={t.val} onClick={() => setAccType(t.val)}
+                  style={{ flex: 1, padding: '7px 8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: accType === t.val ? 600 : 400, background: accType === t.val ? C.w : 'none', color: accType === t.val ? C.p : C.m, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                  <span>{t.icon}</span> {t.label}
+                </button>
+              ))}
+            </div>
+            {accType === 'business' && (
+              <div style={{ background: '#e3f2fd', borderRadius: 8, padding: '6px 10px', marginTop: 6, fontSize: 11, color: '#1565c0' }}>
+                🏢 Doanh nghiệp: Cần upload Giấy phép KD để được badge xác minh
+              </div>
+            )}
+          </div>
+
+          {/* Badge xác minh */}
           <div style={{ fontSize: 11, fontWeight: 600, color: C.m, marginBottom: 6 }}>Xác minh danh tính:</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
             <span style={{ fontSize: 11, background: '#e8f5e9', color: '#2e7d32', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>✅ SĐT</span>
             <span style={{ fontSize: 11, background: '#e8f5e9', color: '#2e7d32', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🪪 Căn cước KYC</span>
             <span style={{ fontSize: 11, background: '#fff3e0', color: '#e65100', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🟣 Pi chưa xác minh</span>
-            <span style={{ fontSize: 11, background: '#f5f0ff', color: C.p, padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🟣 Pi Payment sắp có</span>
           </div>
+
+          {/* Nút xem gian hàng */}
+          <button
+            onClick={() => go(accType === 'business' ? 's-store-business' : 's-store-personal')}
+            style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            🏪 Xem gian hàng {accType === 'business' ? 'Doanh nghiệp' : 'Cá nhân'} của tôi
+          </button>
         </div>
 
         {/* Uy tín — 3 tab: Người bán / Người mua / Shipper */}
