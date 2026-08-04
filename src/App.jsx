@@ -944,44 +944,99 @@ function KYCScreen({ go, doLogin }) {
   );
 }
 
+// Demo: mock 1 hồ sơ "đã tồn tại" để minh họa luồng — thực tế sẽ là API kiểm tra DB thật
+const MOCK_EXISTING_PROFILES = [
+  { phone: '0901234567', name: 'Nguyễn Văn A', missing: ['Khu vực'] },
+];
+
 function RegisterScreen({ go }) {
-  const [role, setRole]       = useState(0);
+  const [step, setStep]             = useState('phone'); // phone | otp | form
+  const [phone, setPhone]           = useState('');
+  const [otp, setOtp]               = useState('');
+  const [existing, setExisting]     = useState(null); // hồ sơ cũ tìm thấy sau khi xác thực OTP (null nếu là user mới)
+  const [sending, setSending]       = useState(false);
+
+  function sendOtp() {
+    if (phone.replace(/\D/g, '').length < 9) { alert('Vui lòng nhập đúng số điện thoại.'); return; }
+    setSending(true);
+    setTimeout(() => { setSending(false); setStep('otp'); }, 800);
+  }
+
+  function verifyOtp() {
+    if (otp.replace(/\D/g, '').length !== 6) { alert('Vui lòng nhập đủ 6 số OTP.'); return; }
+    // Quan trọng: luôn xác thực OTP TRƯỚC, chỉ sau khi đúng OTP mới được biết có hồ sơ cũ hay không
+    // → tránh lộ thông tin "SĐT này đã có tài khoản" cho người không sở hữu SĐT đó (account enumeration)
+    const found = MOCK_EXISTING_PROFILES.find(p => p.phone === phone.replace(/\D/g, ''));
+    setExisting(found || null);
+    setStep('form');
+  }
 
   return (
     <div>
       <Shdr title="Tạo tài khoản" onBack={() => go('s-login')} />
       <div style={{ padding: 12 }}>
 
-        {/* Vai trò chính */}
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>Vai trò chính</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
-          {[['🛒','Người mua / bán'],['🚚','Shipper cộng đồng'],['🔨','Thợ / Freelancer'],['👥','Kết hợp nhiều vai trò']].map(([icon,lbl],i) => (
-            <div key={i} onClick={() => setRole(i)}
-              style={{ background: role===i?C.pl:C.w, border: `2px solid ${role===i?C.p:C.b}`, borderRadius: 12, padding: 12, cursor: 'pointer', textAlign: 'center' }}>
-              <div style={{ fontSize: 24, marginBottom: 6 }}>{icon}</div>
-              <span style={{ fontSize: 12, fontWeight: 500, color: C.t }}>{lbl}</span>
+        {step === 'phone' && (
+          <>
+            <Fg label="Số điện thoại" req>
+              <Fi placeholder="0901234567" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
+            </Fg>
+            <Infobox text="Mỗi số điện thoại chỉ gắn với đúng 1 hồ sơ. Nếu bạn đã từng đăng ký, hệ thống sẽ giúp tiếp tục từ hồ sơ cũ — không cần nhập lại từ đầu." />
+            <Btn onClick={sendOtp} disabled={sending}>{sending ? 'Đang gửi mã...' : '📩 Gửi mã OTP xác thực'}</Btn>
+          </>
+        )}
+
+        {step === 'otp' && (
+          <>
+            <Fg label={`Nhập mã OTP đã gửi tới ${phone}`} req>
+              <Fi placeholder="6 số" maxLength={6} inputMode="numeric" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ''))} />
+            </Fg>
+            <Btn onClick={verifyOtp}>Xác nhận OTP ➡️</Btn>
+            <Btn2 onClick={() => setStep('phone')}>⬅️ Đổi số điện thoại</Btn2>
+          </>
+        )}
+
+        {step === 'form' && existing && (
+          <>
+            <div style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 10, padding: 12, marginBottom: 14 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#1565c0', marginBottom: 4 }}>👋 Chào mừng trở lại, {existing.name}!</div>
+              <div style={{ fontSize: 12, color: '#1976d2' }}>Hồ sơ của bạn đã có sẵn — chỉ cần bổ sung phần còn thiếu để tiếp tục, không phải nhập lại từ đầu.</div>
             </div>
-          ))}
-        </div>
+            {existing.missing.includes('Khu vực') && (
+              <Fg label="Khu vực" req>
+                <Fs>
+                  <option>-- Chọn Tỉnh / Thành phố --</option>
+                  <option>Đồng Nai</option>
+                  <option>TP. Hồ Chí Minh</option>
+                  <option>Bình Dương</option>
+                </Fs>
+              </Fg>
+            )}
+            <Btn onClick={() => go('s-pledge')}>Tiếp tục: Đọc cam kết ➡️</Btn>
+          </>
+        )}
 
-        {/* Thông tin cơ bản */}
-        <Fg label="Họ và tên" req><Fi placeholder="Nhập họ và tên đầy đủ" /></Fg>
-        <Fg label="Số điện thoại" req><Fi placeholder="0901234567" type="tel" /></Fg>
-        <Fg label="Mật khẩu" req><Fi placeholder="Tối thiểu 8 ký tự" type="password" /></Fg>
-        <Fg label="Khu vực" req>
-          <Fs>
-            <option>-- Chọn Tỉnh / Thành phố --</option>
-            <option>Đồng Nai</option>
-            <option>TP. Hồ Chí Minh</option>
-            <option>Bình Dương</option>
-          </Fs>
-        </Fg>
+        {step === 'form' && !existing && (
+          <>
+            <Fg label="Họ và tên" req><Fi placeholder="Nhập họ và tên đầy đủ" /></Fg>
+            <Fg label="Mật khẩu" req><Fi placeholder="Tối thiểu 8 ký tự" type="password" /></Fg>
+            <Fg label="Khu vực" req>
+              <Fs>
+                <option>-- Chọn Tỉnh / Thành phố --</option>
+                <option>Đồng Nai</option>
+                <option>TP. Hồ Chí Minh</option>
+                <option>Bình Dương</option>
+              </Fs>
+            </Fg>
 
-        <div style={{ background: '#e8f5e9', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#2e7d32', marginBottom: 12 }}>
-          ℹ️ Sau khi xác minh CCCD (KYC), bạn có thể nâng cấp lên tài khoản Doanh nghiệp bất cứ lúc nào trong mục Tài khoản.
-        </div>
+            <div style={{ background: '#e8f5e9', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#2e7d32', marginBottom: 12 }}>
+              ℹ️ Tài khoản mặc định có thể đăng tin mua/bán ngay. Muốn làm <b>Thợ</b> (nộp CV) hoặc <b>Shipper cộng đồng</b>, đăng ký riêng trong mục Dịch vụ &amp; Việc làm bất cứ lúc nào. Sau khi xác minh CCCD (KYC), có thể nâng cấp lên tài khoản Doanh nghiệp trong mục Tài khoản.
+            </div>
 
-        <Btn onClick={() => go('s-pledge')}>Tiếp theo: Đọc cam kết ➡️</Btn>
+            <Btn onClick={() => go('s-pledge')}>Tiếp theo: Đọc cam kết ➡️</Btn>
+          </>
+        )}
+
         <div style={{ height: 80 }} />
       </div>
     </div>
