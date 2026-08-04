@@ -392,6 +392,52 @@ function PostScreen({ go, chkLogin }) {
   );
 }
 // ─── DIRECT SCREEN (Fix C: bỏ nút xem tin nhắn) ─────────────────────
+// ─── CHẶN BỔ SUNG SĐT khi cần thực hiện hành động quan trọng (đăng tin, nhận đơn...) ───
+function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
+  const [step, setStep]       = useState('phone'); // phone | otp
+  const [phone, setPhone]     = useState('');
+  const [otp, setOtp]         = useState('');
+  const [sending, setSending] = useState(false);
+
+  function sendOtp() {
+    if (phone.replace(/\D/g, '').length < 9) { alert('Vui lòng nhập đúng số điện thoại.'); return; }
+    setSending(true);
+    setTimeout(() => { setSending(false); setStep('otp'); }, 800);
+  }
+  function verifyOtp() {
+    if (otp.replace(/\D/g, '').length !== 6) { alert('Vui lòng nhập đủ 6 số OTP.'); return; }
+    onVerified();
+  }
+
+  return (
+    <div>
+      <Shdr title="Cần bổ sung số điện thoại" onBack={() => go('s-home')} />
+      <div style={{ padding: 12 }}>
+        <Infobox icon="🔒" text={`Để ${actionLabel || 'tiếp tục'}, ShopX cần xác minh số điện thoại nhằm đảm bảo trách nhiệm giao dịch giữa các bên.`} bg="#fff3e0" color="#e65100" />
+
+        {step === 'phone' && (
+          <>
+            <Fg label="Số điện thoại" req>
+              <Fi placeholder="0901234567" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
+            </Fg>
+            <Btn onClick={sendOtp} disabled={sending}>{sending ? 'Đang gửi mã...' : '📩 Gửi mã OTP xác thực'}</Btn>
+          </>
+        )}
+
+        {step === 'otp' && (
+          <>
+            <Fg label={`Nhập mã OTP đã gửi tới ${phone}`} req>
+              <Fi placeholder="6 số" maxLength={6} inputMode="numeric" value={otp} onChange={e => setOtp(e.target.value.replace(/\D/g, ''))} />
+            </Fg>
+            <Btn onClick={verifyOtp}>✅ Xác nhận & Tiếp tục</Btn>
+            <Btn2 onClick={() => setStep('phone')}>⬅️ Đổi số điện thoại</Btn2>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function DirectScreen({ go }) {
   return (
     <div>
@@ -950,11 +996,19 @@ const MOCK_EXISTING_PROFILES = [
 ];
 
 function RegisterScreen({ go }) {
-  const [step, setStep]             = useState('phone'); // phone | otp | form
+  const [method, setMethod]         = useState(null);   // 'phone' | 'email'
+  const [step, setStep]             = useState('method'); // method | phone | email | otp | form
   const [phone, setPhone]           = useState('');
+  const [email, setEmail]           = useState('');
   const [otp, setOtp]               = useState('');
   const [existing, setExisting]     = useState(null); // hồ sơ cũ tìm thấy sau khi xác thực OTP (null nếu là user mới)
   const [sending, setSending]       = useState(false);
+
+  function chooseMethod(m) {
+    setMethod(m);
+    sessionStorage.setItem('sx_register_method', m);
+    setStep(m === 'phone' ? 'phone' : 'email');
+  }
 
   function sendOtp() {
     if (phone.replace(/\D/g, '').length < 9) { alert('Vui lòng nhập đúng số điện thoại.'); return; }
@@ -971,18 +1025,51 @@ function RegisterScreen({ go }) {
     setStep('form');
   }
 
+  function submitEmail() {
+    if (!email.includes('@')) { alert('Vui lòng nhập đúng định dạng email.'); return; }
+    setExisting(null); // demo: luôn coi là tài khoản mới khi đăng ký bằng email
+    setStep('form');
+  }
+
   return (
     <div>
       <Shdr title="Tạo tài khoản" onBack={() => go('s-login')} />
       <div style={{ padding: 12 }}>
+
+        {step === 'method' && (
+          <>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>Chọn cách đăng ký</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 4 }}>
+              <div onClick={() => chooseMethod('phone')} style={{ background: C.w, border: `2px solid ${C.b}`, borderRadius: 12, padding: 16, cursor: 'pointer', textAlign: 'center' }}>
+                <div style={{ fontSize: 26, marginBottom: 6 }}>📱</div>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Số điện thoại</span>
+              </div>
+              <div onClick={() => chooseMethod('email')} style={{ background: C.w, border: `2px solid ${C.b}`, borderRadius: 12, padding: 16, cursor: 'pointer', textAlign: 'center' }}>
+                <div style={{ fontSize: 26, marginBottom: 6 }}>✉️</div>
+                <span style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Email</span>
+              </div>
+            </div>
+          </>
+        )}
+
+        {step === 'email' && (
+          <>
+            <Fg label="Địa chỉ Email" req>
+              <Fi placeholder="ban@email.com" type="email" value={email} onChange={e => setEmail(e.target.value)} />
+            </Fg>
+            <Btn onClick={submitEmail}>Tiếp tục ➡️</Btn>
+            <Btn2 onClick={() => setStep('method')}>⬅️ Chọn cách khác</Btn2>
+          </>
+        )}
 
         {step === 'phone' && (
           <>
             <Fg label="Số điện thoại" req>
               <Fi placeholder="0901234567" type="tel" value={phone} onChange={e => setPhone(e.target.value)} />
             </Fg>
-            <Infobox text="Mỗi số điện thoại chỉ gắn với đúng 1 hồ sơ. Nếu bạn đã từng đăng ký, hệ thống sẽ giúp tiếp tục từ hồ sơ cũ — không cần nhập lại từ đầu." />
+            <Infobox text="Số điện thoại mới → đăng ký bình thường như dưới đây. Nếu số này đã từng đăng ký trước đó → hệ thống tự giúp bạn tiếp tục từ hồ sơ cũ, không cần nhập lại." />
             <Btn onClick={sendOtp} disabled={sending}>{sending ? 'Đang gửi mã...' : '📩 Gửi mã OTP xác thực'}</Btn>
+            <Btn2 onClick={() => setStep('method')}>⬅️ Chọn cách khác</Btn2>
           </>
         )}
 
@@ -1078,6 +1165,7 @@ export default function App() {
   });
   const [navActive,  setNavActive]  = useState(() => sessionStorage.getItem('sx_nav') || 'ni-home');
   const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('sx_login') === '1');
+  const [hasPhone,   setHasPhone]   = useState(() => sessionStorage.getItem('sx_hasphone') !== '0');
   const [showPopup,  setShowPopup]  = useState(false);
   const [pendingScr, setPendingScr] = useState('');
 
@@ -1098,12 +1186,20 @@ export default function App() {
   };
 
   const doLogin = () => {
+    const viaEmailOnly = sessionStorage.getItem('sx_register_method') === 'email';
     setIsLoggedIn(true);
+    setHasPhone(!viaEmailOnly);
+    sessionStorage.setItem('sx_hasphone', viaEmailOnly ? '0' : '1');
     setShowPopup(false);
     sessionStorage.setItem('sx_login', '1');
     go(pendingScr && pendingScr !== 's-login' ? pendingScr : 's-home');
     nav('ni-acc');
     setPendingScr('');
+  };
+
+  const verifyPhoneGate = () => {
+    setHasPhone(true);
+    sessionStorage.setItem('sx_hasphone', '1');
   };
 
   const doLogout = () => {
@@ -1132,7 +1228,9 @@ export default function App() {
       case 's-chat-worker':      return <ChatScreen             go={go} type="worker" />;
       case 's-chat-3way':        return <Chat3WayScreen         go={go} />;
       case 's-service':          return <ServiceScreen          go={go} chkLogin={chkLogin} />;
-      case 's-post':             return <PostScreen             go={go} chkLogin={chkLogin} />;
+      case 's-post':             return hasPhone
+                                     ? <PostScreen             go={go} chkLogin={chkLogin} />
+                                     : <PhoneGateScreen go={go} onVerified={verifyPhoneGate} actionLabel="đăng tin bán" />;
       case 's-preview-post':    return <PreviewPostScreen     go={go} />;
       case 's-direct':           return <DirectScreen           go={go} />;
       case 's-post-success':     return <PostSuccessScreen      go={go} />;
