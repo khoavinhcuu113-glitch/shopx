@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { C, NGHES, NGANH_LIST, CATEGORIES, FREE_ORDERS_SELLER, calcPlatformFee } from './constants';
-import { Shdr, Btn, Btn2, Fg, Fi, Fs, Sechdr, VidPlaceholder, Upbox, Warnbox, Infobox, Avatar, Badge, Ckrow } from './components/UI';
+import { Shdr, Btn, Btn2, Fg, Fi, Fs, Sechdr, VidPlaceholder, Upbox, Warnbox, Infobox, Avatar, Badge, Ckrow, MaskedField } from './components/UI';
 import BottomNav from './components/BottomNav';
 import LoginPopup from './components/LoginPopup';
 import HomeScreen from './screens/HomeScreen';
@@ -856,6 +856,94 @@ function TxHistoryScreen({ go }) {
   );
 }
 
+function KYCScreen({ go, doLogin }) {
+  const [frontDone, setFrontDone] = useState(false);
+  const [backDone, setBackDone]   = useState(false);
+  const [cccd, setCccd]           = useState('');
+  const [phone] = useState('0901234567'); // demo: SĐT đã nhập ở bước Đăng ký
+  const [confirmed, setConfirmed] = useState(false);
+  const [processing, setProcessing] = useState(false);
+
+  const canConfirm = frontDone && backDone && cccd.replace(/\D/g, '').length === 12;
+
+  function handleConfirm() {
+    if (!canConfirm) { alert('Vui lòng chụp đủ 2 mặt CCCD và nhập đúng 12 số CCCD.'); return; }
+    setConfirmed(true);
+  }
+
+  function handleFinish() {
+    setProcessing(true);
+    setTimeout(() => { doLogin(); }, 1200);
+  }
+
+  return (
+    <div>
+      <Shdr title="Xác minh CCCD" onBack={() => go('s-pledge')} />
+      <div style={{ padding: 12 }}>
+        <Infobox text="Bắt buộc xác minh CCCD để đảm bảo trách nhiệm giao dịch. Dữ liệu được ẩn, chỉ bạn và Admin xem được đầy đủ." />
+
+        {!confirmed && (
+          <>
+            <Sechdr num="1" title="Chụp ảnh CCCD" />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+              <div onClick={() => setFrontDone(true)} style={{ cursor: 'pointer' }}>
+                {frontDone ? (
+                  <div style={{ border: `1.5px solid #2e7d32`, borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                    <div style={{ fontSize: 26, marginBottom: 4 }}>✅</div>
+                    <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Mặt trước đã chụp</p>
+                  </div>
+                ) : (
+                  <Upbox icon="🪪" text="Chụp mặt trước CCCD" />
+                )}
+              </div>
+              <div onClick={() => setBackDone(true)} style={{ cursor: 'pointer' }}>
+                {backDone ? (
+                  <div style={{ border: `1.5px solid #2e7d32`, borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                    <div style={{ fontSize: 26, marginBottom: 4 }}>✅</div>
+                    <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Mặt sau đã chụp</p>
+                  </div>
+                ) : (
+                  <Upbox icon="🪪" text="Chụp mặt sau CCCD" />
+                )}
+              </div>
+            </div>
+
+            <Sechdr num="2" title="Nhập số CCCD" />
+            <Fg label="Số CCCD (12 số)" req>
+              <Fi placeholder="VD: 079123456789" maxLength={12} inputMode="numeric"
+                value={cccd} onChange={e => setCccd(e.target.value.replace(/\D/g, ''))} />
+            </Fg>
+
+            <Btn onClick={handleConfirm} disabled={!canConfirm} style={{ marginTop: 4 }}>
+              Tiếp theo: Xem lại thông tin ➡️
+            </Btn>
+            <div style={{ height: 40 }} />
+          </>
+        )}
+
+        {confirmed && !processing && (
+          <>
+            <Sechdr num="3" title="Xem lại thông tin trước khi hoàn tất" />
+            <MaskedField label="Số điện thoại" value={phone} keepStart={3} keepEnd={2} />
+            <MaskedField label="Số CCCD" value={cccd} keepStart={3} keepEnd={3} />
+            <Infobox icon="🔒" text="Chỉ bạn và Admin ShopX xem được thông tin đầy đủ. Người khác chỉ thấy tên/mã SX." bg="#fff3e0" color="#e65100" />
+            <Btn onClick={handleFinish} style={{ marginTop: 4 }}>✅ Xác nhận & Hoàn tất đăng ký</Btn>
+            <Btn2 onClick={() => setConfirmed(false)}>⬅️ Quay lại chỉnh sửa</Btn2>
+            <div style={{ height: 40 }} />
+          </>
+        )}
+
+        {processing && (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <div style={{ fontSize: 36, marginBottom: 10 }}>⏳</div>
+            <div style={{ fontSize: 13, color: C.m }}>Đang xác minh danh tính...</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function RegisterScreen({ go }) {
   const [role, setRole]       = useState(0);
 
@@ -918,7 +1006,7 @@ function PledgeScreen({ go, doLogin }) {
         </div>
         <Ckrow label="Tôi đã đọc hết và đồng ý với toàn bộ cam kết trên" checked={ck1} onChange={e => setCk1(e.target.checked)} />
         <Ckrow label="Tôi hiểu rằng vi phạm cam kết có thể bị khóa tài khoản vĩnh viễn" checked={ck2} onChange={e => setCk2(e.target.checked)} />
-        <Btn onClick={() => { if(!ck1||!ck2){alert('Vui lòng tick chọn đồng ý với tất cả cam kết.');return;} doLogin(); }} style={{ marginTop: 8 }}>✅ Xác nhận & Tạo tài khoản</Btn>
+        <Btn onClick={() => { if(!ck1||!ck2){alert('Vui lòng tick chọn đồng ý với tất cả cam kết.');return;} go('s-kyc'); }} style={{ marginTop: 8 }}>✅ Đồng ý — Tiếp tục xác minh CCCD ➡️</Btn>
         <div style={{ height: 80 }} />
       </div>
     </div>
@@ -930,7 +1018,7 @@ export default function App() {
   const [screen,     setScreen]     = useState(() => {
     // F5: giữ lại màn hình hiện tại (trừ các màn cần login)
     const saved = sessionStorage.getItem('sx_screen');
-    const noSave = ['s-login','s-register','s-pledge'];
+    const noSave = ['s-login','s-register','s-pledge','s-kyc'];
     return (saved && !noSave.includes(saved)) ? saved : 's-home';
   });
   const [navActive,  setNavActive]  = useState(() => sessionStorage.getItem('sx_nav') || 'ni-home');
@@ -999,6 +1087,7 @@ export default function App() {
       case 's-tx-history':       return <TxHistoryScreen        go={go} />;
       case 's-register':         return <RegisterScreen         go={go} />;
       case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
+      case 's-kyc':               return <KYCScreen              go={go} doLogin={doLogin} />;
       case 's-notif':            return <NotifScreen            go={go} />;
       case 's-shipper-register': return <ShipperRegisterScreen  go={go} />;
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;

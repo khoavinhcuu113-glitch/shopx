@@ -1,4 +1,30 @@
 import { C } from '../constants';
+import { useState } from 'react';
+
+export function maskMiddle(str, keepStart = 3, keepEnd = 3) {
+  if (!str) return '';
+  const s = String(str);
+  if (s.length <= keepStart + keepEnd) return s;
+  return s.slice(0, keepStart) + '•'.repeat(s.length - keepStart - keepEnd) + s.slice(-keepEnd);
+}
+
+export function MaskedField({ label, value, keepStart = 3, keepEnd = 3 }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ fontSize: 11, color: C.m, marginBottom: 3 }}>{label}</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', background: C.w }}>
+        <span style={{ flex: 1, fontSize: 13, color: C.t, fontFamily: 'monospace', letterSpacing: 0.5 }}>
+          {show ? value : maskMiddle(value, keepStart, keepEnd)}
+        </span>
+        <span onClick={() => setShow(s => !s)} title={show ? 'Ẩn' : 'Xem đầy đủ'}
+          style={{ cursor: 'pointer', fontSize: 16, flexShrink: 0, userSelect: 'none' }}>
+          {show ? '🙈' : '👁️'}
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export function Shdr({ title, onBack, children }) {
   return (
