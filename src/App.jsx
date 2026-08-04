@@ -565,190 +565,150 @@ function LoginScreen({ go, doLogin }) {
 
 // ─── ACCOUNT SCREEN (Fix A: chỉ hiện khi đã đăng nhập + Fix I: nhật ký tin đăng) ──
 function AccountScreen({ go, nav, doLogout }) {
-  const [accType, setAccType] = React.useState('personal');
+  const [accType, setAccType] = React.useState('personal'); // personal | business (đã nâng cấp)
+  const [showUpgrade, setShowUpgrade] = React.useState(false);
+  const businessInfo = { name: 'CTY TNHH MTV ABC', mst: '000000001-ABC', address: '123 KP Nhị Hòa, P. Trấn Biên, TP. Đồng Nai' };
+
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH', price: '18.500.000đ', date: '26/07/2026', hasMsg: true,  msgCount: 2 },
     { icon: '🏍️', title: 'Honda SH 125i 2021 đen bóng', price: '62.000.000đ', date: '25/07/2026', hasMsg: false, msgCount: 0 },
   ];
+
+  function approveUpgrade() {
+    setAccType('business');
+    setShowUpgrade(false);
+  }
+
   return (
     <div>
       <Shdr title="Tài khoản của tôi" />
       <div style={{ padding: 12 }}>
-        {/* Thông tin tài khoản */}
-        <div style={{ background: C.w, padding: 12, borderRadius: 12, border: '1px solid #e8def8', marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-            <Avatar initials="KV" size={52} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: C.t }}>Khoavinhcuu113</div>
-              <div style={{ fontSize: 12, color: C.m }}>SX-00001</div>
-              <div style={{ fontSize: 11, color: '#f59e0b', marginTop: 2 }}>⭐⭐⭐⭐⭐ 4.8 (34 đánh giá)</div>
-            </div>
-          </div>
 
-          {/* Toggle Cá nhân / Doanh nghiệp */}
-          <div style={{ marginBottom: 10 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.m, marginBottom: 6 }}>Loại tài khoản:</div>
-            <div style={{ display: 'flex', background: '#f0ebfa', borderRadius: 10, padding: 3, gap: 3 }}>
-              {[
-                { val: 'personal', icon: '👤', label: 'Cá nhân' },
-                { val: 'business', icon: '🏢', label: 'Doanh nghiệp' },
-              ].map(t => (
-                <button key={t.val} onClick={() => setAccType(t.val)}
-                  style={{ flex: 1, padding: '7px 8px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: accType === t.val ? 600 : 400, background: accType === t.val ? C.w : 'none', color: accType === t.val ? C.p : C.m, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-                  <span>{t.icon}</span> {t.label}
-                </button>
-              ))}
-            </div>
-            {accType === 'business' && (
-              <div style={{ background: '#e3f2fd', borderRadius: 10, padding: 12, marginTop: 8, border: '1px solid #bbdefb' }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#1565c0', marginBottom: 8 }}>🏢 Thông tin Doanh nghiệp</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Tên công ty / Cơ sở KD *</div>
-                    <input placeholder="VD: Cửa hàng điện tử Minh Anh"
-                      style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Mã số thuế *</div>
-                    <input placeholder="VD: 3602123456" maxLength={13}
-                      style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Địa chỉ kinh doanh *</div>
-                    <input placeholder="VD: 45 Đồng Khởi, Biên Hòa, Đồng Nai"
-                      style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Ngành hàng chính *</div>
-                    <select style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', background: '#fff' }}>
-                      <option>-- Chọn ngành hàng --</option>
-                      <option>Điện thoại & Phụ kiện</option>
-                      <option>Máy tính & Laptop</option>
-                      <option>Thời trang</option>
-                      <option>Thực phẩm & Đồ uống</option>
-                      <option>Nội thất & Gia dụng</option>
-                      <option>Xe cộ & Phụ tùng</option>
-                      <option>Dịch vụ</option>
-                      <option>Khác</option>
-                    </select>
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    <div>
-                      <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Email DN</div>
-                      <input placeholder="contact@company.vn" type="email"
-                        style={{ width: '100%', border: '1.5px solid #bbdefb', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
-                    </div>
-                    <div>
-                      <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Website</div>
-                      <input placeholder="shopx.vn/store/..."
-                        style={{ width: '100%', border: '1.5px solid #bbdefb', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
-                    </div>
-                  </div>
-                  <div style={{ background: '#fff3e0', borderRadius: 8, padding: '6px 10px', fontSize: 11, color: '#e65100' }}>
-                    ℹ️ ShopX xác minh MST qua Cổng ĐKKD quốc gia. Không cần upload giấy phép. Admin xét duyệt trong 24h.
-                  </div>
-                  <button style={{ background: '#1565c0', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
-                    📤 Gửi yêu cầu nâng cấp Doanh nghiệp
-                  </button>
-                </div>
+        {/* 1. HỒ SƠ — gọn, 1 dòng rating + badge icon nhỏ */}
+        <div style={{ background: C.w, padding: 12, borderRadius: 12, border: '1px solid #e8def8', marginBottom: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Avatar initials="KV" size={48} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {accType === 'business' && (
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#1565c0' }}>🏢 {businessInfo.name}</div>
+              )}
+              <div style={{ fontSize: accType === 'business' ? 12 : 15, fontWeight: accType === 'business' ? 400 : 600, color: accType === 'business' ? C.m : C.t }}>Khoavinhcuu113</div>
+              <div style={{ fontSize: 11, color: C.m, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <span>SX-00001</span>
+                <span style={{ color: '#f59e0b' }}>⭐ 4.8 (34)</span>
+                <span title="SĐT đã xác minh">✅</span>
+                <span title="Căn cước KYC đã xác minh">🪪</span>
+                <span title="Pi chưa xác minh" style={{ opacity: 0.5 }}>🟣</span>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Badge xác minh */}
-          <div style={{ fontSize: 11, fontWeight: 600, color: C.m, marginBottom: 6 }}>Xác minh danh tính:</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
-            <span style={{ fontSize: 11, background: '#e8f5e9', color: '#2e7d32', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>✅ SĐT</span>
-            <span style={{ fontSize: 11, background: '#e8f5e9', color: '#2e7d32', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🪪 Căn cước KYC</span>
-            <span style={{ fontSize: 11, background: '#fff3e0', color: '#e65100', padding: '4px 10px', borderRadius: 10, fontWeight: 500 }}>🟣 Pi chưa xác minh</span>
-          </div>
-
-          {/* Nút xem gian hàng */}
-          <button
-            onClick={() => go('s-my-store')}
-            style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            🏪 Xem gian hàng {accType === 'business' ? 'Doanh nghiệp' : 'Cá nhân'} của tôi
-          </button>
+          {accType === 'business' && (
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #f0ebfa', fontSize: 11, color: C.m }}>
+              <div>MST: {businessInfo.mst} · {businessInfo.address}</div>
+              <div style={{ marginTop: 4, color: '#9e9e9e', fontSize: 10 }}>
+                🔒 Hồ sơ đầy đủ chỉ Admin và bạn (chủ tài khoản) xem/sửa được
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Uy tín — 3 tab: Người bán / Người mua / Shipper */}
+        {/* 2. LOẠI TÀI KHOẢN — banner nâng cấp (chỉ hiện khi còn cá nhân) */}
+        {accType === 'personal' && !showUpgrade && (
+          <div onClick={() => setShowUpgrade(true)}
+            style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: '10px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <span style={{ fontSize: 18 }}>🏢</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>Nâng cấp lên Doanh nghiệp</div>
+              <div style={{ fontSize: 10, color: '#1565c0' }}>Quảng cáo · Ưu tiên hiển thị · Badge xác minh</div>
+            </div>
+            <span style={{ fontSize: 16, color: '#1565c0' }}>›</span>
+          </div>
+        )}
+
+        {showUpgrade && (
+          <div style={{ background: '#e3f2fd', borderRadius: 12, padding: 12, marginBottom: 8, border: '1px solid #bbdefb' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1565c0', marginBottom: 8 }}>🏢 Thông tin Doanh nghiệp</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div>
+                <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Tên công ty / Cơ sở KD *</div>
+                <input placeholder="VD: Cửa hàng điện tử Minh Anh"
+                  style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Mã số thuế *</div>
+                <input placeholder="VD: 3602123456" maxLength={13}
+                  style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Địa chỉ kinh doanh *</div>
+                <input placeholder="VD: 45 Đồng Khởi, Biên Hòa, Đồng Nai"
+                  style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <div style={{ fontSize: 11, color: '#1565c0', marginBottom: 3 }}>Ngành hàng chính *</div>
+                <select style={{ width: '100%', border: '1.5px solid #90caf9', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', background: '#fff' }}>
+                  <option>-- Chọn ngành hàng --</option>
+                  <option>Điện thoại & Phụ kiện</option>
+                  <option>Máy tính & Laptop</option>
+                  <option>Thời trang</option>
+                  <option>Thực phẩm & Đồ uống</option>
+                  <option>Nội thất & Gia dụng</option>
+                  <option>Xe cộ & Phụ tùng</option>
+                  <option>Dịch vụ</option>
+                  <option>Khác</option>
+                </select>
+              </div>
+              <div style={{ background: '#fff3e0', borderRadius: 8, padding: '6px 10px', fontSize: 11, color: '#e65100' }}>
+                ℹ️ ShopX xác minh MST qua Cổng ĐKKD quốc gia. Không cần upload giấy phép. Admin xét duyệt trong 24h.
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={() => setShowUpgrade(false)} style={{ flex: 1, background: 'none', color: '#1565c0', border: '1px solid #90caf9', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                  Hủy
+                </button>
+                <button onClick={approveUpgrade} style={{ flex: 2, background: '#1565c0', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                  📤 Gửi yêu cầu nâng cấp
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* 3. GIAN HÀNG */}
+        <button
+          onClick={() => go('s-my-store')}
+          style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: '10px 12px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
+          🏪 Xem gian hàng {accType === 'business' ? 'Doanh nghiệp' : 'Cá nhân'} của tôi
+        </button>
+
+        {/* 4. THỐNG KÊ HOẠT ĐỘNG — thu gọn */}
         {(() => {
           const [activeTab, setActiveTab] = React.useState('seller');
           const sellerLevel  = getRatingLevel(SAMPLE_USER_RATINGS.seller.totalOrders,  SAMPLE_USER_RATINGS.seller.completionRate);
           const buyerLevel   = getRatingLevel(SAMPLE_USER_RATINGS.buyer.totalOrders,   SAMPLE_USER_RATINGS.buyer.receiveRate);
           const shipperLevel = getRatingLevel(SAMPLE_USER_RATINGS.shipper.totalOrders, SAMPLE_USER_RATINGS.shipper.onTimeRate);
+          const dataMap = { seller: SAMPLE_USER_RATINGS.seller, buyer: SAMPLE_USER_RATINGS.buyer, shipper: SAMPLE_USER_RATINGS.shipper };
+          const d = dataMap[activeTab];
           return (
-            <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 12, marginBottom: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>📊 Thống kê hoạt động</div>
-              {/* Tabs */}
-              <div style={{ display: 'flex', background: '#f0ebfa', padding: 3, borderRadius: 8, marginBottom: 10, gap: 3 }}>
+            <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 10, marginBottom: 8 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6 }}>📊 Thống kê hoạt động</div>
+              <div style={{ display: 'flex', background: '#f0ebfa', padding: 2, borderRadius: 8, marginBottom: 8, gap: 2 }}>
                 {[
-                  { key: 'seller',  label: 'Người bán', level: sellerLevel  },
-                  { key: 'buyer',   label: 'Người mua', level: buyerLevel   },
-                  { key: 'shipper', label: 'Shipper',   level: shipperLevel },
+                  { key: 'seller',  label: 'Bán',     level: sellerLevel  },
+                  { key: 'buyer',   label: 'Mua',     level: buyerLevel   },
+                  { key: 'shipper', label: 'Shipper', level: shipperLevel },
                 ].map(t => (
                   <button key={t.key} onClick={() => setActiveTab(t.key)}
-                    style={{ flex: 1, padding: '6px 4px', borderRadius: 6, border: 'none', fontSize: 10, cursor: 'pointer', fontWeight: activeTab === t.key ? 600 : 400, background: activeTab === t.key ? C.w : 'none', color: activeTab === t.key ? C.p : C.m, lineHeight: 1.3, textAlign: 'center' }}>
-                    {t.label}<br/>
-                    <span style={{ fontSize: 9 }}>{t.level.label}</span>
+                    style={{ flex: 1, padding: '4px 4px', borderRadius: 6, border: 'none', fontSize: 10, cursor: 'pointer', fontWeight: activeTab === t.key ? 600 : 400, background: activeTab === t.key ? C.w : 'none', color: activeTab === t.key ? C.p : C.m }}>
+                    {t.label} · {t.level.label}
                   </button>
                 ))}
               </div>
-
-              {/* Nội dung tab */}
-              {activeTab === 'seller' && (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                    <RatingBadge orders={SAMPLE_USER_RATINGS.seller.totalOrders} rate={SAMPLE_USER_RATINGS.seller.completionRate} size="md" />
-                    <div style={{ fontSize: 11, color: C.m }}>
-                      Giao dịch {SAMPLE_USER_RATINGS.seller.totalOrders} ({SAMPLE_USER_RATINGS.seller.completionRate}%) · 👍 {SAMPLE_USER_RATINGS.seller.thumbsUp}%
-                    </div>
-                  </div>
-                  <RatingStats role="seller" data={SAMPLE_USER_RATINGS.seller} />
-                  {SAMPLE_USER_RATINGS.seller.disputes > 0 && (
-                    <div style={{ background: '#fff3e0', borderRadius: 8, padding: '6px 10px', marginTop: 8, fontSize: 11, color: '#e65100' }}>
-                      ⚠️ {SAMPLE_USER_RATINGS.seller.disputes} tranh chấp trong 30 ngày qua
-                    </div>
-                  )}
-                </div>
-              )}
-              {activeTab === 'buyer' && (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                    <RatingBadge orders={SAMPLE_USER_RATINGS.buyer.totalOrders} rate={SAMPLE_USER_RATINGS.buyer.receiveRate} size="md" />
-                    <div style={{ fontSize: 11, color: C.m }}>
-                      Đã mua {SAMPLE_USER_RATINGS.buyer.totalOrders} đơn · 👍 {SAMPLE_USER_RATINGS.buyer.thumbsUp}%
-                    </div>
-                  </div>
-                  <RatingStats role="buyer" data={SAMPLE_USER_RATINGS.buyer} />
-                </div>
-              )}
-              {activeTab === 'shipper' && (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-                    <RatingBadge orders={SAMPLE_USER_RATINGS.shipper.totalOrders} rate={SAMPLE_USER_RATINGS.shipper.onTimeRate} size="md" />
-                    <div style={{ fontSize: 11, color: C.m }}>
-                      Đã giao {SAMPLE_USER_RATINGS.shipper.totalOrders} đơn · 👍 {SAMPLE_USER_RATINGS.shipper.thumbsUp}%
-                    </div>
-                  </div>
-                  <RatingStats role="shipper" data={SAMPLE_USER_RATINGS.shipper} />
-                </div>
-              )}
-
-              {/* Bảng ngưỡng hạng */}
-              <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #f0ebfa' }}>
-                <div style={{ fontSize: 11, color: C.m, marginBottom: 6 }}>Ngưỡng lên hạng:</div>
-                <div style={{ display: 'flex', gap: 6 }}>
-                  {[
-                    { label: '🆕 Mới',    desc: '0-4 đơn' },
-                    { label: '✅ Uy tín', desc: '5+ • ≥90%' },
-                    { label: '🏅 Pro',    desc: '20+ • ≥95%' },
-                  ].map((h, i) => (
-                    <div key={i} style={{ flex: 1, background: C.pl, borderRadius: 8, padding: '6px 4px', textAlign: 'center' }}>
-                      <div style={{ fontSize: 11, fontWeight: 600, color: C.pd }}>{h.label}</div>
-                      <div style={{ fontSize: 9, color: C.m, marginTop: 2 }}>{h.desc}</div>
-                    </div>
-                  ))}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <RatingBadge orders={d.totalOrders} rate={activeTab === 'seller' ? d.completionRate : activeTab === 'buyer' ? d.receiveRate : d.onTimeRate} size="sm" />
+                <div style={{ fontSize: 10, color: C.m }}>
+                  {d.totalOrders} đơn · 👍 {d.thumbsUp}%
+                  {activeTab === 'seller' && d.disputes > 0 && <span style={{ color: '#e65100' }}> · ⚠️ {d.disputes} tranh chấp</span>}
                 </div>
               </div>
             </div>
@@ -756,47 +716,50 @@ function AccountScreen({ go, nav, doLogout }) {
         })()}
 
         {/* SX Points */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
           {[{ val: '1.250', lbl: 'SX Points' }, { val: '96.2%', lbl: '👍 Tích cực', color: '#f59e0b' }].map((st, i) => (
-            <div key={i} style={{ background: C.pl, borderRadius: 10, padding: 10, textAlign: 'center' }}>
-              <div style={{ fontSize: 18, fontWeight: 700, color: st.color || C.p }}>{st.val}</div>
+            <div key={i} style={{ background: C.pl, borderRadius: 10, padding: 8, textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: st.color || C.p }}>{st.val}</div>
               <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>{st.lbl}</div>
             </div>
           ))}
         </div>
 
-        {/* Cảnh báo đơn chưa cập nhật */}
-        <div style={{ marginBottom: 10 }}>
+        {/* 5. HOẠT ĐỘNG HIỆN TẠI — màu theo vai trò: bán=xanh, mua=vàng, shipper=tím, dịch vụ/tin tìm việc=nâu */}
+        <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6 }}>🔔 Hoạt động hiện tại</div>
+
+        <div style={{ marginBottom: 8 }}>
           <ServiceOrderAlert hoursElapsed={25} status="waiting" />
         </div>
 
-        {/* Đơn dịch vụ đang chờ */}
-        <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 12, marginBottom: 10 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>🔨 Đơn dịch vụ đang chạy</div>
-          <div style={{ background: '#e3f2fd', borderRadius: 10, padding: 10, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
+          <div style={{ fontSize: 10, fontWeight: 600, color: '#5d4037', marginBottom: 4 }}>🟤 DỊCH VỤ & VIỆC LÀM</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#1565c0' }}>Sửa điện phòng ngủ</div>
-              <div style={{ fontSize: 11, color: '#1976d2' }}>⏳ Chờ thợ đến • +25h</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>Sửa điện phòng ngủ</div>
+              <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +25h</div>
             </div>
             <button onClick={() => go('s-service-order-hirer')}
-              style={{ background: '#1565c0', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+              style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
               Xem đơn
             </button>
           </div>
         </div>
+
+        <div style={{ fontSize: 10, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>🟢 TIN ĐĂNG CỦA TÔI (Người bán)</div>
         {listings.map((l, i) => (
-          <div key={i} style={{ background: C.w, border: `1.5px solid ${l.hasMsg ? C.p : '#e8def8'}`, borderRadius: 12, padding: 12, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
-            onClick={() => l.hasMsg && go('s-chat-buy')}>
-            <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{l.icon}</div>
+          <div key={i} style={{ background: '#e8f5e9', border: `1.5px solid ${l.hasMsg ? '#2e7d32' : '#c8e6c9'}`, borderRadius: 12, padding: 10, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
+            onClick={() => l.hasMsg && go('s-chat-buy-mine')}>
+            <div style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{l.icon}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{l.title}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.p, marginBottom: 2 }}>{l.price}</div>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#2e7d32', marginBottom: 2 }}>{l.price}</div>
               <div style={{ fontSize: 10, color: C.m }}>Đăng ngày {l.date}</div>
             </div>
             {l.hasMsg ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, marginBottom: 4 }}>{l.msgCount}</div>
-                <div style={{ fontSize: 10, color: C.p, fontWeight: 600 }}>Tin nhắn</div>
+                <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, marginBottom: 3 }}>{l.msgCount}</div>
+                <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 600 }}>Tin nhắn</div>
               </div>
             ) : (
               <div style={{ flexShrink: 0, fontSize: 10, color: C.m, alignSelf: 'center' }}>Chưa có tin</div>
@@ -804,29 +767,55 @@ function AccountScreen({ go, nav, doLogout }) {
           </div>
         ))}
 
-        {/* Nhật ký giao dịch */}
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8, marginTop: 8 }}>🧾 Nhật ký giao dịch</div>
+        {/* 6. NHẬT KÝ GIAO DỊCH — chỉ 2 gần nhất + xem tất cả */}
+        <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6, marginTop: 4 }}>🧾 Nhật ký giao dịch</div>
         {[
           { icon: '📱', name: 'iPhone 12 Pro 128GB', date: '15/03/2026 • SX-00089', price: '15.500.000đ', badge: 'Đã nhận' },
           { icon: '🔧', name: 'Sửa điện phòng ngủ',  date: '10/06/2026 • SX-00127', price: '150.000đ',    badge: 'Hoàn thành' },
         ].map((tx, i) => (
-          <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 8, display: 'flex', gap: 10 }}>
-            <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{tx.icon}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{tx.name}</div>
-              <div style={{ fontSize: 10, color: C.m, marginBottom: 4 }}>{tx.date}</div>
-              <span style={{ fontSize: 13, fontWeight: 700, color: C.p }}>{tx.price}</span>
-              <span style={{ fontSize: 10, background: '#e8f5e9', color: '#2e7d32', padding: '2px 6px', borderRadius: 8, marginLeft: 6 }}>{tx.badge}</span>
+          <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ width: 36, height: 36, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{tx.icon}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{tx.name}</div>
+              <div style={{ fontSize: 9, color: C.m }}>{tx.date}</div>
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.p }}>{tx.price}</div>
+              <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{tx.badge}</div>
             </div>
           </div>
         ))}
+        <button onClick={() => go('s-tx-history')}
+          style={{ width: '100%', background: 'none', border: 'none', color: C.pd, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: '4px 0 10px', textAlign: 'center' }}>
+          Xem tất cả lịch sử →
+        </button>
 
-        <Btn2 onClick={() => go('s-qr')} style={{ marginBottom: 8 }}>
-          📱 QR Code gian hàng của tôi
-        </Btn2>
-        <Btn2 onClick={() => { go('s-home'); nav('ni-home'); }} style={{ marginBottom: 8 }}>🛍️ Tiếp tục mua sắm</Btn2>
-        <button onClick={() => go('s-terms')} style={{ width: '100%', background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 10, borderRadius: 10, fontSize: 13, cursor: 'pointer', marginTop: 8 }}>📋 Quy chế & Điều khoản</button>
-        <button onClick={doLogout} style={{ width: '100%', background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 10, borderRadius: 10, fontSize: 13, cursor: 'pointer', marginTop: 8 }}>🚪 Đăng xuất</button>
+        {/* 7. CÀI ĐẶT — gọn, danh sách hàng mỏng */}
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
+          {[
+            { icon: '📱', label: 'QR Code gian hàng của tôi', action: () => go('s-qr') },
+            { icon: '📋', label: 'Quy chế & Điều khoản',      action: () => go('s-terms') },
+          ].map((it, i) => (
+            <div key={i} onClick={it.action}
+              style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '11px 12px', cursor: 'pointer', borderBottom: i === 0 ? '1px solid #f0ebfa' : 'none' }}>
+              <span style={{ fontSize: 15 }}>{it.icon}</span>
+              <span style={{ flex: 1, fontSize: 12, color: C.t }}>{it.label}</span>
+              <span style={{ color: C.m, fontSize: 13 }}>›</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => { go('s-home'); nav('ni-home'); }}
+            style={{ flex: 1, background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 9, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>
+            🛍️ Tiếp tục mua sắm
+          </button>
+          <button onClick={doLogout}
+            style={{ flex: 1, background: 'none', border: '1px solid #e0d4f7', color: C.m, padding: 9, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>
+            🚪 Đăng xuất
+          </button>
+        </div>
+
         <div style={{ height: 80 }} />
       </div>
     </div>
@@ -834,6 +823,39 @@ function AccountScreen({ go, nav, doLogout }) {
 }
 
 // ─── REGISTER + PLEDGE ────────────────────────────────────────────────
+// ─── LỊCH SỬ GIAO DỊCH ĐẦY ĐỦ ───────────────────────────────────────
+function TxHistoryScreen({ go }) {
+  const allTx = [
+    { icon: '📱', name: 'iPhone 12 Pro 128GB', date: '15/03/2026 • SX-00089', price: '15.500.000đ', badge: 'Đã nhận' },
+    { icon: '🔧', name: 'Sửa điện phòng ngủ',  date: '10/06/2026 • SX-00127', price: '150.000đ',    badge: 'Hoàn thành' },
+    { icon: '🏍️', name: 'Honda SH 125i 2021', date: '02/05/2026 • SX-00234', price: '62.000.000đ', badge: 'Đã bán' },
+    { icon: '🧹', name: 'Dọn dẹp nhà theo giờ', date: '18/04/2026 • SX-00198', price: '120.000đ',    badge: 'Hoàn thành' },
+    { icon: '📱', name: 'Samsung S23 256GB',    date: '22/02/2026 • SX-00312', price: '13.200.000đ', badge: 'Đã nhận' },
+  ];
+  return (
+    <div>
+      <Shdr title="Lịch sử giao dịch" onBack={() => go('s-account')} />
+      <div style={{ padding: 12 }}>
+        {allTx.map((tx, i) => (
+          <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ width: 36, height: 36, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{tx.icon}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{tx.name}</div>
+              <div style={{ fontSize: 9, color: C.m }}>{tx.date}</div>
+            </div>
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: C.p }}>{tx.price}</div>
+              <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{tx.badge}</div>
+            </div>
+          </div>
+        ))}
+        <div style={{ textAlign: 'center', fontSize: 11, color: C.m, marginTop: 8 }}>— Hết lịch sử —</div>
+        <div style={{ height: 80 }} />
+      </div>
+    </div>
+  );
+}
+
 function RegisterScreen({ go }) {
   const [role, setRole]       = useState(0);
 
@@ -962,6 +984,7 @@ export default function App() {
       case 's-prod1':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p1" />;
       case 's-prod2':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p2" />;
       case 's-chat-buy':         return <ChatScreen             go={go} type="buy" />;
+      case 's-chat-buy-mine':    return <ChatScreen             go={go} type="buy" returnTo="s-account" />;
       case 's-chat-job':         return <ChatScreen             go={go} type="job" />;
       case 's-chat-worker':      return <ChatScreen             go={go} type="worker" />;
       case 's-chat-3way':        return <Chat3WayScreen         go={go} />;
@@ -973,6 +996,7 @@ export default function App() {
       case 's-delivery':         return <DeliveryScreen         go={go} chkLogin={chkLogin} />;
       case 's-login':            return <LoginScreen            go={go} doLogin={doLogin} />;
       case 's-account':          return <AccountScreen          go={go} nav={nav} doLogout={doLogout} />;
+      case 's-tx-history':       return <TxHistoryScreen        go={go} />;
       case 's-register':         return <RegisterScreen         go={go} />;
       case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
       case 's-notif':            return <NotifScreen            go={go} />;

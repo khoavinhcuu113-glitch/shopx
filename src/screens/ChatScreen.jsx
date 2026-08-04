@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { C } from '../constants';
 import { SAMPLE_SHIPPERS } from '../constants';
 
-export default function ChatScreen({ go, type }) {
+export default function ChatScreen({ go, type, returnTo }) {
+  const backTarget = returnTo || (type === 'buy' ? 's-home' : 's-service');
   const [step, setStep]           = useState('chat'); // chat | addr | map | shippers | invited
   const [address, setAddress]     = useState('');
   const [addrConfirmed, setAddrConfirmed] = useState(false);
@@ -67,7 +68,7 @@ export default function ChatScreen({ go, type }) {
       {/* Header */}
       <div style={{ background: C.p, padding: '10px 16px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <button onClick={() => go('s-service')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
+          <button onClick={() => go(backTarget)} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>{c.title}</div>
             <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>{c.sub}</div>
