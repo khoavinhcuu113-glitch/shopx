@@ -390,7 +390,6 @@ function PostScreen({ go, chkLogin }) {
     </div>
   );
 }
-
 // ─── DIRECT SCREEN (Fix C: bỏ nút xem tin nhắn) ─────────────────────
 function DirectScreen({ go }) {
   return (
