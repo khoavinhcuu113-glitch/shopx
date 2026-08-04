@@ -42,8 +42,8 @@ function CategoriesScreen({ go, nav }) {
 // ─── PRODUCT SCREEN ───────────────────────────────────────────────────
 function ProductScreen({ go, chkLogin, type }) {
   const data = {
-    p1: { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'NT', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh' },
-    p2: { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'MH', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh' },
+    p1: { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh' },
+    p2: { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh' },
   };
   const p = data[type] || data.p1;
   return (
@@ -62,7 +62,7 @@ function ProductScreen({ go, chkLogin, type }) {
         <VidPlaceholder title="Clip giới thiệu sản phẩm" desc="Sắp ra mắt — người bán quay clip 15-30s thực tế" />
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
-          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>Người bán tại {p.loc}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div><div onClick={() => go('s-store-personal')} style={{ fontSize: 11, color: C.pd, marginTop: 2, cursor: 'pointer', textDecoration: 'underline' }}>🏪 Xem gian hàng</div></div>
+          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{p.seller}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div><div onClick={() => go('s-store-personal')} style={{ fontSize: 11, color: C.pd, marginTop: 2, cursor: 'pointer', textDecoration: 'underline' }}>🏪 Xem gian hàng</div></div>
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Mô tả</h3>

@@ -36,7 +36,32 @@ const MY_STORE = {
   ],
 };
 
-// Gian hàng NGƯỜI KHÁC — BIZ-0001 Cửa hàng Minh Anh
+// Gian hàng NGƯỜI KHÁC (cá nhân) — SX-00127 Anh Trần Minh Tuấn
+const OTHER_STORE_PERSONAL = {
+  id: 'SX-00127',
+  name: 'Anh Trần Minh Tuấn',
+  type: 'personal',
+  typeLabel: '👤 Cá nhân',
+  avatar: 'TT',
+  avatarBg: '#2e7d32',
+  location: 'Biên Hòa, Đồng Nai',
+  bio: 'Bán đồ điện tử cũ còn tốt, đã kiểm tra kỹ trước khi đăng bán.',
+  verified: ['✅ SĐT', '🪪 Căn cước KYC'],
+  stats: { orders: 34, rate: 97, thumbsUp: 98.2 },
+  hasCV: false,
+
+  products: [
+    { id: 'p1', icon: '📱', name: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cat: 'Đồ điện tử', loc: 'Biên Hòa', status: 'selling' },
+    { id: 'p2', icon: '🏍️', name: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cat: 'Xe cộ', loc: 'Long Khánh', status: 'selling' },
+  ],
+  services: [],
+
+  reviews: [
+    { from: 'SX-00234', text: 'Máy đúng mô tả, đóng gói kỹ, giao nhanh!', thumb: '👍', time: '3 ngày trước', product: 'iPhone 13 Pro' },
+  ],
+};
+
+// Gian hàng NGƯỜI KHÁC (doanh nghiệp) — BIZ-0001 Cửa hàng Minh Anh
 const OTHER_STORE = {
   id: 'BIZ-0001',
   name: 'Cửa hàng Điện tử Minh Anh',
@@ -70,7 +95,7 @@ const OTHER_STORE = {
 export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOwner = false }) {
   const store = isOwner
     ? MY_STORE
-    : storeType === 'business' ? OTHER_STORE : MY_STORE;
+    : storeType === 'business' ? OTHER_STORE : OTHER_STORE_PERSONAL;
 
   // Tab chỉ hiện khi có nội dung
   const tabs = [
