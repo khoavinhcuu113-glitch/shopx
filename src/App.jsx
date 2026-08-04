@@ -387,6 +387,7 @@ function PostScreen({ go, chkLogin }) {
         
         <div style={{ height: 80 }} />
       </div>
+      </div>
     </div>
   );
 }
