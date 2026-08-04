@@ -836,28 +836,11 @@ function AccountScreen({ go, nav, doLogout }) {
 // ─── REGISTER + PLEDGE ────────────────────────────────────────────────
 function RegisterScreen({ go }) {
   const [role, setRole]       = useState(0);
-  const [accType, setAccType] = useState('personal'); // personal | business
 
   return (
     <div>
       <Shdr title="Tạo tài khoản" onBack={() => go('s-login')} />
       <div style={{ padding: 12 }}>
-
-        {/* Toggle Cá nhân / Doanh nghiệp */}
-        <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>Loại tài khoản</div>
-        <div style={{ display: 'flex', background: '#f0ebfa', borderRadius: 12, padding: 4, marginBottom: 16, gap: 4 }}>
-          {[
-            { val: 'personal', icon: '👤', label: 'Cá nhân', desc: 'Bán đồ cá nhân, dịch vụ tự do' },
-            { val: 'business', icon: '🏢', label: 'Doanh nghiệp', desc: 'Gian hàng chuyên nghiệp, quảng cáo' },
-          ].map(t => (
-            <button key={t.val} onClick={() => setAccType(t.val)}
-              style={{ flex: 1, padding: '10px 8px', borderRadius: 10, border: 'none', cursor: 'pointer', textAlign: 'center', background: accType === t.val ? C.w : 'none', boxShadow: accType === t.val ? '0 1px 4px rgba(0,0,0,0.1)' : 'none', transition: 'all 0.2s' }}>
-              <div style={{ fontSize: 22, marginBottom: 4 }}>{t.icon}</div>
-              <div style={{ fontSize: 13, fontWeight: 600, color: accType === t.val ? C.p : C.m }}>{t.label}</div>
-              <div style={{ fontSize: 10, color: C.m, lineHeight: 1.3, marginTop: 2 }}>{t.desc}</div>
-            </button>
-          ))}
-        </div>
 
         {/* Vai trò chính */}
         <div style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 8 }}>Vai trò chính</div>
@@ -884,34 +867,9 @@ function RegisterScreen({ go }) {
           </Fs>
         </Fg>
 
-        {/* Thông tin bổ sung nếu là Doanh nghiệp */}
-        {accType === 'business' && (
-          <div style={{ background: '#e8f0fe', borderRadius: 12, padding: 12, marginBottom: 12, border: '1px solid #c5d8ff' }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e', marginBottom: 10 }}>
-              🏢 Thông tin Doanh nghiệp
-            </div>
-            <Fg label="Tên công ty / Cơ sở kinh doanh" req>
-              <Fi placeholder="VD: Cửa hàng điện tử Minh Anh" />
-            </Fg>
-            <Fg label="Mã số thuế / Mã số doanh nghiệp">
-              <Fi placeholder="VD: 3602123456" />
-            </Fg>
-            <Fg label="Địa chỉ kinh doanh" req>
-              <Fi placeholder="VD: 123 Nguyễn Ái Quốc, Biên Hòa" />
-            </Fg>
-            <Fg label="Giấy phép kinh doanh">
-              <div style={{ border: `2px dashed ${C.b}`, borderRadius: 10, padding: 12, textAlign: 'center', cursor: 'pointer', background: '#f8f5ff' }}>
-                <div style={{ fontSize: 22, marginBottom: 4 }}>📄</div>
-                <div style={{ fontSize: 12, color: C.m }}>Upload Giấy phép KD (tùy chọn)</div>
-                <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>Có giấy phép → được badge 🏢 Doanh nghiệp xác minh</div>
-              </div>
-            </Fg>
-            <div style={{ background: '#e3f2fd', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#1565c0' }}>
-              💡 Doanh nghiệp xác minh được:
-              Đăng quảng cáo trên ShopX · Hiển thị ưu tiên · Badge xác minh · Thống kê doanh thu
-            </div>
-          </div>
-        )}
+        <div style={{ background: '#e8f5e9', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#2e7d32', marginBottom: 12 }}>
+          ℹ️ Sau khi xác minh CCCD (KYC), bạn có thể nâng cấp lên tài khoản Doanh nghiệp bất cứ lúc nào trong mục Tài khoản.
+        </div>
 
         <Btn onClick={() => go('s-pledge')}>Tiếp theo: Đọc cam kết ➡️</Btn>
         <div style={{ height: 80 }} />

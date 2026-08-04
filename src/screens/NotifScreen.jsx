@@ -61,7 +61,7 @@ export default function NotifScreen({ go }) {
     {
       id: 'chat',
       icon: '💬',
-      title: 'SX-00127 (Thợ điện) đã phản hồi',
+      title: 'SX-00199 (Thợ điện) đã phản hồi',
       desc: 'Mình có thể qua chiều nay lúc 15h được bạn nhé.',
       time: '3 giờ trước',
       type: 'chat',
@@ -176,7 +176,7 @@ export default function NotifScreen({ go }) {
             {n.needAction && shipperFound && (
               <div style={{ marginTop: 8 }}>
                 <div style={{ background: '#e8f5e9', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#2e7d32', marginBottom: 8 }}>
-                  🚚 <strong>Chị Thu Hương (SP-001)</strong> đã nhận đơn!<br/>
+                  🚚 <strong>Trần Văn Cường (SP-001)</strong> đã nhận đơn!<br/>
                   Shipper đang trên đường đến lấy hàng tại Biên Hòa.
                 </div>
 

@@ -61,7 +61,7 @@ export default function RatingScreen({ go, target = 'seller', onSkip }) {
 
   const targetInfo = {
     seller:  { name: 'SX-00127 (Người bán)',       icon: '🏷️', role: 'Người bán' },
-    shipper: { name: 'SP-001 (Chị Thu Hương)',      icon: '🚚', role: 'Shipper' },
+    shipper: { name: 'SP-001 (Trần Văn Cường)',      icon: '🚚', role: 'Shipper' },
   };
   const t = targetInfo[target] || targetInfo.seller;
 

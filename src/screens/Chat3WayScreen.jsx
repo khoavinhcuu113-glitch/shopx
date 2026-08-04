@@ -127,7 +127,7 @@ function ShipperView({ setShipperArrived, shipperArrived, otpDone, msgs, setMsgs
   function markArrived() {
     setArrived(true);
     setShipperArrived(true);
-    setMsgs(m => [...m, { from: 'shipper', name: 'SP-001 (Chị Thu Hương)', text: '🚚 Tôi đã đến điểm A. Đang chờ người bán xác nhận giao hàng.' }]);
+    setMsgs(m => [...m, { from: 'shipper', name: 'SP-001 (Trần Văn Cường)', text: '🚚 Tôi đã đến điểm A. Đang chờ người bán xác nhận giao hàng.' }]);
   }
 
   function confirmDelivery() {
@@ -173,7 +173,7 @@ function ShipperView({ setShipperArrived, shipperArrived, otpDone, msgs, setMsgs
               </button>
             </div>
           )}
-          <button onClick={() => setMsgs(m => [...m, { from: 'shipper', name: 'SP-001 (Chị Thu Hương)', text: '⚠️ Tôi đã có mặt tại điểm B, chờ 15 phút, không có người nhận. Đề nghị người mua phản hồi.' }])}
+          <button onClick={() => setMsgs(m => [...m, { from: 'shipper', name: 'SP-001 (Trần Văn Cường)', text: '⚠️ Tôi đã có mặt tại điểm B, chờ 15 phút, không có người nhận. Đề nghị người mua phản hồi.' }])}
             style={{ width: '100%', background: 'none', border: '1px solid #c5d8ff', color: '#1a237e', padding: 8, borderRadius: 8, fontSize: 11, cursor: 'pointer', marginTop: 6 }}>
             ⚠️ Không có người nhận tại điểm B
           </button>

@@ -146,7 +146,7 @@ export const CATEGORIES = [
 // --- DỮ LIỆU MẪU SHIPPER ---
 export const SAMPLE_SHIPPERS = [
   {
-    id: 'SP-001', initials: 'TH', name: 'Chị Thu Hương',
+    id: 'SP-101', initials: 'TH', name: 'Chị Thu Hương',
     level: 'saoVang', badge: '⭐ Sao Vàng',
     orders: 1250, rate: 98.5, stars: 4.9,
     route: 'Biên Hòa ↔ Hố Nai', time: '18h00 hôm nay',
@@ -240,7 +240,7 @@ export const DEMO_USERS = {
 
   // Thợ / Freelancer
   workers: [
-    { id: 'SX-00127', name: 'Anh Trần Văn Nhân',      initials: 'VN', bg: '#7c3aed', trade: 'Thợ điện dân dụng', exp: '8 năm',  price: '80.000đ/giờ',    orders: 788, rate: 98,  thumbsUp: 98.2 },
+    { id: 'SX-00199', name: 'Anh Trần Văn Nhân',      initials: 'VN', bg: '#7c3aed', trade: 'Thợ điện dân dụng', exp: '8 năm',  price: '80.000đ/giờ',    orders: 788, rate: 98,  thumbsUp: 98.2 },
     { id: 'SX-00143', name: 'Anh Nguyễn Thanh Long',  initials: 'TL', bg: '#0891b2', trade: 'Thợ sửa máy lạnh',  exp: '5 năm',  price: '150.000đ/ca',    orders: 234, rate: 95,  thumbsUp: 94.5 },
     { id: 'SX-00198', name: 'Chị Nguyễn Thu Hương',   initials: 'TH', bg: '#db2777', trade: 'Dọn dẹp vệ sinh',   exp: '3 năm',  price: '80.000đ/giờ',    orders: 156, rate: 100, thumbsUp: 99.1 },
     { id: 'SX-00215', name: 'Anh Lê Quốc Hùng',       initials: 'QH', bg: '#6B2F9E', trade: 'Thợ sơn & chống thấm', exp: '10 năm', price: '400.000đ/ngày', orders: 412, rate: 96,  thumbsUp: 96.8 },

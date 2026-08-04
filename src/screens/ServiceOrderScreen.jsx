@@ -62,7 +62,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   const [msgs, setMsgs]             = useState([
     { from: 'system', text: '✅ Hai bên đã xác nhận. Đơn dịch vụ bắt đầu.' },
     { from: 'hirer',  name: 'SX-00001 (Người thuê)', text: 'Anh ơi, địa chỉ: 45 Bùi Thị Xuân, Hố Nai. Em đang ở nhà.' },
-    { from: 'worker', name: 'SX-00127 (Thợ điện)', text: 'Dạ, mình sẽ đến lúc 14h chiều nay!' },
+    { from: 'worker', name: 'SX-00199 (Thợ điện)', text: 'Dạ, mình sẽ đến lúc 14h chiều nay!' },
   ]);
   const [input, setInput]           = useState('');
 
@@ -71,7 +71,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
 
   function sendMsg() {
     if (!input.trim()) return;
-    const nameMap = { worker: 'SX-00127 (Thợ điện)', hirer: 'SX-00001 (Người thuê)' };
+    const nameMap = { worker: 'SX-00199 (Thợ điện)', hirer: 'SX-00001 (Người thuê)' };
     setMsgs(m => [...m, { from: role, name: nameMap[role], text: input }]);
     setInput('');
   }
@@ -148,7 +148,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
           <button onClick={() => go('s-service')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20 }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Đơn dịch vụ — Thợ điện</div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>SX-00001 × SX-00127</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>SX-00001 × SX-00199</div>
           </div>
         </div>
 
@@ -169,7 +169,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
           <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 8 }}>📋 Thông tin đơn dịch vụ</div>
           {[
             { label: 'Dịch vụ',      val: 'Sửa điện phòng ngủ' },
-            { label: 'Thợ',          val: 'Anh Văn Nhân (SX-00127)' },
+            { label: 'Thợ',          val: 'Anh Văn Nhân (SX-00199)' },
             { label: 'Người thuê',   val: 'SX-00001' },
             { label: 'Địa chỉ',      val: '45 Bùi Thị Xuân, Hố Nai' },
             { label: 'Giá thỏa thuận', val: '150.000đ' },

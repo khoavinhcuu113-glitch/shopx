@@ -105,6 +105,19 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
         )}
       </div>
 
+      {/* Banner nâng cấp Doanh nghiệp — chỉ gian hàng cá nhân của chính chủ */}
+      {isOwner && store.type === 'personal' && (
+        <div onClick={() => go('s-account')}
+          style={{ background: '#e8f0fe', borderBottom: '1px solid #c5d8ff', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+          <span style={{ fontSize: 18 }}>🏢</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>Nâng cấp lên Doanh nghiệp</div>
+            <div style={{ fontSize: 10, color: '#1565c0' }}>Quảng cáo · Hiển thị ưu tiên · Badge xác minh · Thống kê doanh thu</div>
+          </div>
+          <span style={{ fontSize: 16, color: '#1565c0' }}>›</span>
+        </div>
+      )}
+
       {/* Banner quảng cáo — chỉ doanh nghiệp */}
       {store.adBanner && (
         <div style={{ background: 'linear-gradient(135deg,#1565c0,#1976d2)', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
