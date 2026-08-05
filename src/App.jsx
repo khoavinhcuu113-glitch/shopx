@@ -902,6 +902,9 @@ function TxHistoryScreen({ go }) {
   );
 }
 
+// Demo: mô phỏng kết quả OCR đọc được từ CCCD sau khi chụp — thực tế sẽ là API OCR thật (VNPT eKYC/FPT.AI...)
+const OCR_MOCK = { name: 'Lê Đăng Khoa', dob: '15/08/1995', address: 'KP Nhị Hòa, P. Trấn Biên, TP. Đồng Nai' };
+
 function KYCScreen({ go, doLogin }) {
   const [frontDone, setFrontDone] = useState(false);
   const [backDone, setBackDone]   = useState(false);
@@ -954,6 +957,20 @@ function KYCScreen({ go, doLogin }) {
               </div>
             </div>
 
+            {frontDone && (
+              <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 10, marginBottom: 14 }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#1565c0', marginBottom: 6 }}>📄 Đã đọc được từ CCCD (OCR tự động):</div>
+                <div style={{ fontSize: 11, color: '#1976d2', lineHeight: 1.6 }}>
+                  Họ tên: <b>{OCR_MOCK.name}</b><br/>
+                  Ngày sinh: <b>{OCR_MOCK.dob}</b><br/>
+                  Thường trú: <b>{OCR_MOCK.address}</b>
+                </div>
+                <div style={{ fontSize: 10, color: '#e65100', marginTop: 6 }}>
+                  ⚠️ Thông tin này sẽ tự động thay thế phần bạn tự khai lúc đăng ký (nếu có khác biệt) — không cần chỉnh sửa gì thêm.
+                </div>
+              </div>
+            )}
+
             <Sechdr num="2" title="Nhập số CCCD" />
             <Fg label="Số CCCD (12 số)" req>
               <Fi placeholder="VD: 079123456789" maxLength={12} inputMode="numeric"
@@ -970,8 +987,10 @@ function KYCScreen({ go, doLogin }) {
         {confirmed && !processing && (
           <>
             <Sechdr num="3" title="Xem lại thông tin trước khi hoàn tất" />
+            <div style={{ fontSize: 11, color: C.m, marginBottom: 8 }}>Theo CCCD xác minh: <b style={{ color: C.t }}>{OCR_MOCK.name}</b> · {OCR_MOCK.dob}</div>
             <MaskedField label="Số điện thoại" value={phone} keepStart={3} keepEnd={2} />
             <MaskedField label="Số CCCD" value={cccd} keepStart={3} keepEnd={3} />
+            <MaskedField label="Địa chỉ thường trú" value={OCR_MOCK.address} keepStart={0} keepEnd={0} />
             <Infobox icon="🔒" text="Chỉ bạn và Admin ShopX xem được thông tin đầy đủ. Người khác chỉ thấy tên/mã SX." bg="#fff3e0" color="#e65100" />
             <Btn onClick={handleFinish} style={{ marginTop: 4 }}>✅ Xác nhận & Hoàn tất đăng ký</Btn>
             <Btn2 onClick={() => setConfirmed(false)}>⬅️ Quay lại chỉnh sửa</Btn2>
@@ -1105,14 +1124,16 @@ function RegisterScreen({ go }) {
 
         {step === 'form' && !existing && (
           <>
-            <Fg label="Họ và tên" req><Fi placeholder="Nhập họ và tên đầy đủ" /></Fg>
+            <Fg label="Họ và tên (tự khai, sẽ đối chiếu khi xác minh CCCD)" req><Fi placeholder="Nhập họ và tên" /></Fg>
+            <Fg label="Ngày sinh" req><Fi placeholder="dd/mm/yyyy" type="date" /></Fg>
             <Fg label="Mật khẩu" req><Fi placeholder="Tối thiểu 8 ký tự" type="password" /></Fg>
-            <Fg label="Khu vực" req>
+            <Fg label="Hoạt động bạn quan tâm" req>
               <Fs>
-                <option>-- Chọn Tỉnh / Thành phố --</option>
-                <option>Đồng Nai</option>
-                <option>TP. Hồ Chí Minh</option>
-                <option>Bình Dương</option>
+                <option>-- Chọn hoạt động --</option>
+                <option>🛒 Mua sắm</option>
+                <option>💰 Bán hàng</option>
+                <option>🔍 Tìm việc / Nhận việc</option>
+                <option>🔧 Cung cấp dịch vụ</option>
               </Fs>
             </Fg>
 
