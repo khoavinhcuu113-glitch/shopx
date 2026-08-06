@@ -335,7 +335,7 @@ export default function Chat3WayScreen({ go }) {
             {role === 'buyer' && (
               <button onClick={() => setShowRating(true)}
                 style={{ background: C.p, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600, marginTop: 6 }}>
-                ⭐ Đánh giá → nhận 10 SX Points
+                ⭐ Đánh giá → nhận 5 SX Points
               </button>
             )}
           </div>
