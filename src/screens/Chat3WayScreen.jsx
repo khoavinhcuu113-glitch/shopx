@@ -118,7 +118,7 @@ function SellerView({ shipperArrived, msgs, setMsgs }) {
 }
 
 // ── SHIPPER ──
-function ShipperView({ setShipperArrived, shipperArrived, otpDone, msgs, setMsgs }) {
+function ShipperView({ setShipperArrived, shipperArrived, otpDone, setOtpDone, msgs, setMsgs }) {
   const [arrived, setArrived]   = useState(false);
   const [otpInput, setOtpInput] = useState('');
   const [showOtp, setShowOtp]   = useState(false);
@@ -132,6 +132,7 @@ function ShipperView({ setShipperArrived, shipperArrived, otpDone, msgs, setMsgs
 
   function confirmDelivery() {
     if (otpInput === OTP) {
+      setOtpDone(true);
       setMsgs(m => [...m, { from: 'system', text: '✅ Shipper đã xác nhận giao hàng thành công bằng OTP!' }]);
     } else {
       alert('OTP không đúng! Yêu cầu người mua cung cấp lại.');
@@ -324,7 +325,7 @@ export default function Chat3WayScreen({ go }) {
         {/* Bảng theo vai trò */}
         {role === 'buyer'   && <BuyerView  otpDone={otpDone} setOtpDone={setOtpDone} msgs={msgs} setMsgs={setMsgs} setShowRating={setShowRating} />}
         {role === 'seller'  && <SellerView shipperArrived={shipperArrived} msgs={msgs} setMsgs={setMsgs} />}
-        {role === 'shipper' && <ShipperView setShipperArrived={setShipperArrived} shipperArrived={shipperArrived} otpDone={otpDone} msgs={msgs} setMsgs={setMsgs} />}
+        {role === 'shipper' && <ShipperView setShipperArrived={setShipperArrived} shipperArrived={shipperArrived} otpDone={otpDone} setOtpDone={setOtpDone} msgs={msgs} setMsgs={setMsgs} />}
 
         {/* Thông báo đơn hoàn tất */}
         {otpDone && (
