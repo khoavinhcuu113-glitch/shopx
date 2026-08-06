@@ -267,7 +267,7 @@ function ServiceScreen({ go, chkLogin }) {
 }
 
 // ─── POST SCREEN (Fix B: nhiều ảnh + Fix D: hình thức bán) ───────────
-function PostScreen({ go, chkLogin }) {
+function PostScreen({ go, chkLogin, hasCCCD }) {
   const [method, setMethod] = useState('both');
   const [photos, setPhotos] = useState([]);
   const [title, setTitle] = useState('');
@@ -293,10 +293,11 @@ function PostScreen({ go, chkLogin }) {
   return (
     <div>
       <Shdr title="Đăng tin bán" onBack={() => go('s-home')} />
-      <div style={{ background: '#e8f5e9', padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #c8e6c9' }}>
-        <Avatar initials="KV" size={28} />
-        <div><div style={{ fontSize: 11, fontWeight: 600, color: '#2e7d32' }}>Đăng tin với tư cách: SX-00001
-					<div style={{ fontSize: 10, color: '#388e3c' }}>Lê Đăng Khoa (khoavinhcuu113) • Đã xác minh CCCD</div></div>
+      <div style={{ background: '#e8f5e9', padding: '6px 14px', display: 'flex', alignItems: 'center', gap: 8, borderBottom: '1px solid #c8e6c9' }}>
+        <Avatar initials="KV" size={22} />
+        <div style={{ fontSize: 11, color: '#2e7d32', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          Đăng với tư cách <b>Lê Đăng Khoa</b> · SX-00001{hasCCCD ? ' · 🪪 Đã xác minh' : ''}
+        </div>
       </div>
       <div style={{ padding: 12 }}>
         {/* Fix B: Ảnh thêm được nhiều lần */}
@@ -386,7 +387,6 @@ function PostScreen({ go, chkLogin }) {
         <Btn onClick={previewPost} style={{ marginBottom: 8 }}>👁️ Xem trước tin đăng</Btn>
         
         <div style={{ height: 80 }} />
-      </div>
       </div>
     </div>
   );
@@ -1300,9 +1300,9 @@ export default function App() {
       case 's-chat-3way':        return <Chat3WayScreen         go={go} />;
       case 's-service':          return <ServiceScreen          go={go} chkLogin={chkLogin} />;
       case 's-post':             return hasPhone
-                                     ? <PostScreen             go={go} chkLogin={chkLogin} />
+                                     ? <PostScreen             go={go} chkLogin={chkLogin} hasCCCD={hasCCCD} />
                                      : <PhoneGateScreen go={go} onVerified={verifyPhoneGate} actionLabel="đăng tin bán" />;
-      case 's-preview-post':    return <PreviewPostScreen     go={go} hasCCCD={hasCCCD} />;;
+      case 's-preview-post':    return <PreviewPostScreen     go={go} hasCCCD={hasCCCD} />;
       case 's-direct':           return <DirectScreen           go={go} />;
       case 's-post-success':     return <PostSuccessScreen      go={go} />;
       case 's-delivery':         return <DeliveryScreen         go={go} chkLogin={chkLogin} hasCCCD={hasCCCD} buyCount={buyCount} incrementBuyCount={incrementBuyCount} />;
