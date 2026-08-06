@@ -24,6 +24,7 @@ const MY_STORE = {
     { id: 'p3', icon: '❄️', name: 'Máy lạnh Daikin 1.5HP Inverter', price: '5.800.000đ', cat: 'Điện lạnh', loc: 'Biên Hòa', status: 'selling' },
     { id: 'p4', icon: '🛋️', name: 'Sofa góc L màu xám còn mới 80%', price: '3.200.000đ', cat: 'Nội thất', loc: 'Biên Hòa', status: 'selling' },
     { id: 'p5', icon: '🍱', name: 'Cơm hộp văn phòng đặt trước', price: '35.000đ', cat: 'Đồ ăn', loc: 'Hố Nai', status: 'selling' },
+    { id: 'p6', icon: '🎧', name: 'Tai nghe Bluetooth JBL Tune 510BT', price: '350.000đ', cat: 'Đồ điện tử', loc: 'Biên Hòa', status: 'selling' },
   ],
   services: [
     { id: 's1', icon: '🔧', name: 'Sửa điện dân dụng tại nhà', price: '80.000đ/giờ', cat: 'Thợ điện' },

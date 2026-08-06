@@ -268,11 +268,12 @@ function ServiceScreen({ go, chkLogin }) {
 
 // ─── POST SCREEN (Fix B: nhiều ảnh + Fix D: hình thức bán) ───────────
 function PostScreen({ go, chkLogin, hasCCCD }) {
-  const [method, setMethod] = useState('both');
-  const [photos, setPhotos] = useState([]);
-  const [title, setTitle] = useState('');
-  const [price, setPrice] = useState('');
-  const [cat, setCat] = useState('');
+  const saved = (() => { try { return JSON.parse(sessionStorage.getItem('postData') || '{}'); } catch(e) { return {}; } })();
+  const [method, setMethod] = useState(saved.method || 'ship');
+  const [photos, setPhotos] = useState(saved.photos ? Array.from({ length: saved.photos }, (_, i) => ['📱','📦','🛋️','👕','🚗','❄️','🔧','🏡'][i % 8]) : []);
+  const [title, setTitle] = useState(saved.title || '');
+  const [price, setPrice] = useState(saved.price || '');
+  const [cat, setCat] = useState(saved.cat || '');
   const emojis = ['📱','📦','🛋️','👕','🚗','❄️','🔧','🏡'];
 
   function addPhoto() {
@@ -280,7 +281,14 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
     setPhotos(p => [...p, emojis[p.length % 8]]);
   }
 
-  function previewPost() { go("s-preview-post"); }
+  function previewPost() {
+    if (!title.trim())        { alert('Vui lòng nhập Tiêu đề.'); return; }
+    if (!cat)                 { alert('Vui lòng chọn Danh mục.'); return; }
+    if (!price || Number(price) <= 0) { alert('Vui lòng nhập Giá bán hợp lệ.'); return; }
+    if (photos.length === 0)  { alert('Vui lòng thêm ít nhất 1 ảnh sản phẩm.'); return; }
+    sessionStorage.setItem('postData', JSON.stringify({ title, price, cat, method, photos: photos.length }));
+    go('s-preview-post');
+  }
 
   function submitPost() {
     if (method === 'direct') {
