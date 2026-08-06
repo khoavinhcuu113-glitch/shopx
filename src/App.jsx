@@ -41,6 +41,10 @@ function CategoriesScreen({ go, nav }) {
 
 // ─── PRODUCT SCREEN ───────────────────────────────────────────────────
 function ProductScreen({ go, chkLogin, type }) {
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportNote, setReportNote] = useState('');
+  const [reportSent, setReportSent] = useState(false);
   const data = {
     p1: { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh' },
     p2: { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh' },
@@ -77,9 +81,47 @@ function ProductScreen({ go, chkLogin, type }) {
           <button style={{ background: C.w, color: C.p, border: `1.5px solid ${C.p}`, padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-buy')}>💬 Chat người bán</button>
           <button style={{ background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-delivery')}>🚚 Đặt giao hàng</button>
         </div>
-        <button style={{ width: '100%', background: 'none', color: C.m, border: '1px solid #e0d4f7', padding: 8, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>🚩 Báo cáo tin đăng</button>
+        <button onClick={() => setShowReport(true)} style={{ width: '100%', background: 'none', color: C.m, border: '1px solid #e0d4f7', padding: 8, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>🚩 Báo cáo tin đăng</button>
       </div>
       <div style={{ height: 80 }} />
+
+      {showReport && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'flex-end', zIndex: 50 }}
+          onClick={() => !reportSent && setShowReport(false)}>
+          <div onClick={e => e.stopPropagation()} style={{ background: C.w, borderRadius: '18px 18px 0 0', padding: 16, width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
+            {!reportSent ? (
+              <>
+                <div style={{ fontSize: 14, fontWeight: 700, color: C.t, marginBottom: 4 }}>🚩 Báo cáo tin đăng</div>
+                <div style={{ fontSize: 11, color: C.m, marginBottom: 12 }}>Cho ShopX biết vấn đề với tin đăng này. Admin sẽ xem xét trong 24h.</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
+                  {['Hàng giả / hàng nhái', 'Nghi ngờ lừa đảo', 'Thông tin/ảnh không đúng thực tế', 'Nội dung không phù hợp', 'Khác'].map(r => (
+                    <label key={r} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: C.t, cursor: 'pointer', padding: '8px 10px', borderRadius: 8, background: reportReason === r ? C.pl : 'transparent', border: `1px solid ${reportReason === r ? C.b : '#eee'}` }}>
+                      <input type="radio" name="reportReason" checked={reportReason === r} onChange={() => setReportReason(r)} style={{ accentColor: C.p }} />
+                      {r}
+                    </label>
+                  ))}
+                </div>
+                <Fg label="Mô tả thêm (không bắt buộc)">
+                  <textarea value={reportNote} onChange={e => setReportNote(e.target.value)}
+                    style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
+                    rows={3} placeholder="Chi tiết vấn đề bạn gặp phải..." />
+                </Fg>
+                <Btn onClick={() => { if (!reportReason) { alert('Vui lòng chọn lý do báo cáo.'); return; } setReportSent(true); }} style={{ marginTop: 4 }}>
+                  Gửi báo cáo
+                </Btn>
+                <Btn2 onClick={() => setShowReport(false)}>Hủy</Btn2>
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                <div style={{ fontSize: 40, marginBottom: 10 }}>✅</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: C.t, marginBottom: 6 }}>Đã gửi báo cáo</div>
+                <div style={{ fontSize: 12, color: C.m, marginBottom: 16 }}>Admin ShopX sẽ xem xét trong vòng 24 giờ. Cảm ơn bạn đã giúp ShopX an toàn hơn.</div>
+                <Btn onClick={() => { setShowReport(false); setReportSent(false); setReportReason(''); setReportNote(''); }}>Đóng</Btn>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
