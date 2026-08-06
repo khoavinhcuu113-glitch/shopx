@@ -92,9 +92,14 @@ const OTHER_STORE = {
 };
 
 // ─── STORE SCREEN ─────────────────────────────────────────────────────
-export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOwner = false }) {
+export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOwner = false, hasCCCD = true }) {
   const store = isOwner
-    ? MY_STORE
+    ? {
+        ...MY_STORE,
+        verified: hasCCCD
+          ? ['✅ SĐT', '🪪 Căn cước KYC', '🏅 Người bán uy tín']
+          : ['✅ SĐT'],
+      }
     : storeType === 'business' ? OTHER_STORE : OTHER_STORE_PERSONAL;
 
   // Tab chỉ hiện khi có nội dung

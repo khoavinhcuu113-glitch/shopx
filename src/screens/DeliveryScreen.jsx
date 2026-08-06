@@ -4,7 +4,7 @@ import { Shdr, Infobox } from '../components/UI';
 import ShipperCard from '../components/ShipperCard';
 import TrackingSteps from '../components/TrackingSteps';
 
-export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000 }) {
+export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000, hasCCCD = true, buyCount = 0, incrementBuyCount = () => {} }) {
   const [selectedShipper, setSelectedShipper] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const platformFee = calcPlatformFee(orderValue);
@@ -15,6 +15,13 @@ export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000 }) 
   }
 
   function handleInviteShipper() {
+    if (buyCount >= 2 && !hasCCCD) {
+      sessionStorage.setItem('sx_kyc_return', 's-delivery');
+      sessionStorage.setItem('sx_kyc_reason', 'tiếp tục mua hàng (đã dùng hết 2 đơn miễn phí)');
+      go('s-kyc');
+      return;
+    }
+    incrementBuyCount();
     // Trigger tạo chat 3 bên
     go('s-chat-3way');
   }

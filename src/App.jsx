@@ -465,7 +465,7 @@ function DirectScreen({ go }) {
 }
 
 // ─── XEM TRƯỚC TIN ĐĂNG ──────────────────────────────────────────────
-function PreviewPostScreen({ go }) {
+function PreviewPostScreen({ go, hasCCCD }) {
   const methodInfo = {
     direct: { label: '🤝 Gặp trực tiếp', sub: '(app không can thiệp)', bg: '#fff8e1', color: '#f57f17' },
     ship:   { label: '🚚 Giao hàng cộng đồng', sub: '(app bảo vệ ship)', bg: C.pl, color: C.pd },
@@ -480,6 +480,12 @@ function PreviewPostScreen({ go }) {
   const priceNum = parseInt(postData.price || 0);
 
   function confirmPost() {
+    if (priceNum >= 500000 && !hasCCCD) {
+      sessionStorage.setItem('sx_kyc_return', 's-preview-post');
+      sessionStorage.setItem('sx_kyc_reason', 'đăng tin giá trị cao (từ 500.000đ)');
+      go('s-kyc');
+      return;
+    }
     sessionStorage.removeItem('postData');
     if (postData.method === 'direct') {
       go('s-direct');
@@ -610,7 +616,7 @@ function LoginScreen({ go, doLogin }) {
 }
 
 // ─── ACCOUNT SCREEN (Fix A: chỉ hiện khi đã đăng nhập + Fix I: nhật ký tin đăng) ──
-function AccountScreen({ go, nav, doLogout }) {
+function AccountScreen({ go, nav, doLogout, hasCCCD }) {
   const [accType, setAccType] = React.useState('personal'); // personal | business (đã nâng cấp)
   const [showUpgrade, setShowUpgrade] = React.useState(false);
   const businessInfo = { name: 'CTY TNHH MTV ABC', mst: '000000001-ABC', address: '123 KP Nhị Hòa, P. Trấn Biên, TP. Đồng Nai' };
@@ -643,7 +649,11 @@ function AccountScreen({ go, nav, doLogout }) {
                 <span>SX-00001</span>
                 <span style={{ color: '#f59e0b' }}>⭐ 4.8 (34)</span>
                 <span title="SĐT đã xác minh">✅</span>
-                <span title="Căn cước KYC đã xác minh">🪪</span>
+                {hasCCCD ? (
+                  <span title="Căn cước KYC đã xác minh">🪪</span>
+                ) : (
+                  <span title="Căn cước KYC chưa xác minh" style={{ opacity: 0.5 }}>🪪</span>
+                )}
                 <span title="Pi chưa xác minh" style={{ opacity: 0.5 }}>🟣</span>
               </div>
             </div>
@@ -658,6 +668,19 @@ function AccountScreen({ go, nav, doLogout }) {
             </div>
           )}
         </div>
+
+        {/* Banner gợi ý xác minh CCCD sớm — tự nguyện, giọng lợi ích */}
+        {!hasCCCD && (
+          <div onClick={() => { sessionStorage.setItem('sx_kyc_return', 's-account'); sessionStorage.setItem('sx_kyc_reason', 'mở khóa toàn bộ quyền lợi tài khoản'); go('s-kyc'); }}
+            style={{ background: '#e8f5e9', border: '1px solid #c8e6c9', borderRadius: 12, padding: '10px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <span style={{ fontSize: 18 }}>🎁</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#2e7d32' }}>Xác minh CCCD ngay để nhận quyền lợi</div>
+              <div style={{ fontSize: 10, color: '#388e3c' }}>+50 SX Points · Badge uy tín · Ưu tiên hiển thị · Đăng tin không giới hạn</div>
+            </div>
+            <span style={{ fontSize: 16, color: '#2e7d32' }}>›</span>
+          </div>
+        )}
 
         {/* 2. LOẠI TÀI KHOẢN — banner nâng cấp (chỉ hiện khi còn cá nhân) */}
         {accType === 'personal' && !showUpgrade && (
@@ -905,11 +928,11 @@ function TxHistoryScreen({ go }) {
 // Demo: mô phỏng kết quả OCR đọc được từ CCCD sau khi chụp — thực tế sẽ là API OCR thật (VNPT eKYC/FPT.AI...)
 const OCR_MOCK = { name: 'Lê Đăng Khoa', dob: '15/08/1995', address: 'KP Nhị Hòa, P. Trấn Biên, TP. Đồng Nai' };
 
-function KYCScreen({ go, doLogin }) {
+function KYCScreen({ go, onComplete, backTo, actionLabel }) {
   const [frontDone, setFrontDone] = useState(false);
   const [backDone, setBackDone]   = useState(false);
   const [cccd, setCccd]           = useState('');
-  const [phone] = useState('0901234567'); // demo: SĐT đã nhập ở bước Đăng ký
+  const [phone] = useState('0901234567'); // demo: SĐT đã có sẵn của tài khoản
   const [confirmed, setConfirmed] = useState(false);
   const [processing, setProcessing] = useState(false);
 
@@ -922,14 +945,25 @@ function KYCScreen({ go, doLogin }) {
 
   function handleFinish() {
     setProcessing(true);
-    setTimeout(() => { doLogin(); }, 1200);
+    setTimeout(() => { onComplete(); }, 1200);
   }
 
   return (
     <div>
-      <Shdr title="Xác minh CCCD" onBack={() => go('s-pledge')} />
+      <Shdr title="Xác minh CCCD" onBack={() => go(backTo || 's-home')} />
       <div style={{ padding: 12 }}>
-        <Infobox text="Bắt buộc xác minh CCCD để đảm bảo trách nhiệm giao dịch. Dữ liệu được ẩn, chỉ bạn và Admin xem được đầy đủ." />
+        <div style={{ background: '#e8f5e9', border: '1px solid #c8e6c9', borderRadius: 12, padding: 12, marginBottom: 10 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#2e7d32', marginBottom: 6 }}>
+            🎁 Xác minh CCCD để mở khóa{actionLabel ? ` — ${actionLabel}` : ''}:
+          </div>
+          <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.8 }}>
+            🏅 Badge "Người bán uy tín" trên gian hàng<br/>
+            📈 Ưu tiên hiển thị khi khách tìm kiếm<br/>
+            🎯 +50 SX Points ngay khi xác minh xong<br/>
+            🛡️ Được bảo vệ bằng chứng nếu có tranh chấp
+          </div>
+        </div>
+        <Infobox text="Dữ liệu CCCD được ẩn, chỉ bạn và Admin ShopX xem được đầy đủ." />
 
         {!confirmed && (
           <>
@@ -1169,7 +1203,7 @@ function PledgeScreen({ go, doLogin }) {
         </div>
         <Ckrow label="Tôi đã đọc hết và đồng ý với toàn bộ cam kết trên" checked={ck1} onChange={e => setCk1(e.target.checked)} />
         <Ckrow label="Tôi hiểu rằng vi phạm cam kết có thể bị khóa tài khoản vĩnh viễn" checked={ck2} onChange={e => setCk2(e.target.checked)} />
-        <Btn onClick={() => { if(!ck1||!ck2){alert('Vui lòng tick chọn đồng ý với tất cả cam kết.');return;} go('s-kyc'); }} style={{ marginTop: 8 }}>✅ Đồng ý — Tiếp tục xác minh CCCD ➡️</Btn>
+        <Btn onClick={() => { if(!ck1||!ck2){alert('Vui lòng tick chọn đồng ý với tất cả cam kết.');return;} doLogin(); }} style={{ marginTop: 8 }}>✅ Đồng ý — Hoàn tất đăng ký ➡️</Btn>
         <div style={{ height: 80 }} />
       </div>
     </div>
@@ -1187,6 +1221,8 @@ export default function App() {
   const [navActive,  setNavActive]  = useState(() => sessionStorage.getItem('sx_nav') || 'ni-home');
   const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('sx_login') === '1');
   const [hasPhone,   setHasPhone]   = useState(() => sessionStorage.getItem('sx_hasphone') !== '0');
+  const [hasCCCD,    setHasCCCD]    = useState(() => sessionStorage.getItem('sx_hascccd') === '1');
+  const [buyCount,   setBuyCount]   = useState(() => parseInt(sessionStorage.getItem('sx_buycount') || '0'));
   const [showPopup,  setShowPopup]  = useState(false);
   const [pendingScr, setPendingScr] = useState('');
 
@@ -1223,6 +1259,20 @@ export default function App() {
     sessionStorage.setItem('sx_hasphone', '1');
   };
 
+  const verifyCCCDGate = () => {
+    setHasCCCD(true);
+    sessionStorage.setItem('sx_hascccd', '1');
+    const returnTo = sessionStorage.getItem('sx_kyc_return') || 's-home';
+    sessionStorage.removeItem('sx_kyc_return');
+    go(returnTo);
+  };
+
+  const incrementBuyCount = () => {
+    const next = buyCount + 1;
+    setBuyCount(next);
+    sessionStorage.setItem('sx_buycount', String(next));
+  };
+
   const doLogout = () => {
     setIsLoggedIn(false);
     sessionStorage.removeItem('sx_login');
@@ -1252,16 +1302,16 @@ export default function App() {
       case 's-post':             return hasPhone
                                      ? <PostScreen             go={go} chkLogin={chkLogin} />
                                      : <PhoneGateScreen go={go} onVerified={verifyPhoneGate} actionLabel="đăng tin bán" />;
-      case 's-preview-post':    return <PreviewPostScreen     go={go} />;
+      case 's-preview-post':    return <PreviewPostScreen     go={go} hasCCCD={hasCCCD} />;;
       case 's-direct':           return <DirectScreen           go={go} />;
       case 's-post-success':     return <PostSuccessScreen      go={go} />;
-      case 's-delivery':         return <DeliveryScreen         go={go} chkLogin={chkLogin} />;
+      case 's-delivery':         return <DeliveryScreen         go={go} chkLogin={chkLogin} hasCCCD={hasCCCD} buyCount={buyCount} incrementBuyCount={incrementBuyCount} />;
       case 's-login':            return <LoginScreen            go={go} doLogin={doLogin} />;
-      case 's-account':          return <AccountScreen          go={go} nav={nav} doLogout={doLogout} />;
+      case 's-account':          return <AccountScreen          go={go} nav={nav} doLogout={doLogout} hasCCCD={hasCCCD} />;
       case 's-tx-history':       return <TxHistoryScreen        go={go} />;
       case 's-register':         return <RegisterScreen         go={go} />;
       case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
-      case 's-kyc':               return <KYCScreen              go={go} doLogin={doLogin} />;
+      case 's-kyc':               return <KYCScreen              go={go} onComplete={verifyCCCDGate} backTo={sessionStorage.getItem('sx_kyc_return') || 's-home'} actionLabel={sessionStorage.getItem('sx_kyc_reason') || 'tiếp tục'} />;
       case 's-notif':            return <NotifScreen            go={go} />;
       case 's-shipper-register': return <ShipperRegisterScreen  go={go} />;
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
@@ -1273,7 +1323,7 @@ export default function App() {
       case 's-terms-worker':  return <TermsScreen go={go} role="worker" />;
       case 's-terms-business':return <TermsScreen go={go} role="business" />;
       case 's-qr':                   return <QRScreen go={go} />;
-      case 's-my-store':             return <StoreScreen go={go} chkLogin={chkLogin} isOwner={true} />;
+      case 's-my-store':             return <StoreScreen go={go} chkLogin={chkLogin} isOwner={true} hasCCCD={hasCCCD} />;
       case 's-store-personal':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="personal" />;
       case 's-store-business':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="business" />;
       case 's-service-order-worker': return <ServiceOrderScreen go={go} role="worker" />;
