@@ -226,30 +226,62 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
             <option>Trung học cơ sở</option><option>Trung học phổ thông</option><option>Trung cấp nghề</option><option>Cao đẳng</option><option>Đại học</option>
           </Fs>
         </Fg>
-        <Fg label="Chứng chỉ nghề"><Fi placeholder="VD: Chứng chỉ kỹ thuật viên điện lạnh hạng 3" value={form.chungChi || ''} onChange={e => upd('chungChi', e.target.value)} /></Fg>
-        <Fg label="Upload ảnh chứng chỉ">
-          <div onClick={() => upd('anhChungChi', true)} style={{ cursor: 'pointer' }}>
-            {form.anhChungChi ? (
-              <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
-                <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
-                <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã upload ảnh chứng chỉ</p>
-              </div>
-            ) : (
-              <Upbox icon="📜" text="Chụp ảnh chứng chỉ rõ nét → được badge ⭐ Chứng chỉ nghề" />
-            )}
+        <Fg label="Chứng chỉ nghề (không bắt buộc)">
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
+              <input type="radio" name="ccStatus" checked={(form.ccStatus || 'none') === 'none'} onChange={() => upd('ccStatus', 'none')} style={{ accentColor: C.p }} />
+              Chưa có — bổ sung sau
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
+              <input type="radio" name="ccStatus" checked={form.ccStatus === 'has'} onChange={() => upd('ccStatus', 'has')} style={{ accentColor: C.p }} />
+              Tôi có, upload ngay
+            </label>
           </div>
+          {form.ccStatus === 'has' && (
+            <>
+              <Fi placeholder="VD: Chứng chỉ kỹ thuật viên điện lạnh hạng 3" value={form.chungChi || ''} onChange={e => upd('chungChi', e.target.value)} style={{ marginBottom: 8 }} />
+              <div onClick={() => upd('anhChungChi', true)} style={{ cursor: 'pointer' }}>
+                {form.anhChungChi ? (
+                  <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                    <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
+                    <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã upload ảnh chứng chỉ</p>
+                  </div>
+                ) : (
+                  <Upbox icon="📜" text="Chụp ảnh chứng chỉ rõ nét → được badge ⭐ Chứng chỉ nghề" />
+                )}
+              </div>
+            </>
+          )}
         </Fg>
-        <Fg label="Ảnh công trình đã làm">
-          <div onClick={() => upd('anhCongTrinh', true)} style={{ cursor: 'pointer' }}>
-            {form.anhCongTrinh ? (
-              <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
-                <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
-                <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã upload ảnh công trình</p>
-              </div>
-            ) : (
-              <Upbox icon="🖼️" text="Upload ảnh thực tế • Tối đa 8 ảnh" />
-            )}
+
+        <Fg label="Portfolio / Công trình đã làm">
+          <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 10, marginBottom: 8 }}>
+            <div style={{ fontSize: 11, color: '#1565c0', lineHeight: 1.6 }}>
+              💡 Chưa có ảnh công trình cũng không sao — Portfolio của bạn sẽ <b>tự động xây dựng</b> từ các hợp đồng hoàn thành thật qua ShopX. Không cần tự chứng minh gì cả, khách hàng xác nhận là đủ.
+            </div>
           </div>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
+              <input type="radio" name="ctStatus" checked={(form.ctStatus || 'none') === 'none'} onChange={() => upd('ctStatus', 'none')} style={{ accentColor: C.p }} />
+              Chưa có ảnh — để Portfolio tự xây dựng
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
+              <input type="radio" name="ctStatus" checked={form.ctStatus === 'has'} onChange={() => upd('ctStatus', 'has')} style={{ accentColor: C.p }} />
+              Tôi có sẵn ảnh, muốn thêm ngay
+            </label>
+          </div>
+          {form.ctStatus === 'has' && (
+            <div onClick={() => upd('anhCongTrinh', true)} style={{ cursor: 'pointer' }}>
+              {form.anhCongTrinh ? (
+                <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                  <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
+                  <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã upload ảnh công trình</p>
+                </div>
+              ) : (
+                <Upbox icon="🖼️" text="Upload ảnh thực tế • Tối đa 8 ảnh" />
+              )}
+            </div>
+          )}
         </Fg>
 
         {/* PHẦN 6 */}
