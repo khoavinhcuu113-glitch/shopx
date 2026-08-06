@@ -116,14 +116,14 @@ const TERMS = {
   },
 
   worker: {
-    title: 'Quy chế Thợ / Freelancer',
+    title: 'Quy chế Thợ / Người làm tự do',
     icon: '🔨',
     color: '#e65100',
     version: 'v1.0',
     sections: [
       {
         title: '1. Quan hệ pháp lý',
-        content: 'Thợ/Freelancer ShopX là CÁ NHÂN TỰ DO. Quan hệ với ShopX là HỢP ĐỒNG DỊCH VỤ (Điều 513 BLDS 2015), KHÔNG phải hợp đồng lao động. ShopX chỉ là nền tảng kết nối.',
+        content: 'Thợ/Người làm tự do ShopX là CÁ NHÂN TỰ DO. Quan hệ với ShopX là HỢP ĐỒNG DỊCH VỤ (Điều 513 BLDS 2015), KHÔNG phải hợp đồng lao động. ShopX chỉ là nền tảng kết nối.',
       },
       {
         title: '2. Quyền lợi',
@@ -338,7 +338,7 @@ export function TermsMenuScreen({ go }) {
   const items = [
     { role: 'buyer',    icon: '🛒', label: 'Người mua / Người bán', color: C.p },
     { role: 'shipper',  icon: '🚚', label: 'Shipper Cộng đồng',     color: '#2e7d32' },
-    { role: 'worker',   icon: '🔨', label: 'Thợ / Freelancer',       color: '#e65100' },
+    { role: 'worker',   icon: '🔨', label: 'Thợ / Người làm tự do',       color: '#e65100' },
     { role: 'business', icon: '🏢', label: 'Doanh nghiệp',           color: '#1565c0' },
     { role: 'privacy',  icon: '🔒', label: 'Quyền dữ liệu cá nhân',  color: '#5e35b1' },
   ];

@@ -56,7 +56,7 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
 
   function goVerifyCCCD() {
     sessionStorage.setItem('sx_kyc_return', 's-cv-register');
-    sessionStorage.setItem('sx_kyc_reason', 'đăng ký hồ sơ Thợ/Freelancer');
+    sessionStorage.setItem('sx_kyc_reason', 'đăng ký hồ sơ Thợ/Người làm tự do');
     go('s-kyc');
   }
 
@@ -67,7 +67,7 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
 
   function submit() {
     if (!hasCCCD) { alert('Vui lòng xác minh Căn cước trước khi gửi hồ sơ.'); return; }
-    if (!hasAgreedTerms) { alert('Vui lòng đọc và đồng ý Quy chế Thợ/Freelancer trước khi gửi hồ sơ.'); return; }
+    if (!hasAgreedTerms) { alert('Vui lòng đọc và đồng ý Quy chế Thợ/Người làm tự do trước khi gửi hồ sơ.'); return; }
     if (!form.ck1) { alert('Vui lòng tick xác nhận trước khi gửi hồ sơ.'); return; }
     sessionStorage.removeItem(STORAGE_KEY);
     go('s-cv-success');
@@ -79,7 +79,7 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
 
   return (
     <div>
-      <Shdr title="Đăng ký làm thợ / Freelancer" onBack={() => go('s-service')} />
+      <Shdr title="Đăng ký làm thợ / Người làm tự do" onBack={() => go('s-service')} />
 
       {/* Progress bar */}
       <div style={{ padding: '8px 12px 4px', background: C.w, borderBottom: `1px solid #e8def8` }}>
@@ -254,16 +254,16 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
           )}
         </Fg>
 
-        <Fg label="Portfolio / Công trình đã làm">
+        <Fg label="Hồ sơ năng lực / Công trình đã làm">
           <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 10, marginBottom: 8 }}>
             <div style={{ fontSize: 11, color: '#1565c0', lineHeight: 1.6 }}>
-              💡 Chưa có ảnh công trình cũng không sao — Portfolio của bạn sẽ <b>tự động xây dựng</b> từ các hợp đồng hoàn thành thật qua ShopX. Không cần tự chứng minh gì cả, khách hàng xác nhận là đủ.
+              💡 Chưa có ảnh công trình cũng không sao — Hồ sơ năng lực của bạn sẽ <b>tự động xây dựng</b> từ các hợp đồng hoàn thành thật qua ShopX. Không cần tự chứng minh gì cả, khách hàng xác nhận là đủ.
             </div>
           </div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
               <input type="radio" name="ctStatus" checked={(form.ctStatus || 'none') === 'none'} onChange={() => upd('ctStatus', 'none')} style={{ accentColor: C.p }} />
-              Chưa có ảnh — để Portfolio tự xây dựng
+              Chưa có ảnh — để Hồ sơ năng lực tự xây dựng
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, cursor: 'pointer' }}>
               <input type="radio" name="ctStatus" checked={form.ctStatus === 'has'} onChange={() => upd('ctStatus', 'has')} style={{ accentColor: C.p }} />
@@ -318,12 +318,12 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
 
         {/* PHẦN 7b — Quy chế chính thức */}
         <div style={{ marginTop: 16 }} />
-        <Sechdr num="7b" title="Quy chế Thợ / Freelancer" />
+        <Sechdr num="7b" title="Quy chế Thợ / Người làm tự do" />
         <div style={{ background: hasAgreedTerms ? '#f1f8e9' : C.pl, border: `1.5px solid ${hasAgreedTerms ? '#4caf50' : C.b}`, borderRadius: 12, padding: 14, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 22 }}>{hasAgreedTerms ? '✅' : '📋'}</span>
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>{hasAgreedTerms ? 'Đã đọc và đồng ý Quy chế Thợ/Freelancer' : 'Cần đọc và đồng ý Quy chế Thợ/Freelancer'}</div>
-            <div style={{ fontSize: 10, color: C.m, marginTop: 1 }}>Quy chế chính thức — Điều khoản đầy đủ, giống nhau cho mọi Thợ/Freelancer</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>{hasAgreedTerms ? 'Đã đọc và đồng ý Quy chế Thợ/Người làm tự do' : 'Cần đọc và đồng ý Quy chế Thợ/Người làm tự do'}</div>
+            <div style={{ fontSize: 10, color: C.m, marginTop: 1 }}>Quy chế chính thức — Điều khoản đầy đủ, giống nhau cho mọi Thợ/Người làm tự do</div>
           </div>
           <button onClick={goReadTerms}
             style={{ fontSize: 11, padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600, background: hasAgreedTerms ? '#e8f5e9' : C.p, color: hasAgreedTerms ? '#2e7d32' : '#fff' }}>

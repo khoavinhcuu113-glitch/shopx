@@ -143,7 +143,7 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
           <span style={{ fontSize: 18 }}>🏢</span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>Nâng cấp lên Doanh nghiệp</div>
-            <div style={{ fontSize: 10, color: '#1565c0' }}>Quảng cáo · Hiển thị ưu tiên · Badge xác minh · Thống kê doanh thu</div>
+            <div style={{ fontSize: 10, color: '#1565c0' }}>Quảng cáo · Hiển thị ưu tiên · Huy hiệu xác minh · Thống kê doanh thu</div>
           </div>
           <span style={{ fontSize: 16, color: '#1565c0' }}>›</span>
         </div>
@@ -210,7 +210,7 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
           </div>
         )}
 
-        {/* Badge xác minh */}
+        {/* Huy hiệu xác minh */}
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
           {store.verified.map((b, i) => (
             <span key={i} style={{ fontSize: 10, background: '#e8f5e9', color: '#2e7d32', padding: '3px 8px', borderRadius: 8, fontWeight: 500, border: '1px solid #c8e6c9' }}>

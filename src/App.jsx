@@ -231,7 +231,7 @@ function ServiceScreen({ go, chkLogin }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1 }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{w.name}</span>
                       <span style={{ fontSize: 10, background: C.pl, color: C.pd, padding: '1px 6px', borderRadius: 8, flexShrink: 0 }}>
-                        {w.orders >= 20 ? '🏅 Pro' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới'}
+                        {w.orders >= 20 ? '🏅 Chuyên nghiệp' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới'}
                       </span>
                     </div>
                     <div style={{ fontSize: 11, color: C.m, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -271,7 +271,7 @@ function ServiceScreen({ go, chkLogin }) {
             ))}
           </div>
           <div style={{ padding: '4px 12px 16px' }}>
-            <Btn onClick={() => chkLogin('s-cv-register')}>➕ Đăng ký làm thợ / Freelancer</Btn>
+            <Btn onClick={() => chkLogin('s-cv-register')}>➕ Đăng ký làm thợ / Người làm tự do</Btn>
           </div>
         </div>
       )}
@@ -730,7 +730,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
             <span style={{ fontSize: 18 }}>🎁</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#2e7d32' }}>Xác minh danh tính ngay để nhận quyền lợi</div>
-              <div style={{ fontSize: 10, color: '#388e3c' }}>+50 SX Points · Badge uy tín · Ưu tiên hiển thị · Đăng tin không giới hạn</div>
+              <div style={{ fontSize: 10, color: '#388e3c' }}>+50 SX Points · Huy hiệu uy tín · Ưu tiên hiển thị · Đăng tin không giới hạn</div>
             </div>
             <span style={{ fontSize: 16, color: '#2e7d32' }}>›</span>
           </div>
@@ -743,7 +743,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
             <span style={{ fontSize: 18 }}>🏢</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>Nâng cấp lên Doanh nghiệp</div>
-              <div style={{ fontSize: 10, color: '#1565c0' }}>Quảng cáo · Ưu tiên hiển thị · Badge xác minh</div>
+              <div style={{ fontSize: 10, color: '#1565c0' }}>Quảng cáo · Ưu tiên hiển thị · Huy hiệu xác minh</div>
             </div>
             <span style={{ fontSize: 16, color: '#1565c0' }}>›</span>
           </div>

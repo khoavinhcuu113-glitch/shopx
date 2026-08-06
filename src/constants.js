@@ -186,7 +186,7 @@ export const SAMPLE_SHIPPERS = [
 export const RATING_LEVELS = {
   moi:   { min: 0,  max: 4,    label: '🆕 Mới',    minRate: 0,  color: '#9e9e9e' },
   uyTin: { min: 5,  max: 19,   label: '✅ Uy tín', minRate: 90, color: '#2e7d32' },
-  pro:   { min: 20, max: null, label: '🏅 Pro',    minRate: 95, color: '#f59e0b' },
+  pro:   { min: 20, max: null, label: '🏅 Chuyên nghiệp',    minRate: 95, color: '#f59e0b' },
 };
 
 export function getRatingLevel(totalOrders, completionRate) {
@@ -238,7 +238,7 @@ export const DEMO_USERS = {
     { id: 'SP-003', name: 'Phạm Văn Hùng',   initials: 'VH', bg: '#7c2d12', vehicle: 'Toyota Vios 🚗' },
   ],
 
-  // Thợ / Freelancer
+  // Thợ / Người làm tự do
   workers: [
     { id: 'SX-00199', name: 'Anh Trần Văn Nhân',      initials: 'VN', bg: '#7c3aed', trade: 'Thợ điện dân dụng', exp: '8 năm',  price: '80.000đ/giờ',    orders: 788, rate: 98,  thumbsUp: 98.2 },
     { id: 'SX-00143', name: 'Anh Nguyễn Thanh Long',  initials: 'TL', bg: '#0891b2', trade: 'Thợ sửa máy lạnh',  exp: '5 năm',  price: '150.000đ/ca',    orders: 234, rate: 95,  thumbsUp: 94.5 },
