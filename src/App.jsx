@@ -15,7 +15,7 @@ import StoreScreen from './screens/StoreScreen';
 import QRScreen from './screens/QRScreen';
 import TermsScreen, { TermsMenuScreen } from './screens/TermsScreen';
 import ServiceOrderScreen, { ServiceOrderAlert } from './screens/ServiceOrderScreen';
-import CvRegisterScreen, { CvSuccessScreen, CccdScreen } from './screens/CvRegisterScreen';
+import CvRegisterScreen, { CvSuccessScreen } from './screens/CvRegisterScreen';
 import RatingScreen from './screens/RatingScreen';
 import { SAMPLE_USER_RATINGS, getRatingLevel } from './constants';
 import ShipperCommunityScreen, { ShipperSuccessScreen } from './screens/ShipperScreens';
@@ -1279,6 +1279,8 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('sx_login') === '1');
   const [hasPhone,   setHasPhone]   = useState(() => sessionStorage.getItem('sx_hasphone') !== '0');
   const [hasCCCD,    setHasCCCD]    = useState(() => sessionStorage.getItem('sx_hascccd') === '1');
+  const [hasAgreedShipperTerms, setHasAgreedShipperTerms] = useState(() => sessionStorage.getItem('sx_agreed_shipper') === '1');
+  const [hasAgreedWorkerTerms,  setHasAgreedWorkerTerms]  = useState(() => sessionStorage.getItem('sx_agreed_worker') === '1');
   const [buyCount,   setBuyCount]   = useState(() => parseInt(sessionStorage.getItem('sx_buycount') || '0'));
   const [showPopup,  setShowPopup]  = useState(false);
   const [pendingScr, setPendingScr] = useState('');
@@ -1370,14 +1372,18 @@ export default function App() {
       case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
       case 's-kyc':               return <KYCScreen              go={go} onComplete={verifyCCCDGate} backTo={sessionStorage.getItem('sx_kyc_return') || 's-home'} actionLabel={sessionStorage.getItem('sx_kyc_reason') || 'tiếp tục'} />;
       case 's-notif':            return <NotifScreen            go={go} />;
-      case 's-shipper-register': return <ShipperRegisterScreen  go={go} />;
+      case 's-shipper-register': return <ShipperRegisterScreen  go={go} hasCCCD={hasCCCD} hasAgreedTerms={hasAgreedShipperTerms} />;
       case 's-shipper-orders':  return <ShipperOrdersScreen  go={go} />;
       case 's-shipper-success':  return <ShipperSuccessScreen   go={go} />;
       case 's-rating':                  return <RatingScreen           go={go} />;
       case 's-terms':           return <TermsMenuScreen go={go} />;
       case 's-terms-buyer':   return <TermsScreen go={go} role="buyer" />;
-      case 's-terms-shipper': return <TermsScreen go={go} role="shipper" />;
-      case 's-terms-worker':  return <TermsScreen go={go} role="worker" />;
+      case 's-terms-shipper': return <TermsScreen go={go} role="shipper"
+                                   showAgree={sessionStorage.getItem('sx_terms_agree_mode') === 'shipper'}
+                                   onAgree={() => { setHasAgreedShipperTerms(true); sessionStorage.setItem('sx_agreed_shipper', '1'); sessionStorage.removeItem('sx_terms_agree_mode'); go('s-shipper-register'); }} />;
+      case 's-terms-worker':  return <TermsScreen go={go} role="worker"
+                                   showAgree={sessionStorage.getItem('sx_terms_agree_mode') === 'worker'}
+                                   onAgree={() => { setHasAgreedWorkerTerms(true); sessionStorage.setItem('sx_agreed_worker', '1'); sessionStorage.removeItem('sx_terms_agree_mode'); go('s-cv-register'); }} />;
       case 's-terms-business':return <TermsScreen go={go} role="business" />;
       case 's-terms-privacy': return <TermsScreen go={go} role="privacy" />;
       case 's-qr':                   return <QRScreen go={go} />;
@@ -1387,8 +1393,7 @@ export default function App() {
       case 's-service-order-worker': return <ServiceOrderScreen go={go} role="worker" />;
       case 's-service-order-hirer':  return <ServiceOrderScreen go={go} role="hirer" />;
       case 's-cv-success':       return <CvSuccessScreen    go={go} />;
-      case 's-cccd':             return <CccdScreen         go={go} />;
-      case 's-cv-register':      return <CvRegisterScreen   go={go} />;
+      case 's-cv-register':      return <CvRegisterScreen   go={go} hasCCCD={hasCCCD} hasAgreedTerms={hasAgreedWorkerTerms} />;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
   };

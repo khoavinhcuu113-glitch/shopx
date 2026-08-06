@@ -15,12 +15,10 @@ export function CvSuccessScreen({ go }) {
         <div style={{ background: C.pl, borderRadius: 12, padding: 14, marginBottom: 20, textAlign: 'left' }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: C.pd, marginBottom: 8 }}>Bước tiếp theo:</div>
           {[
-            '🪪 Xác minh Căn cước KYC → nhận badge KYC',
-            '🟣 Kết nối Pi Network → nhận badge Pi',
             '⭐ Upload chứng chỉ → nhận badge Chứng chỉ',
             '🎬 Sắp có: Quay clip giới thiệu kỹ năng',
           ].map((t, i) => (
-            <div key={i} style={{ fontSize: 12, color: i === 3 ? C.p : C.t, marginBottom: 6 }}>{t}</div>
+            <div key={i} style={{ fontSize: 12, color: i === 1 ? C.p : C.t, marginBottom: 6 }}>{t}</div>
           ))}
         </div>
         <Btn onClick={() => go('s-service')}>Về trang Dịch vụ & Việc làm</Btn>
@@ -31,35 +29,53 @@ export function CvSuccessScreen({ go }) {
   );
 }
 
-export function CccdScreen({ go }) {
-  return (
-    <div>
-      <Shdr title="Xác minh Căn cước KYC" onBack={() => go('s-cv-register')} />
-      <div style={{ padding: 12 }}>
-        <div style={{ background: '#fff3e0', border: '1px solid #ffe082', borderRadius: 10, padding: '10px 12px', fontSize: 12, color: '#e65100', marginBottom: 14, display: 'flex', gap: 8 }}>
-          🔒 <span>Thông tin Căn cước được mã hóa, chỉ dùng để xác minh danh tính. Không chia sẻ với bên thứ ba trừ yêu cầu pháp lý.</span>
-        </div>
-        <Fg label="Mặt trước Căn cước" req><Upbox icon="🪪" text="Chụp mặt trước rõ nét, đủ 4 góc" /></Fg>
-        <Fg label="Mặt sau Căn cước" req><Upbox icon="🪪" text="Chụp mặt sau rõ nét" /></Fg>
-        <Fg label="Ảnh chân dung cầm Căn cước" req><Upbox icon="🤳" text="Mặt người và Căn cước đều rõ trong cùng 1 ảnh" /></Fg>
-        <Infobox text="Admin xét duyệt trong 24 giờ. Sau khi duyệt bạn nhận badge 🪪 Căn cước KYC." />
-        <Btn onClick={() => go('s-cv-register')}>📤 Gửi xác minh Căn cước</Btn>
-        <div style={{ height: 80 }} />
-      </div>
-    </div>
-  );
+const STORAGE_KEY = 'sx_cv_form';
+function loadSaved() {
+  try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) { return {}; }
 }
 
-export default function CvRegisterScreen({ go }) {
-  const [nganh, setNganh]   = useState('');
-  const [ck1, setCk1]       = useState(false);
-  const [ck2, setCk2]       = useState(false);
-  const [progress, setProgress] = useState(12);
+export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
+  const [form, setForm] = useState(loadSaved);
+  const progress = 12 + (form.hoTen ? 2 : 0) + (form.nganh ? 5 : 0);
+
+  function upd(field, value) {
+    setForm(f => {
+      const next = { ...f, [field]: value };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+  function toggleMulti(field, label) {
+    setForm(f => {
+      const cur = f[field] || {};
+      const next = { ...f, [field]: { ...cur, [label]: !cur[label] } };
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
+  }
+
+  function goVerifyCCCD() {
+    sessionStorage.setItem('sx_kyc_return', 's-cv-register');
+    sessionStorage.setItem('sx_kyc_reason', 'đăng ký hồ sơ Thợ/Freelancer');
+    go('s-kyc');
+  }
+
+  function goReadTerms() {
+    sessionStorage.setItem('sx_terms_agree_mode', 'worker');
+    go('s-terms-worker');
+  }
 
   function submit() {
-    if (!ck1 || !ck2) { alert('Vui lòng tick xác nhận trước khi gửi hồ sơ.'); return; }
+    if (!hasCCCD) { alert('Vui lòng xác minh Căn cước trước khi gửi hồ sơ.'); return; }
+    if (!hasAgreedTerms) { alert('Vui lòng đọc và đồng ý Quy chế Thợ/Freelancer trước khi gửi hồ sơ.'); return; }
+    if (!form.ck1) { alert('Vui lòng tick xác nhận trước khi gửi hồ sơ.'); return; }
+    sessionStorage.removeItem(STORAGE_KEY);
     go('s-cv-success');
   }
+
+  const nganh = form.nganh || '';
+  const jobTypeOptions = ['Bán thời gian', 'Toàn thời gian', 'Theo yêu cầu', 'Làm cuối tuần'];
+  const paymentOptions = ['Tiền mặt', 'Chuyển khoản / VietQR'];
 
   return (
     <div>
@@ -68,7 +84,7 @@ export default function CvRegisterScreen({ go }) {
       {/* Progress bar */}
       <div style={{ padding: '8px 12px 4px', background: C.w, borderBottom: `1px solid #e8def8` }}>
         <div style={{ background: '#e0d4f7', borderRadius: 10, height: 6, marginBottom: 4 }}>
-          <div style={{ background: C.p, borderRadius: 10, height: 6, width: `${progress}%`, transition: 'width 0.3s' }} />
+          <div style={{ background: C.p, borderRadius: 10, height: 6, width: `${Math.min(progress, 100)}%`, transition: 'width 0.3s' }} />
         </div>
         <div style={{ fontSize: 10, color: C.m, textAlign: 'right' }}>Hoàn thiện hồ sơ để được hiển thị</div>
       </div>
@@ -86,29 +102,44 @@ export default function CvRegisterScreen({ go }) {
 
         {/* PHẦN 1 */}
         <Sechdr num="1" title="Thông tin cá nhân" />
-        <Fg label="Họ và tên đầy đủ" req><Fi placeholder="Đúng theo Căn cước công dân" onChange={() => setProgress(p => Math.min(p + 2, 100))} /></Fg>
-        <Fg label="Ngày tháng năm sinh" req><Fi type="date" /></Fg>
-        <Fg label="Số Căn cước công dân" req><Fi placeholder="VD: 079123456789" maxLength={12} /></Fg>
+        <Fg label="Họ và tên đầy đủ" req><Fi placeholder="Đúng theo Căn cước" value={form.hoTen || ''} onChange={e => upd('hoTen', e.target.value)} /></Fg>
+        <Fg label="Ngày tháng năm sinh" req><Fi type="date" value={form.ngaySinh || ''} onChange={e => upd('ngaySinh', e.target.value)} /></Fg>
+        <Fg label="Số Căn cước" req><Fi placeholder="VD: 079123456789" maxLength={12} value={form.soCanCuoc || ''} onChange={e => upd('soCanCuoc', e.target.value.replace(/\D/g, ''))} /></Fg>
         <Fg label="Giới tính">
-          <Fs><option>Nam</option><option>Nữ</option><option>Khác</option></Fs>
+          <Fs value={form.gioiTinh || 'Nam'} onChange={e => upd('gioiTinh', e.target.value)}>
+            <option>Nam</option><option>Nữ</option><option>Khác</option>
+          </Fs>
         </Fg>
-        <Fg label="Số điện thoại liên hệ" req><Fi placeholder="0901234567" type="tel" /></Fg>
-        <Fg label="Email liên hệ phụ"><Fi placeholder="VD: example@gmail.com" type="email" /></Fg>
+        <Fg label="Số điện thoại liên hệ" req><Fi placeholder="0901234567" type="tel" value={form.sdt || ''} onChange={e => upd('sdt', e.target.value)} /></Fg>
+        <Fg label="Email liên hệ phụ"><Fi placeholder="VD: example@gmail.com" type="email" value={form.email || ''} onChange={e => upd('email', e.target.value)} /></Fg>
         <Fg label="Nơi thường trú" req>
           <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
-            rows={2} placeholder="VD: 123 Nguyễn Văn A, P. Tân Phong, TP. Biên Hòa, Đồng Nai" />
+            rows={2} placeholder="VD: 123 Nguyễn Văn A, P. Tân Phong, TP. Biên Hòa, Đồng Nai"
+            value={form.thuongTru || ''} onChange={e => upd('thuongTru', e.target.value)} />
         </Fg>
         <Fg label="Nơi tạm trú (nếu khác thường trú)">
           <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
-            rows={2} placeholder="Để trống nếu giống nơi thường trú" />
+            rows={2} placeholder="Để trống nếu giống nơi thường trú"
+            value={form.tamTru || ''} onChange={e => upd('tamTru', e.target.value)} />
         </Fg>
-        <Fg label="Ảnh đại diện"><Upbox icon="📷" text="Chụp ảnh chân dung rõ mặt" /></Fg>
+        <Fg label="Ảnh đại diện (ảnh thật)">
+          <div onClick={() => upd('anhDaiDien', true)} style={{ cursor: 'pointer' }}>
+            {form.anhDaiDien ? (
+              <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
+                <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã chụp ảnh đại diện</p>
+              </div>
+            ) : (
+              <Upbox icon="📷" text="Chụp ảnh chân dung rõ mặt" />
+            )}
+          </div>
+        </Fg>
 
         {/* PHẦN 2 */}
         <Sechdr num="2" title="Nghề nghiệp & Kỹ năng" />
         <Fg label="Ngành nghề chính" req>
           <div style={{ position: 'relative' }}>
-            <Fs value={nganh} onChange={e => { setNganh(e.target.value); setProgress(p => Math.min(p + 5, 100)); }}>
+            <Fs value={nganh} onChange={e => upd('nganh', e.target.value)}>
               <option value="">-- Chọn ngành --</option>
               {NGANH_LIST.map(n => <option key={n.value} value={n.value}>{n.label}</option>)}
             </Fs>
@@ -116,17 +147,20 @@ export default function CvRegisterScreen({ go }) {
         </Fg>
         {nganh && (
           <Fg label="Nghề cụ thể" req>
-            <Fs>
+            <Fs value={form.ngheCuThe || ''} onChange={e => upd('ngheCuThe', e.target.value)}>
               {(NGHES[nganh] || []).map(n => <option key={n}>{n}</option>)}
             </Fs>
           </Fg>
         )}
         <Fg label="Mô tả kỹ năng" req>
           <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
-            rows={3} placeholder="Mô tả cụ thể bạn làm được gì, kinh nghiệm thực tế..." />
+            rows={3} placeholder="Mô tả cụ thể bạn làm được gì, kinh nghiệm thực tế..."
+            value={form.moTaKyNang || ''} onChange={e => upd('moTaKyNang', e.target.value)} />
         </Fg>
         <Fg label="Số năm kinh nghiệm" req>
-          <Fs><option>Dưới 1 năm</option><option>1-3 năm</option><option>3-5 năm</option><option>5-10 năm</option><option>Trên 10 năm</option></Fs>
+          <Fs value={form.soNamKN || ''} onChange={e => upd('soNamKN', e.target.value)}>
+            <option>Dưới 1 năm</option><option>1-3 năm</option><option>3-5 năm</option><option>5-10 năm</option><option>Trên 10 năm</option>
+          </Fs>
         </Fg>
         <Fg label="Video giới thiệu bản thân">
           <VidPlaceholder title="Quay clip 15-30 giây" desc="Giới thiệu kỹ năng và công trình thực tế — sắp ra mắt" />
@@ -135,8 +169,8 @@ export default function CvRegisterScreen({ go }) {
         {/* PHẦN 3 */}
         <Sechdr num="3" title="Thời gian & Khu vực" />
         <Fg label="Khu vực làm việc chính" req>
-          <Fs>
-            <option>-- Chọn khu vực --</option>
+          <Fs value={form.khuVuc || ''} onChange={e => upd('khuVuc', e.target.value)}>
+            <option value="">-- Chọn khu vực --</option>
             <option>Biên Hòa (TP. Biên Hòa cũ), Đồng Nai</option>
             <option>Trảng Bom (H. Trảng Bom cũ), Đồng Nai</option>
             <option>Long Khánh (TX. Long Khánh cũ), Đồng Nai</option>
@@ -146,44 +180,77 @@ export default function CvRegisterScreen({ go }) {
           </Fs>
         </Fg>
         <Fg label="Bán kính di chuyển">
-          <Fs><option>Trong vòng 10km</option><option>Trong vòng 20km</option><option>Trong vòng 50km</option><option>Toàn tỉnh</option></Fs>
+          <Fs value={form.banKinh || ''} onChange={e => upd('banKinh', e.target.value)}>
+            <option>Trong vòng 10km</option><option>Trong vòng 20km</option><option>Trong vòng 50km</option><option>Toàn tỉnh</option>
+          </Fs>
         </Fg>
         <Fg label="Loại công việc nhận">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {['Bán thời gian','Toàn thời gian','Theo yêu cầu','Làm cuối tuần'].map((l, i) => (
-              <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-                <input type="checkbox" defaultChecked={[0,2,3].includes(i)} style={{ accentColor: C.p }} /> {l}
-              </label>
-            ))}
+            {jobTypeOptions.map((l, i) => {
+              const checked = form.loaiCongViec ? !!form.loaiCongViec[l] : [0, 2, 3].includes(i);
+              return (
+                <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                  <input type="checkbox" checked={checked} onChange={() => toggleMulti('loaiCongViec', l)} style={{ accentColor: C.p }} /> {l}
+                </label>
+              );
+            })}
           </div>
         </Fg>
 
         {/* PHẦN 4 */}
         <Sechdr num="4" title="Mức giá công" />
-        <Fg label="Giá theo giờ"><Fi placeholder="VD: 80.000" type="number" /></Fg>
-        <Fg label="Giá theo ngày"><Fi placeholder="VD: 500.000" type="number" /></Fg>
+        <Fg label="Giá theo giờ"><Fi placeholder="VD: 80.000" type="number" value={form.giaGio || ''} onChange={e => upd('giaGio', e.target.value)} /></Fg>
+        <Fg label="Giá theo ngày"><Fi placeholder="VD: 500.000" type="number" value={form.giaNgay || ''} onChange={e => upd('giaNgay', e.target.value)} /></Fg>
         <Fg label="Ghi chú về giá">
           <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
-            rows={2} placeholder="VD: Giá chưa bao gồm vật tư, phụ phí đi xa..." />
+            rows={2} placeholder="VD: Giá chưa bao gồm vật tư, phụ phí đi xa..."
+            value={form.ghiChuGia || ''} onChange={e => upd('ghiChuGia', e.target.value)} />
         </Fg>
         <Fg label="Nhận thanh toán">
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {['Tiền mặt','Chuyển khoản / VietQR','Pi coin (qua ShopX Pay)'].map((l, i) => (
-              <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-                <input type="checkbox" defaultChecked={i < 2} style={{ accentColor: C.p }} /> {l}
-              </label>
-            ))}
+            {paymentOptions.map((l, i) => {
+              const checked = form.nhanThanhToan ? !!form.nhanThanhToan[l] : true;
+              return (
+                <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                  <input type="checkbox" checked={checked} onChange={() => toggleMulti('nhanThanhToan', l)} style={{ accentColor: C.p }} /> {l}
+                </label>
+              );
+            })}
           </div>
         </Fg>
 
         {/* PHẦN 5 */}
         <Sechdr num="5" title="Học vấn & Chứng chỉ" />
         <Fg label="Trình độ học vấn">
-          <Fs><option>Trung học cơ sở</option><option>Trung học phổ thông</option><option>Trung cấp nghề</option><option>Cao đẳng</option><option>Đại học</option></Fs>
+          <Fs value={form.hocVan || ''} onChange={e => upd('hocVan', e.target.value)}>
+            <option>Trung học cơ sở</option><option>Trung học phổ thông</option><option>Trung cấp nghề</option><option>Cao đẳng</option><option>Đại học</option>
+          </Fs>
         </Fg>
-        <Fg label="Chứng chỉ nghề"><Fi placeholder="VD: Chứng chỉ kỹ thuật viên điện lạnh hạng 3" /></Fg>
-        <Fg label="Upload ảnh chứng chỉ"><Upbox icon="📜" text="Chụp ảnh chứng chỉ rõ nét → được badge ⭐ Chứng chỉ nghề" /></Fg>
-        <Fg label="Ảnh công trình đã làm"><Upbox icon="🖼️" text="Upload ảnh thực tế • Tối đa 8 ảnh" /></Fg>
+        <Fg label="Chứng chỉ nghề"><Fi placeholder="VD: Chứng chỉ kỹ thuật viên điện lạnh hạng 3" value={form.chungChi || ''} onChange={e => upd('chungChi', e.target.value)} /></Fg>
+        <Fg label="Upload ảnh chứng chỉ">
+          <div onClick={() => upd('anhChungChi', true)} style={{ cursor: 'pointer' }}>
+            {form.anhChungChi ? (
+              <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
+                <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã upload ảnh chứng chỉ</p>
+              </div>
+            ) : (
+              <Upbox icon="📜" text="Chụp ảnh chứng chỉ rõ nét → được badge ⭐ Chứng chỉ nghề" />
+            )}
+          </div>
+        </Fg>
+        <Fg label="Ảnh công trình đã làm">
+          <div onClick={() => upd('anhCongTrinh', true)} style={{ cursor: 'pointer' }}>
+            {form.anhCongTrinh ? (
+              <div style={{ border: '1.5px solid #2e7d32', borderRadius: 12, padding: 14, textAlign: 'center', background: '#e8f5e9' }}>
+                <div style={{ fontSize: 22, marginBottom: 4 }}>✅</div>
+                <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Đã upload ảnh công trình</p>
+              </div>
+            ) : (
+              <Upbox icon="🖼️" text="Upload ảnh thực tế • Tối đa 8 ảnh" />
+            )}
+          </div>
+        </Fg>
 
         {/* PHẦN 6 */}
         <Sechdr num="6" title="Lịch sử & Uy tín" />
@@ -195,15 +262,13 @@ export default function CvRegisterScreen({ go }) {
         </div>
 
         {/* PHẦN 7 */}
-        <Sechdr num="7" title="Xác minh danh tính" />
-        <p style={{ fontSize: 12, color: C.m, marginBottom: 12 }}>Xác minh càng nhiều mức → Badge càng cao → Khách tin tưởng hơn</p>
+        <Sechdr num="7" title="Xác minh danh tính (bắt buộc)" />
+        <p style={{ fontSize: 12, color: C.m, marginBottom: 12 }}>Khác với tài khoản mua/bán, hồ sơ Thợ bắt buộc xác minh đầy đủ ngay từ đầu để đảm bảo minh bạch chất lượng dịch vụ.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {[
-            { done: true,  icon: '✅', lbl: 'Mức 1 — Số điện thoại',         desc: 'Đã xác minh qua OTP khi đăng ký',            btn: 'Đã xong',         btnBg: '#e8f5e9', btnColor: '#2e7d32', action: null },
-            { done: false, icon: '🪪', lbl: 'Mức 2 — Căn cước KYC',          desc: 'Chụp 2 mặt + ảnh chân dung cầm Căn cước',    btn: 'Xác minh',        btnBg: C.p,       btnColor: '#fff',    action: () => go('s-cccd') },
-            { done: false, icon: '⭐', lbl: 'Mức 3 — Chứng chỉ nghề',        desc: 'Upload chứng chỉ → Admin xác minh 24h',      btn: 'Upload ở Phần 5', btnBg: '#f59e0b', btnColor: '#fff',    action: null },
-            { done: false, icon: '🟣', lbl: 'Mức 4 — Pi Network đã xác minh', desc: 'Kết nối tài khoản Pi Network đã KYC',        btn: 'Kết nối Pi',      btnBg: C.p,       btnColor: '#fff',    action: null },
-            { done: false, icon: '🟣', lbl: 'Mức 5 — Thanh toán Pi Network',  desc: 'Cho phép nhận thanh toán bằng Pi coin',      btn: 'Sắp có',          btnBg: '#ccc',    btnColor: '#666',    action: null },
+            { done: true,     icon: '✅', lbl: 'Mức 1 — Số điện thoại', desc: 'Đã xác minh qua OTP khi đăng ký',         btn: 'Đã xong',         btnBg: '#e8f5e9', btnColor: '#2e7d32', action: null },
+            { done: hasCCCD,  icon: '🪪', lbl: 'Mức 2 — Căn cước',      desc: 'Chụp 2 mặt Căn cước — bắt buộc để nhận việc', btn: hasCCCD ? 'Đã xong' : 'Xác minh', btnBg: hasCCCD ? '#e8f5e9' : C.p, btnColor: hasCCCD ? '#2e7d32' : '#fff', action: hasCCCD ? null : goVerifyCCCD },
+            { done: false,    icon: '⭐', lbl: 'Mức 3 — Chứng chỉ nghề', desc: 'Upload chứng chỉ → Admin xác minh 24h (tùy chọn)', btn: 'Upload ở Phần 5', btnBg: '#f59e0b', btnColor: '#fff', action: null },
           ].map((v, i) => (
             <div key={i} style={{ background: v.done ? '#f1f8e9' : C.w, border: `1.5px solid ${v.done ? '#4caf50' : C.b}`, borderRadius: 10, padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 32, height: 32, borderRadius: '50%', background: v.done ? '#e8f5e9' : C.pl, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{v.icon}</div>
@@ -219,6 +284,21 @@ export default function CvRegisterScreen({ go }) {
           ))}
         </div>
 
+        {/* PHẦN 7b — Quy chế chính thức */}
+        <div style={{ marginTop: 16 }} />
+        <Sechdr num="7b" title="Quy chế Thợ / Freelancer" />
+        <div style={{ background: hasAgreedTerms ? '#f1f8e9' : C.pl, border: `1.5px solid ${hasAgreedTerms ? '#4caf50' : C.b}`, borderRadius: 12, padding: 14, marginBottom: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 22 }}>{hasAgreedTerms ? '✅' : '📋'}</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>{hasAgreedTerms ? 'Đã đọc và đồng ý Quy chế Thợ/Freelancer' : 'Cần đọc và đồng ý Quy chế Thợ/Freelancer'}</div>
+            <div style={{ fontSize: 10, color: C.m, marginTop: 1 }}>Quy chế chính thức — Điều khoản đầy đủ, giống nhau cho mọi Thợ/Freelancer</div>
+          </div>
+          <button onClick={goReadTerms}
+            style={{ fontSize: 11, padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', fontWeight: 600, background: hasAgreedTerms ? '#e8f5e9' : C.p, color: hasAgreedTerms ? '#2e7d32' : '#fff' }}>
+            {hasAgreedTerms ? 'Xem lại' : 'Đọc & Đồng ý'}
+          </button>
+        </div>
+
         {/* PHẦN 8 */}
         <div style={{ marginTop: 16 }} />
         <Sechdr num="8" title="Thống kê & Kết nối Dự án số 3" />
@@ -228,7 +308,7 @@ export default function CvRegisterScreen({ go }) {
           <div style={{ color: C.p, fontSize: 11, marginTop: 6 }}>🔗 CV có thể hiển thị đồng thời trên Dự án số 3</div>
           <div style={{ marginTop: 10 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-              <input type="checkbox" style={{ accentColor: C.p }} /> Đồng ý hiển thị hồ sơ trên Dự án số 3
+              <input type="checkbox" checked={!!form.duAnSo3} onChange={e => upd('duAnSo3', e.target.checked)} style={{ accentColor: C.p }} /> Đồng ý hiển thị hồ sơ trên Dự án số 3
             </label>
           </div>
         </div>
@@ -236,8 +316,7 @@ export default function CvRegisterScreen({ go }) {
         {/* Xác nhận */}
         <div style={{ background: C.pl, borderRadius: 12, padding: 12, marginBottom: 12 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: C.pd, marginBottom: 8 }}>Trước khi đăng ký, bạn xác nhận:</div>
-          <Ckrow label="Thông tin kỹ năng là trung thực" checked={ck1} onChange={e => setCk1(e.target.checked)} />
-          <Ckrow label="Tôi đồng ý với cam kết Thợ/Freelancer của ShopX" checked={ck2} onChange={e => setCk2(e.target.checked)} />
+          <Ckrow label="Thông tin kỹ năng là trung thực" checked={!!form.ck1} onChange={e => upd('ck1', e.target.checked)} />
         </div>
 
         <Btn onClick={submit}>➤ Đăng ký hồ sơ thợ</Btn>
