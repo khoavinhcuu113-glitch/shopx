@@ -205,6 +205,35 @@ const TERMS = {
       'Tôi đã đọc và đồng ý toàn bộ Quy chế Doanh nghiệp ShopX v1.0',
     ],
   },
+  privacy: {
+    title: 'Quyền dữ liệu cá nhân',
+    icon: '🔒',
+    color: '#5e35b1',
+    version: 'v1.0',
+    sections: [
+      {
+        title: '1. Dữ liệu ShopX thu thập',
+        content: 'Họ tên, ngày sinh, số điện thoại, số Căn cước, ảnh Căn cước 2 mặt, địa chỉ, lịch sử giao dịch.\n\nMục đích duy nhất: xác minh danh tính, đảm bảo trách nhiệm giao dịch, hỗ trợ giải quyết tranh chấp khi cần.\n\nCăn cứ: Nghị định 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân.',
+      },
+      {
+        title: '2. Ai được xem dữ liệu của bạn',
+        content: 'Chỉ chính bạn (chủ tài khoản) và Admin ShopX (khi xử lý tranh chấp/xác minh) được xem dữ liệu đầy đủ.\n\nNgười khác trên ShopX chỉ thấy tên hiển thị và mã tài khoản (VD: SX-00001), không thấy số Căn cước, số điện thoại đầy đủ.',
+      },
+      {
+        title: '3. Quyền của bạn',
+        content: '✅ Quyền được thông báo rõ mục đích trước khi cung cấp dữ liệu\n✅ Quyền đồng ý hoặc từ chối cung cấp\n✅ Quyền rút lại sự đồng ý bất cứ lúc nào\n✅ Quyền yêu cầu xem, chỉnh sửa dữ liệu của mình\n✅ Quyền yêu cầu xóa dữ liệu (trừ dữ liệu pháp luật yêu cầu lưu trữ, VD: bằng chứng giao dịch đang tranh chấp)\n✅ Quyền khiếu nại nếu phát hiện dữ liệu bị sử dụng sai mục đích',
+      },
+      {
+        title: '4. Hậu quả nếu bạn từ chối cung cấp',
+        content: 'Bạn có thể xem, tìm kiếm sản phẩm/dịch vụ hoàn toàn tự do mà không cần cung cấp Căn cước.\n\nTuy nhiên, nếu từ chối xác minh danh tính, bạn sẽ không thể: đăng tin giá trị từ 500.000đ, tiếp tục mua hàng sau 2 đơn miễn phí, hoặc nhận các quyền lợi mở rộng (badge uy tín, ưu tiên hiển thị, SX Points).\n\nĐây là điều kiện cần thiết để đảm bảo trách nhiệm giữa các bên giao dịch, tương tự cách ngân hàng yêu cầu CCCD/Căn cước để mở tài khoản.',
+      },
+      {
+        title: '5. Cách thực hiện quyền của bạn',
+        content: 'Để rút lại sự đồng ý, yêu cầu xóa hoặc chỉnh sửa dữ liệu cá nhân, liên hệ:\n\n📧 dpo@shopx.vn\n\nShopX phản hồi trong vòng 72 giờ. Lưu ý: rút lại đồng ý có thể khiến bạn không tiếp tục sử dụng được một số tính năng cần xác minh danh tính.',
+      },
+    ],
+    pledges: [],
+  },
 };
 
 // Màn hình hiển thị quy chế
@@ -222,7 +251,7 @@ export default function TermsScreen({ go, role = 'buyer', onAgree, showAgree = f
 
   return (
     <div style={{ position: 'absolute', inset: 0, overflowY: 'auto', background: C.g }}>
-      <Shdr title={t.title} onBack={() => go('s-register')} />
+      <Shdr title={t.title} onBack={() => go(role === 'privacy' ? 's-account' : 's-register')} />
 
       {/* Header */}
       <div style={{ background: t.color, padding: '12px 16px' }}>
@@ -291,9 +320,9 @@ export default function TermsScreen({ go, role = 'buyer', onAgree, showAgree = f
         {/* Nút xem và quay lại (khi không cần agree) */}
         {!showAgree && (
           <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <button onClick={() => go('s-register')}
+            <button onClick={() => go(role === 'privacy' ? 's-account' : 's-register')}
               style={{ background: 'none', border: 'none', color: C.p, fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>
-              ← Quay lại đăng ký
+              ← {role === 'privacy' ? 'Quay lại Tài khoản' : 'Quay lại đăng ký'}
             </button>
           </div>
         )}
@@ -311,6 +340,7 @@ export function TermsMenuScreen({ go }) {
     { role: 'shipper',  icon: '🚚', label: 'Shipper Cộng đồng',     color: '#2e7d32' },
     { role: 'worker',   icon: '🔨', label: 'Thợ / Freelancer',       color: '#e65100' },
     { role: 'business', icon: '🏢', label: 'Doanh nghiệp',           color: '#1565c0' },
+    { role: 'privacy',  icon: '🔒', label: 'Quyền dữ liệu cá nhân',  color: '#5e35b1' },
   ];
   return (
     <div>

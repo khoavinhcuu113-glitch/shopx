@@ -675,7 +675,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
             style={{ background: '#e8f5e9', border: '1px solid #c8e6c9', borderRadius: 12, padding: '10px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
             <span style={{ fontSize: 18 }}>🎁</span>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#2e7d32' }}>Xác minh CCCD ngay để nhận quyền lợi</div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#2e7d32' }}>Xác minh danh tính ngay để nhận quyền lợi</div>
               <div style={{ fontSize: 10, color: '#388e3c' }}>+50 SX Points · Badge uy tín · Ưu tiên hiển thị · Đăng tin không giới hạn</div>
             </div>
             <span style={{ fontSize: 16, color: '#2e7d32' }}>›</span>
@@ -939,7 +939,7 @@ function KYCScreen({ go, onComplete, backTo, actionLabel }) {
   const canConfirm = frontDone && backDone && cccd.replace(/\D/g, '').length === 12;
 
   function handleConfirm() {
-    if (!canConfirm) { alert('Vui lòng chụp đủ 2 mặt CCCD và nhập đúng 12 số CCCD.'); return; }
+    if (!canConfirm) { alert('Vui lòng chụp đủ 2 mặt Căn cước và nhập đúng 12 số Căn cước.'); return; }
     setConfirmed(true);
   }
 
@@ -950,24 +950,27 @@ function KYCScreen({ go, onComplete, backTo, actionLabel }) {
 
   return (
     <div>
-      <Shdr title="Xác minh CCCD" onBack={() => go(backTo || 's-home')} />
+      <Shdr title="Xác minh danh tính" onBack={() => go(backTo || 's-home')} />
       <div style={{ padding: 12 }}>
         <div style={{ background: '#e8f5e9', border: '1px solid #c8e6c9', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#2e7d32', marginBottom: 6 }}>
-            🎁 Xác minh CCCD để mở khóa{actionLabel ? ` — ${actionLabel}` : ''}:
+            🎁 Xác minh danh tính để mở khóa{actionLabel ? ` — ${actionLabel}` : ''}:
           </div>
           <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.8 }}>
             🏅 Badge "Người bán uy tín" trên gian hàng<br/>
             📈 Ưu tiên hiển thị khi khách tìm kiếm<br/>
             🎯 +50 SX Points ngay khi xác minh xong<br/>
-            🛡️ Được bảo vệ bằng chứng nếu có tranh chấp
+            🛡️ Quyền lợi được bảo vệ
           </div>
         </div>
-        <Infobox text="Dữ liệu CCCD được ẩn, chỉ bạn và Admin ShopX xem được đầy đủ." />
+        <Infobox text="Dữ liệu Căn cước được ẩn, đảm bảo an toàn cho dữ liệu cá nhân của bạn." />
+        <div onClick={() => go('s-terms-privacy')} style={{ fontSize: 11, color: C.pd, textDecoration: 'underline', cursor: 'pointer', marginBottom: 10 }}>
+          Xem quyền dữ liệu cá nhân của bạn →
+        </div>
 
         {!confirmed && (
           <>
-            <Sechdr num="1" title="Chụp ảnh CCCD" />
+            <Sechdr num="1" title="Chụp ảnh Căn cước (tự nguyện)" />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 14 }}>
               <div onClick={() => setFrontDone(true)} style={{ cursor: 'pointer' }}>
                 {frontDone ? (
@@ -976,7 +979,7 @@ function KYCScreen({ go, onComplete, backTo, actionLabel }) {
                     <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Mặt trước đã chụp</p>
                   </div>
                 ) : (
-                  <Upbox icon="🪪" text="Chụp mặt trước CCCD" />
+                  <Upbox icon="🪪" text="Chụp mặt trước Căn cước" />
                 )}
               </div>
               <div onClick={() => setBackDone(true)} style={{ cursor: 'pointer' }}>
@@ -986,14 +989,14 @@ function KYCScreen({ go, onComplete, backTo, actionLabel }) {
                     <p style={{ fontSize: 11, color: '#2e7d32', fontWeight: 600 }}>Mặt sau đã chụp</p>
                   </div>
                 ) : (
-                  <Upbox icon="🪪" text="Chụp mặt sau CCCD" />
+                  <Upbox icon="🪪" text="Chụp mặt sau Căn cước" />
                 )}
               </div>
             </div>
 
             {frontDone && (
               <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 10, marginBottom: 14 }}>
-                <div style={{ fontSize: 11, fontWeight: 600, color: '#1565c0', marginBottom: 6 }}>📄 Đã đọc được từ CCCD (OCR tự động):</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: '#1565c0', marginBottom: 6 }}>📄 Đã đọc được từ Căn cước (OCR tự động):</div>
                 <div style={{ fontSize: 11, color: '#1976d2', lineHeight: 1.6 }}>
                   Họ tên: <b>{OCR_MOCK.name}</b><br/>
                   Ngày sinh: <b>{OCR_MOCK.dob}</b><br/>
@@ -1005,8 +1008,8 @@ function KYCScreen({ go, onComplete, backTo, actionLabel }) {
               </div>
             )}
 
-            <Sechdr num="2" title="Nhập số CCCD" />
-            <Fg label="Số CCCD (12 số)" req>
+            <Sechdr num="2" title="Nhập số Căn cước" />
+            <Fg label="Số Căn cước (12 số)" req>
               <Fi placeholder="VD: 079123456789" maxLength={12} inputMode="numeric"
                 value={cccd} onChange={e => setCccd(e.target.value.replace(/\D/g, ''))} />
             </Fg>
@@ -1021,9 +1024,9 @@ function KYCScreen({ go, onComplete, backTo, actionLabel }) {
         {confirmed && !processing && (
           <>
             <Sechdr num="3" title="Xem lại thông tin trước khi hoàn tất" />
-            <div style={{ fontSize: 11, color: C.m, marginBottom: 8 }}>Theo CCCD xác minh: <b style={{ color: C.t }}>{OCR_MOCK.name}</b> · {OCR_MOCK.dob}</div>
+            <div style={{ fontSize: 11, color: C.m, marginBottom: 8 }}>Theo Căn cước xác minh: <b style={{ color: C.t }}>{OCR_MOCK.name}</b> · {OCR_MOCK.dob}</div>
             <MaskedField label="Số điện thoại" value={phone} keepStart={3} keepEnd={2} />
-            <MaskedField label="Số CCCD" value={cccd} keepStart={3} keepEnd={3} />
+            <MaskedField label="Số Căn cước" value={cccd} keepStart={3} keepEnd={3} />
             <MaskedField label="Địa chỉ thường trú" value={OCR_MOCK.address} keepStart={0} keepEnd={0} />
             <Infobox icon="🔒" text="Chỉ bạn và Admin ShopX xem được thông tin đầy đủ. Người khác chỉ thấy tên/mã SX." bg="#fff3e0" color="#e65100" />
             <Btn onClick={handleFinish} style={{ marginTop: 4 }}>✅ Xác nhận & Hoàn tất đăng ký</Btn>
@@ -1158,7 +1161,7 @@ function RegisterScreen({ go }) {
 
         {step === 'form' && !existing && (
           <>
-            <Fg label="Họ và tên (tự khai, sẽ đối chiếu khi xác minh CCCD)" req><Fi placeholder="Nhập họ và tên" /></Fg>
+            <Fg label="Họ và tên (tự khai, sẽ đối chiếu khi xác minh Căn cước)" req><Fi placeholder="Nhập họ và tên" /></Fg>
             <Fg label="Ngày sinh" req><Fi placeholder="dd/mm/yyyy" type="date" /></Fg>
             <Fg label="Mật khẩu" req><Fi placeholder="Tối thiểu 8 ký tự" type="password" /></Fg>
             <Fg label="Hoạt động bạn quan tâm" req>
@@ -1172,7 +1175,7 @@ function RegisterScreen({ go }) {
             </Fg>
 
             <div style={{ background: '#e8f5e9', borderRadius: 8, padding: '8px 10px', fontSize: 11, color: '#2e7d32', marginBottom: 12 }}>
-              ℹ️ Tài khoản mặc định có thể đăng tin mua/bán ngay. Muốn làm <b>Thợ</b> (nộp CV) hoặc <b>Shipper cộng đồng</b>, đăng ký riêng trong mục Dịch vụ &amp; Việc làm bất cứ lúc nào. Sau khi xác minh CCCD (KYC), có thể nâng cấp lên tài khoản Doanh nghiệp trong mục Tài khoản.
+              ℹ️ Tài khoản mặc định có thể đăng tin mua/bán ngay. Muốn làm <b>Thợ</b> (nộp CV) hoặc <b>Shipper cộng đồng</b>, đăng ký riêng trong mục Dịch vụ &amp; Việc làm bất cứ lúc nào. Sau khi xác minh danh tính (Căn cước), có thể nâng cấp lên tài khoản Doanh nghiệp trong mục Tài khoản.
             </div>
 
             <Btn onClick={() => go('s-pledge')}>Tiếp theo: Đọc cam kết ➡️</Btn>
@@ -1198,7 +1201,7 @@ function PledgeScreen({ go, doLogin }) {
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.pd, marginBottom: 8 }}>CAM KẾT SỬ DỤNG DỊCH VỤ SHOPX</h3>
           <p><strong>Điều 1:</strong> Mô tả trung thực, ảnh thật, giá thật.</p>
           <p><strong>Điều 2:</strong> Không đăng tin giả, không bom hàng, chịu trách nhiệm giao dịch trực tiếp.</p>
-          <p><strong>Điều 3:</strong> Chấp nhận ShopX lưu timestamp + IP + SĐT + CCCD, xuất PDF bằng chứng khi tranh chấp.</p>
+          <p><strong>Điều 3:</strong> Chấp nhận ShopX lưu timestamp + IP + SĐT + Căn cước, xuất PDF bằng chứng khi tranh chấp.</p>
           <p><strong>Điều 4:</strong> Vi phạm cam kết có thể bị khóa tài khoản vĩnh viễn.</p>
         </div>
         <Ckrow label="Tôi đã đọc hết và đồng ý với toàn bộ cam kết trên" checked={ck1} onChange={e => setCk1(e.target.checked)} />
@@ -1322,6 +1325,7 @@ export default function App() {
       case 's-terms-shipper': return <TermsScreen go={go} role="shipper" />;
       case 's-terms-worker':  return <TermsScreen go={go} role="worker" />;
       case 's-terms-business':return <TermsScreen go={go} role="business" />;
+      case 's-terms-privacy': return <TermsScreen go={go} role="privacy" />;
       case 's-qr':                   return <QRScreen go={go} />;
       case 's-my-store':             return <StoreScreen go={go} chkLogin={chkLogin} isOwner={true} hasCCCD={hasCCCD} />;
       case 's-store-personal':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="personal" />;
