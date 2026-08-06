@@ -92,21 +92,25 @@ function ProductScreen({ go, chkLogin, type }) {
             {!reportSent ? (
               <>
                 <div style={{ fontSize: 14, fontWeight: 700, color: C.t, marginBottom: 4 }}>🚩 Báo cáo tin đăng</div>
-                <div style={{ fontSize: 11, color: C.m, marginBottom: 12 }}>Cho ShopX biết vấn đề với tin đăng này. Admin sẽ xem xét trong 24h.</div>
+                <div style={{ fontSize: 11, color: C.m, marginBottom: 12 }}>Cho ShopX biết vấn đề với tin đăng này. Thời gian xem xét: Hàng giả/Lừa đảo 3-7 ngày làm việc; Nội dung vi phạm xử lý nhanh hơn.</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 12 }}>
-                  {['Hàng giả / hàng nhái', 'Nghi ngờ lừa đảo', 'Thông tin/ảnh không đúng thực tế', 'Nội dung không phù hợp', 'Khác'].map(r => (
+                  {['Hàng giả, hàng nhái', 'Lừa đảo / Không giao hàng', 'Nội dung vi phạm quy định / Lý do khác'].map(r => (
                     <label key={r} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: C.t, cursor: 'pointer', padding: '8px 10px', borderRadius: 8, background: reportReason === r ? C.pl : 'transparent', border: `1px solid ${reportReason === r ? C.b : '#eee'}` }}>
                       <input type="radio" name="reportReason" checked={reportReason === r} onChange={() => setReportReason(r)} style={{ accentColor: C.p }} />
                       {r}
                     </label>
                   ))}
                 </div>
-                <Fg label="Mô tả thêm (không bắt buộc)">
+                <Fg label={`Mô tả thêm ${reportReason === 'Nội dung vi phạm quy định / Lý do khác' ? '(bắt buộc)' : '(không bắt buộc)'}`} req={reportReason === 'Nội dung vi phạm quy định / Lý do khác'}>
                   <textarea value={reportNote} onChange={e => setReportNote(e.target.value)}
                     style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
                     rows={3} placeholder="Chi tiết vấn đề bạn gặp phải..." />
                 </Fg>
-                <Btn onClick={() => { if (!reportReason) { alert('Vui lòng chọn lý do báo cáo.'); return; } setReportSent(true); }} style={{ marginTop: 4 }}>
+                <Btn onClick={() => {
+                  if (!reportReason) { alert('Vui lòng chọn lý do báo cáo.'); return; }
+                  if (reportReason === 'Nội dung vi phạm quy định / Lý do khác' && !reportNote.trim()) { alert('Vui lòng mô tả cụ thể để Admin xác định đúng vấn đề.'); return; }
+                  setReportSent(true);
+                }} style={{ marginTop: 4 }}>
                   Gửi báo cáo
                 </Btn>
                 <Btn2 onClick={() => setShowReport(false)}>Hủy</Btn2>
