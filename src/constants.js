@@ -78,7 +78,7 @@ export const NGHES = {
   dep:  ['Cắt tóc nam tại nhà','Cắt tóc nữ tại nhà','Nail - làm móng','Trang điểm sự kiện','Massage thư giãn','Chăm sóc da tại nhà'],
   gd:   ['Gia sư Toán - Lý - Hóa','Gia sư Văn - Sử - Địa','Dạy tiếng Anh','Dạy tiếng Trung - Nhật','Dạy đàn - nhạc cụ','Dạy vẽ - mỹ thuật','Dạy kỹ năng sống'],
   cn:   ['Cài đặt phần mềm','Lắp đặt camera','Thiết kế đồ họa','Chụp ảnh sản phẩm','Kế toán theo giờ','Đánh máy - soạn thảo'],
-  dam:  ['Chăm sóc cá cảnh - hồ thủy sinh','Chăm sóc chim cảnh','Trồng & chăm sóc cây cảnh','Tạo dáng bon sai','Chăm sóc thú cưng','Nấu ăn - làm bánh theo đặt','Thêu - móc len','Quay video - dựng phim ngắn'],
+  dam:  ['Chăm sóc cá cảnh - hồ thủy sinh','Chăm sóc chim cảnh','Trồng & chăm sóc cây cảnh','Tạo dáng bon sai','Chăm sóc thú cưng','Nấu ăn - làm bánh theo đặt','Thêu - móc len','Quay video - dựng phim ngắn','KOL/KOC quảng bá sản phẩm'],
 
   // DANH MỤC MỚI — Dịch vụ nội khu & Gia đình
   noikhu: [

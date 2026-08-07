@@ -74,6 +74,8 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
   }
 
   const nganh = form.nganh || '';
+  const isKOL = form.ngheCuThe === 'KOL/KOC quảng bá sản phẩm';
+  const kolPlatforms = ['🎵 TikTok', '📘 Facebook', '📷 Instagram', '▶️ YouTube', '🔴 Livestream đa nền tảng'];
   const jobTypeOptions = ['Bán thời gian', 'Toàn thời gian', 'Theo yêu cầu', 'Làm cuối tuần'];
   const paymentOptions = ['Tiền mặt', 'Chuyển khoản / VietQR'];
 
@@ -197,10 +199,59 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
           </div>
         </Fg>
 
+        {/* PHẦN 3b — Riêng cho KOL/KOC */}
+        {isKOL && (
+          <>
+            <Sechdr num="3b" title="Thông tin KOL/KOC" />
+            <Fg label="Nền tảng hoạt động" req>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {kolPlatforms.map((l, i) => {
+                  const checked = form.kolPlatform ? !!form.kolPlatform[l] : false;
+                  return (
+                    <label key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
+                      <input type="checkbox" checked={checked} onChange={() => toggleMulti('kolPlatform', l)} style={{ accentColor: C.p }} /> {l}
+                    </label>
+                  );
+                })}
+              </div>
+            </Fg>
+            <Fg label="Số người theo dõi / lượt xem trung bình" req>
+              <Fi placeholder="VD: 15.000 người theo dõi, 3.000 lượt xem/video" value={form.kolFollowers || ''} onChange={e => upd('kolFollowers', e.target.value)} />
+            </Fg>
+            <Fg label="Lĩnh vực nội dung" req>
+              <Fs value={form.kolLinhVuc || ''} onChange={e => upd('kolLinhVuc', e.target.value)}>
+                <option value="">-- Chọn lĩnh vực --</option>
+                <option>Làm đẹp - Thời trang</option>
+                <option>Đồ ăn - Ẩm thực</option>
+                <option>Công nghệ - Điện tử</option>
+                <option>Gia đình - Nội trợ</option>
+                <option>Xe cộ</option>
+                <option>Đồ gia dụng - Nội thất</option>
+                <option>Đa lĩnh vực</option>
+              </Fs>
+            </Fg>
+            <Fg label="Link Portfolio (2-3 video/bài đăng tiêu biểu)">
+              <Fi placeholder="Link video/bài đăng 1" value={form.kolLink1 || ''} onChange={e => upd('kolLink1', e.target.value)} style={{ marginBottom: 8 }} />
+              <Fi placeholder="Link video/bài đăng 2" value={form.kolLink2 || ''} onChange={e => upd('kolLink2', e.target.value)} style={{ marginBottom: 8 }} />
+              <Fi placeholder="Link video/bài đăng 3 (không bắt buộc)" value={form.kolLink3 || ''} onChange={e => upd('kolLink3', e.target.value)} />
+            </Fg>
+          </>
+        )}
+
         {/* PHẦN 4 */}
         <Sechdr num="4" title="Mức giá công" />
-        <Fg label="Giá theo giờ"><Fi placeholder="VD: 80.000" type="number" value={form.giaGio || ''} onChange={e => upd('giaGio', e.target.value)} /></Fg>
-        <Fg label="Giá theo ngày"><Fi placeholder="VD: 500.000" type="number" value={form.giaNgay || ''} onChange={e => upd('giaNgay', e.target.value)} /></Fg>
+        {isKOL ? (
+          <>
+            <Fg label="Giá theo bài đăng"><Fi placeholder="VD: 500.000" type="number" value={form.giaBaiDang || ''} onChange={e => upd('giaBaiDang', e.target.value)} /></Fg>
+            <Fg label="Giá theo video"><Fi placeholder="VD: 1.500.000" type="number" value={form.giaVideo || ''} onChange={e => upd('giaVideo', e.target.value)} /></Fg>
+            <Fg label="Giá theo buổi live"><Fi placeholder="VD: 2.000.000" type="number" value={form.giaLive || ''} onChange={e => upd('giaLive', e.target.value)} /></Fg>
+          </>
+        ) : (
+          <>
+            <Fg label="Giá theo giờ"><Fi placeholder="VD: 80.000" type="number" value={form.giaGio || ''} onChange={e => upd('giaGio', e.target.value)} /></Fg>
+            <Fg label="Giá theo ngày"><Fi placeholder="VD: 500.000" type="number" value={form.giaNgay || ''} onChange={e => upd('giaNgay', e.target.value)} /></Fg>
+          </>
+        )}
         <Fg label="Ghi chú về giá">
           <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
             rows={2} placeholder="VD: Giá chưa bao gồm vật tư, phụ phí đi xa..."

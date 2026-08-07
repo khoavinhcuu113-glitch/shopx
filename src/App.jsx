@@ -143,7 +143,6 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: true  },
-        { label: '🟣 Pi Network',       ok: false },
       ],
     },
     {
@@ -153,7 +152,6 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: true  },
-        { label: '🟣 Pi Network',       ok: false },
       ],
     },
     {
@@ -163,7 +161,6 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: false },
-        { label: '🟣 Pi Network',       ok: true  },
       ],
     },
     {
@@ -173,7 +170,15 @@ function ServiceScreen({ go, chkLogin }) {
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '⭐ Chứng chỉ nghề',  ok: false },
-        { label: '🟣 Pi Network',       ok: false },
+      ],
+    },
+    {
+      av: 'MT', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', exp: '2 năm',
+      price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3,
+      thumbsUp: 97.5, bg: '#ad1457',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '📷 12.500 followers', ok: true },
       ],
     },
   ];
@@ -492,6 +497,72 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
   );
 }
 
+// ─── CHIẾN DỊCH KOL — theo dõi hiệu quả cho Doanh nghiệp ────────────
+function KolCampaignScreen({ go }) {
+  const campaigns = [
+    { name: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Máy lạnh Daikin 1.5HP', link: 'shopx.vn/s/kol-a8f3x2', clicks: 342, orders: 12, revenue: 69600000 },
+    { name: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Sofa góc L màu xám', link: 'shopx.vn/s/kol-b91k7p', clicks: 156, orders: 3, revenue: 9600000 },
+    { name: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB', link: 'shopx.vn/s/kol-c4m2q8', clicks: 89, orders: 1, revenue: 18500000 },
+  ];
+  const totalClicks  = campaigns.reduce((s, c) => s + c.clicks, 0);
+  const totalOrders  = campaigns.reduce((s, c) => s + c.orders, 0);
+  const totalRevenue = campaigns.reduce((s, c) => s + c.revenue, 0);
+  const fmt = n => n.toLocaleString('vi-VN') + 'đ';
+
+  return (
+    <div>
+      <Shdr title="Chiến dịch KOL" onBack={() => go('s-account')} />
+      <div style={{ padding: 12 }}>
+        <Infobox text="Đơn hàng được tự động gắn đúng KOL khi khách mua trong vòng 7 ngày sau khi bấm link — không cần bạn tự đối chiếu." />
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+          {[
+            { val: totalClicks, lbl: 'Lượt bấm link', color: C.p },
+            { val: totalOrders, lbl: 'Đơn phát sinh', color: '#2e7d32' },
+            { val: `${((totalOrders / totalClicks) * 100).toFixed(1)}%`, lbl: 'Tỷ lệ chuyển đổi', color: '#e65100' },
+          ].map((s, i) => (
+            <div key={i} style={{ background: C.pl, borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: s.color }}>{s.val}</div>
+              <div style={{ fontSize: 9, color: C.m, marginTop: 2 }}>{s.lbl}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: '#e8f5e9', borderRadius: 12, padding: 12, marginBottom: 16, textAlign: 'center' }}>
+          <div style={{ fontSize: 11, color: '#388e3c' }}>Tổng doanh thu từ các chiến dịch KOL</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: '#2e7d32', marginTop: 2 }}>{fmt(totalRevenue)}</div>
+        </div>
+
+        <Sechdr num="📋" title="Chi tiết từng KOL" />
+        {campaigns.map((c, i) => {
+          const rate = ((c.orders / c.clicks) * 100).toFixed(1);
+          return (
+            <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.name}</div>
+                  <div style={{ fontSize: 11, color: C.m }}>{c.platform} · {c.product}</div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: '#2e7d32' }}>{fmt(c.revenue)}</div>
+                  <div style={{ fontSize: 10, color: C.m }}>{c.orders} đơn</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 10, color: C.pd, marginBottom: 6, wordBreak: 'break-all' }}>🔗 {c.link}</div>
+              <div style={{ display: 'flex', gap: 10, fontSize: 11, color: C.m }}>
+                <span>👆 {c.clicks} lượt bấm</span>
+                <span>📈 {rate}% chuyển đổi</span>
+              </div>
+            </div>
+          );
+        })}
+
+        <div style={{ height: 80 }} />
+      </div>
+    </div>
+  );
+}
+
 function DirectScreen({ go }) {
   return (
     <div>
@@ -723,6 +794,28 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
           )}
         </div>
 
+        {accType === 'business' && (
+          <div onClick={() => go('s-service')}
+            style={{ background: '#fce4ec', border: '1px solid #f8bbd0', borderRadius: 12, padding: '10px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <span style={{ fontSize: 18 }}>🎥</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#ad1457' }}>Tìm KOL/KOC quảng bá sản phẩm</div>
+              <div style={{ fontSize: 10, color: '#c2185b' }}>Xem hồ sơ người quảng bá đã có sẵn trong Dịch vụ & Việc làm</div>
+            </div>
+            <span style={{ fontSize: 16, color: '#ad1457' }}>›</span>
+          </div>
+        )}
+        {accType === 'business' && (
+          <div onClick={() => go('s-kol-campaign')}
+            style={{ background: '#fce4ec', border: '1px solid #f8bbd0', borderRadius: 12, padding: '10px 12px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <span style={{ fontSize: 18 }}>📊</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#ad1457' }}>Chiến dịch KOL đang chạy</div>
+              <div style={{ fontSize: 10, color: '#c2185b' }}>Theo dõi lượt bấm link, đơn hàng, doanh thu từng KOL</div>
+            </div>
+            <span style={{ fontSize: 16, color: '#ad1457' }}>›</span>
+          </div>
+        )}
         {/* Banner gợi ý xác minh CCCD sớm — tự nguyện, giọng lợi ích */}
         {!hasCCCD && (
           <div onClick={() => { sessionStorage.setItem('sx_kyc_return', 's-account'); sessionStorage.setItem('sx_kyc_reason', 'mở khóa toàn bộ quyền lợi tài khoản'); go('s-kyc'); }}
@@ -1392,8 +1485,9 @@ export default function App() {
       case 's-store-business':       return <StoreScreen go={go} chkLogin={chkLogin} storeType="business" />;
       case 's-service-order-worker': return <ServiceOrderScreen go={go} role="worker" />;
       case 's-service-order-hirer':  return <ServiceOrderScreen go={go} role="hirer" />;
-      case 's-cv-success':       return <CvSuccessScreen    go={go} />;
       case 's-cv-register':      return <CvRegisterScreen   go={go} hasCCCD={hasCCCD} hasAgreedTerms={hasAgreedWorkerTerms} />;
+      case 's-cv-success':       return <CvSuccessScreen    go={go} />;
+      case 's-kol-campaign':      return <KolCampaignScreen      go={go} />;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
   };
