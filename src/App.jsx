@@ -137,7 +137,7 @@ function ServiceScreen({ go, chkLogin }) {
   const [nganh, setNganh] = useState('');
   const workers = [
     {
-      av: 'VN', name: 'Anh Trần Văn Nhân', trade: 'Thợ điện dân dụng', exp: '8 năm',
+      av: 'VN', id: 'SX-00199', name: 'Anh Trần Văn Nhân', trade: 'Thợ điện dân dụng', exp: '8 năm',
       price: '80.000đ/giờ', orders: 788, completeRate: 98, cancelRate: 2,
       thumbsUp: 98.2, bg: C.p,
       badges: [
@@ -146,7 +146,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'TL', name: 'Anh Nguyễn Thanh Long', trade: 'Thợ sửa máy lạnh', exp: '5 năm',
+      av: 'TL', id: 'SX-00201', name: 'Anh Nguyễn Thanh Long', trade: 'Thợ sửa máy lạnh', exp: '5 năm',
       price: '150.000đ/ca', orders: 234, completeRate: 95, cancelRate: 5,
       thumbsUp: 94.5, bg: C.pm,
       badges: [
@@ -155,7 +155,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'TH', name: 'Chị Nguyễn Thu Hương', trade: 'Dọn dẹp vệ sinh nhà', exp: '3 năm',
+      av: 'TH', id: 'SX-00198', name: 'Chị Nguyễn Thu Hương', trade: 'Dọn dẹp vệ sinh nhà', exp: '3 năm',
       price: '200.000đ/lần', orders: 56, completeRate: 100, cancelRate: 0,
       thumbsUp: 100, bg: C.pd,
       badges: [
@@ -164,7 +164,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'QH', name: 'Anh Lê Quốc Hùng', trade: 'Thợ sơn & chống thấm', exp: '10 năm',
+      av: 'QH', id: 'SX-00202', name: 'Anh Lê Quốc Hùng', trade: 'Thợ sơn & chống thấm', exp: '10 năm',
       price: '400.000đ/ngày', orders: 412, completeRate: 96, cancelRate: 4,
       thumbsUp: 96.8, bg: '#6B2F9E',
       badges: [
@@ -173,7 +173,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'MT', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', exp: '2 năm',
+      av: 'MT', id: 'SX-00203', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', exp: '2 năm',
       price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3,
       thumbsUp: 97.5, bg: '#ad1457',
       badges: [
@@ -248,7 +248,7 @@ function ServiceScreen({ go, chkLogin }) {
                       {w.trade} • {w.exp} • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span>
                     </div>
                   </div>
-                  <button onClick={() => chkLogin('s-chat-worker')}
+                  <button onClick={() => { sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id })); chkLogin('s-chat-worker'); }}
                     style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
                     💬 Liên hệ
                   </button>
@@ -344,7 +344,7 @@ function ServiceScreen({ go, chkLogin }) {
                   </div>
                   <div style={{ fontSize: 11, color: C.m }}>{w.exp} kinh nghiệm • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span></div>
                 </div>
-                <button onClick={() => chkLogin('s-chat-worker')}
+                <button onClick={() => { sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id })); chkLogin('s-chat-worker'); }}
                   style={{ background: '#ad1457', color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
                   💬 Liên hệ
                 </button>

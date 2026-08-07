@@ -4,6 +4,9 @@ import { SAMPLE_SHIPPERS } from '../constants';
 
 export default function ChatScreen({ go, type, returnTo }) {
   const backTarget = returnTo || (type === 'buy' ? 's-home' : 's-service');
+  const contact = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_chat_contact') || 'null'); } catch (e) { return null; }
+  })();
   const [step, setStep]           = useState('chat'); // chat | addr | map | shippers | invited
   const [address, setAddress]     = useState('');
   const [addrConfirmed, setAddrConfirmed] = useState(false);
@@ -22,6 +25,10 @@ export default function ChatScreen({ go, type, returnTo }) {
       { me: false, from: 'SX-00089', text: 'Chào anh/chị, máy lạnh nhà mình không lạnh, cần vệ sinh và nạp gas.', time: '14:05' },
       { me: true,  text: 'Dạ chào bạn! Mình chuyên sửa máy lạnh 5 năm KN. Cho mình địa chỉ nhé!', time: '14:07' },
     ];
+    if (t === 'worker' && contact) return [
+      { me: true, text: `Chào ${contact.name}, mình muốn tìm hiểu về dịch vụ "${contact.trade}" của bạn.`, time: '09:15' },
+      { me: false, from: `${contact.name} • ${contact.sxId} (${contact.trade})`, text: 'Chào bạn! Rất vui được hỗ trợ. Bạn cần trao đổi thêm gì không?', time: '09:17' },
+    ];
     return [
       { me: true,  text: 'Chào anh, nhà mình bị mất điện 1 phòng ngủ. Anh có thể đến xem không?', time: '09:15' },
       { me: false, from: 'Anh Trần Văn Nhân • SX-00199 (Thợ điện)', text: 'Chào bạn! Có thể do cầu dao phụ hỏng. Bạn ở khu vực nào?', time: '09:17' },
@@ -31,7 +38,9 @@ export default function ChatScreen({ go, type, returnTo }) {
   const cfgMap = {
     buy:    { title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB', t1: 'Nguyễn Văn Bình (người mua)', v1: 'SX-00234', t2: 'Anh Trần Minh Tuấn (người bán)', v2: 'SX-00127', ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e', ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa' },
     job:    { title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh', t1: 'Anh Trần Văn Nhân (thợ)', v1: 'SX-00199', t2: 'Nguyễn Văn Bình (người thuê)', v2: 'SX-00234', ctxBg: '#fff3e0', ctxBorder: '#ffe0b2', ctxColor: '#e65100', ctxTitle: '🔧 Tin tìm thợ — Sửa máy lạnh', ctxDesc: 'Ngân sách: 200.000đ • Biên Hòa' },
-    worker: { title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện', t1: 'Người cần thợ (bạn)', v1: 'SX-00001', t2: 'Thợ điện', v2: 'SX-00199', ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: '✅ Liên hệ từ Hồ sơ thợ', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ' },
+    worker: contact
+      ? { title: `Liên hệ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, sub: `Hồ sơ • ${contact.trade}`, t1: 'Người cần dịch vụ (bạn)', v1: 'SX-00001', t2: contact.trade, v2: contact.sxId, ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: `✅ Liên hệ từ Hồ sơ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, ctxDesc: `${contact.name} • ${contact.exp} • ${contact.price}` }
+      : { title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện', t1: 'Người cần thợ (bạn)', v1: 'SX-00001', t2: 'Thợ điện', v2: 'SX-00199', ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: '✅ Liên hệ từ Hồ sơ thợ', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ' },
   };
   const c = cfgMap[type] || cfgMap.buy;
 
