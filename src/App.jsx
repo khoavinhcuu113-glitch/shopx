@@ -194,7 +194,12 @@ function ServiceScreen({ go, chkLogin }) {
     { id: 'cv',      label: 'Đăng ký nghề cần việc' },
     { id: 'job',     label: 'Tin tìm thợ' },
     { id: 'shipper', label: 'Đăng ký nhận Shipper' },
+    { id: 'kol',     label: '🎥 KOL/KOC' },
   ];
+  function goRegisterKol() {
+    sessionStorage.setItem('sx_cv_form', JSON.stringify({ nganh: 'dam', ngheCuThe: 'KOL/KOC quảng bá sản phẩm' }));
+    chkLogin('s-cv-register');
+  }
   return (
     <div>
       <Shdr title="Dịch vụ & Việc làm" onBack={() => go('s-home')} />
@@ -310,6 +315,53 @@ function ServiceScreen({ go, chkLogin }) {
       {/* Tab 3 — Đăng ký nhận Shipper */}
       {tab === 'shipper' && (
         <ShipperCommunityScreen go={go} chkLogin={chkLogin} />
+      )}
+
+      {/* Tab 4 — KOL/KOC */}
+      {tab === 'kol' && (
+        <div style={{ padding: '0 12px 12px' }}>
+          <div style={{ background: '#fce4ec', border: '1px solid #f8bbd0', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+            <div style={{ fontSize: 12, color: '#880e4f', lineHeight: 1.6, marginBottom: 10 }}>
+              🎥 Quảng bá sản phẩm qua TikTok, Facebook, Instagram, YouTube — nhận thù lao theo bài đăng, video hoặc buổi live. Không cần thiết bị đặc biệt, dùng chính kênh mạng xã hội bạn đang có.
+            </div>
+            <button onClick={goRegisterKol}
+              style={{ width: '100%', background: '#ad1457', color: '#fff', border: 'none', padding: 11, borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+              ➕ Đăng ký làm KOL/KOC
+            </button>
+          </div>
+
+          <Sechdr num="🌟" title="Hồ sơ KOL/KOC đã có" />
+          {workers.filter(w => w.trade === 'KOL/KOC quảng bá sản phẩm').map((w, i) => (
+            <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                <div style={{ width: 42, height: 42, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: 14, fontWeight: 700 }}>{w.av}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{w.name}</span>
+                    <span style={{ fontSize: 10, background: C.pl, color: C.pd, padding: '1px 6px', borderRadius: 8, flexShrink: 0 }}>
+                      {w.orders >= 20 ? '🏅 Chuyên nghiệp' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới'}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 11, color: C.m }}>{w.exp} kinh nghiệm • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span></div>
+                </div>
+                <button onClick={() => chkLogin('s-chat-worker')}
+                  style={{ background: '#ad1457', color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
+                  💬 Liên hệ
+                </button>
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {w.badges.map((b, j) => (
+                  <span key={j} style={{ fontSize: 10, padding: '3px 8px', borderRadius: 8, background: b.ok ? '#e8f5e9' : '#ffebee', border: `1px solid ${b.ok ? '#c8e6c9' : '#ef9a9a'}`, color: b.ok ? '#2e7d32' : '#c62828', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                    {b.label} {b.ok ? '✅' : '❌'}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div style={{ fontSize: 11, color: C.m, textAlign: 'center', marginTop: 4 }}>
+            💡 Muốn mời KOL/KOC quảng bá 1 sản phẩm cụ thể? Vào đúng trang sản phẩm đó trong gian hàng của bạn.
+          </div>
+        </div>
       )}
 
       <div style={{ height: 80 }} />
