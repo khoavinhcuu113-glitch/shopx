@@ -54,6 +54,15 @@ export function ServiceOrderAlert({ hoursElapsed, status }) {
 
 // Màn hình chính theo dõi đơn
 export default function ServiceOrderScreen({ go, role = 'worker' }) {
+  const contact = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_chat_contact') || 'null'); } catch (e) { return null; }
+  })();
+  const workerName  = contact ? contact.name : 'Anh Trần Văn Nhân';
+  const workerTrade = contact ? contact.trade : 'Thợ điện';
+  const workerSxId  = contact ? contact.sxId : 'SX-00199';
+  const workerLabel = `${workerSxId} (${workerTrade})`;
+  const roleNoun    = workerTrade.includes('KOL') ? 'KOL/KOC' : 'Thợ';
+
   const [status, setStatus]         = useState('waiting');
   const [hoursElapsed, setHours]    = useState(0);
   const [showRating, setShowRating] = useState(false);
@@ -61,8 +70,8 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   const [rated, setRated]           = useState({ worker: false, hirer: false });
   const [msgs, setMsgs]             = useState([
     { from: 'system', text: '✅ Hai bên đã xác nhận. Đơn dịch vụ bắt đầu.' },
-    { from: 'hirer',  name: 'SX-00001 (Người thuê)', text: 'Anh ơi, địa chỉ: 45 Bùi Thị Xuân, Hố Nai. Em đang ở nhà.' },
-    { from: 'worker', name: 'SX-00199 (Thợ điện)', text: 'Dạ, mình sẽ đến lúc 14h chiều nay!' },
+    { from: 'hirer',  name: 'SX-00001 (Người thuê)', text: 'Chào bạn, mình đã sẵn sàng trao đổi tiếp về công việc này.' },
+    { from: 'worker', name: workerLabel, text: 'Dạ, mình sẽ tiến hành theo đúng thời gian đã thỏa thuận!' },
   ]);
   const [input, setInput]           = useState('');
 
@@ -71,7 +80,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
 
   function sendMsg() {
     if (!input.trim()) return;
-    const nameMap = { worker: 'SX-00199 (Thợ điện)', hirer: 'SX-00001 (Người thuê)' };
+    const nameMap = { worker: workerLabel, hirer: 'SX-00001 (Người thuê)' };
     setMsgs(m => [...m, { from: role, name: nameMap[role], text: input }]);
     setInput('');
   }
@@ -107,14 +116,14 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
       <div style={{ position: 'absolute', inset: 0, background: C.w, overflow: 'auto' }}>
         <div style={{ background: C.p, padding: '10px 16px' }}>
           <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>
-            Đánh giá {target === 'worker' ? 'Thợ' : 'Người thuê'}
+            Đánh giá {target === 'worker' ? roleNoun : 'Người thuê'}
           </div>
         </div>
 
         {/* 2 chiều */}
         <div style={{ background: C.pl, padding: '8px 16px', display: 'flex', gap: 8 }}>
           {[
-            { key: role === 'hirer' ? 'worker' : 'hirer', label: role === 'hirer' ? '1. Đánh giá Thợ' : '1. Đánh giá Người thuê' },
+            { key: role === 'hirer' ? 'worker' : 'hirer', label: role === 'hirer' ? `1. Đánh giá ${roleNoun}` : '1. Đánh giá Người thuê' },
             { key: role === 'hirer' ? 'hirer' : 'worker',  label: '2. Nhận đánh giá' },
           ].map((s, i) => (
             <div key={s.key} style={{ flex: 1, textAlign: 'center', padding: '6px 0', borderRadius: 8, background: i === 0 ? C.p : '#e8f5e9', color: i === 0 ? '#fff' : '#2e7d32', fontSize: 12, fontWeight: i === 0 ? 600 : 400 }}>
@@ -147,8 +156,8 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
           <button onClick={() => go('s-service')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20 }}>←</button>
           <div style={{ flex: 1 }}>
-            <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Đơn dịch vụ — Thợ điện</div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>SX-00001 × SX-00199</div>
+            <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Đơn dịch vụ — {workerTrade}</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>SX-00001 × {workerSxId}</div>
           </div>
         </div>
 

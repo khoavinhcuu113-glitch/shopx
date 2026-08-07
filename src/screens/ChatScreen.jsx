@@ -129,28 +129,28 @@ export default function ChatScreen({ go, type, returnTo }) {
           </div>
         )}
 
-        {/* Nút thuê thợ — chỉ hiện trong chat tìm thợ */}
+        {/* Nút thuê thợ/KOL — chỉ hiện trong chat tìm thợ */}
         {type === 'worker' && step === 'chat' && (
           <div style={{ background: '#f3e5f5', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #d1c4e9' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#4a148c', marginBottom: 4 }}>
-              🔨 Chốt thuê thợ
+              {contact && contact.trade.includes('KOL') ? '🎥 Chốt thuê KOL/KOC' : '🔨 Chốt thuê thợ'}
             </div>
             <div style={{ fontSize: 11, color: '#6a1b9a', marginBottom: 10, lineHeight: 1.5 }}>
-              2 bên đã thỏa thuận xong. Xác nhận thuê thợ này?
+              2 bên đã thỏa thuận xong. Xác nhận {contact && contact.trade.includes('KOL') ? 'hợp tác với KOL/KOC này' : 'thuê thợ này'}?
             </div>
             <div style={{ display: 'flex', gap: 8, flexDirection: 'column' }}>
               <button
                 onClick={() => {
-                  setMsgs(m => [...m, { me: true, text: '✅ Tôi xác nhận thuê anh/chị. Hẹn gặp theo thời gian đã thỏa thuận!', time: 'Vừa xong' }]);
+                  setMsgs(m => [...m, { me: true, text: '✅ Tôi xác nhận hợp tác với bạn. Hẹn gặp theo thời gian đã thỏa thuận!', time: 'Vừa xong' }]);
                   setStep('hired');
                 }}
                 style={{ background: '#4a148c', color: '#fff', border: 'none', padding: '9px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600, textAlign: 'left' }}>
-                ✅ Xác nhận thuê thợ này
+                {contact && contact.trade.includes('KOL') ? '✅ Xác nhận thuê KOL/KOC này' : '✅ Xác nhận thuê thợ này'}
               </button>
               <button
                 onClick={() => go('s-service')}
                 style={{ background: '#fff', color: '#4a148c', border: '1px solid #d1c4e9', padding: '8px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', textAlign: 'left' }}>
-                🔍 Tìm thợ khác
+                {contact && contact.trade.includes('KOL') ? '🔍 Tìm KOL/KOC khác' : '🔍 Tìm thợ khác'}
               </button>
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function ChatScreen({ go, type, returnTo }) {
           <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 12, margin: '8px 0', border: '1px solid #c8e6c9', textAlign: 'center' }}>
             <div style={{ fontSize: 24, marginBottom: 6 }}>🎉</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>
-              Đã xác nhận thuê thợ!
+              {contact && contact.trade.includes('KOL') ? 'Đã xác nhận hợp tác KOL/KOC!' : 'Đã xác nhận thuê thợ!'}
             </div>
             <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận này. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.

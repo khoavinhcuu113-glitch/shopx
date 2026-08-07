@@ -59,10 +59,15 @@ export default function RatingScreen({ go, target = 'seller', onSkip }) {
   const [submitted, setSubmitted] = useState(false);
   const [points, setPoints]     = useState(0);
 
+  const chatContact = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_chat_contact') || 'null'); } catch (e) { return null; }
+  })();
   const targetInfo = {
     seller:  { name: 'SX-00127 (Người bán)',       icon: '🏷️', role: 'Người bán' },
     shipper: { name: 'SP-001 (Trần Văn Cường)',      icon: '🚚', role: 'Shipper' },
-    worker:  { name: 'SX-00199 (Thợ điện)',          icon: '🔨', role: 'Thợ' },
+    worker:  chatContact
+      ? { name: `${chatContact.sxId} (${chatContact.trade})`, icon: chatContact.trade.includes('KOL') ? '🎥' : '🔨', role: chatContact.trade.includes('KOL') ? 'KOL/KOC' : 'Thợ' }
+      : { name: 'SX-00199 (Thợ điện)',          icon: '🔨', role: 'Thợ' },
     hirer:   { name: 'SX-00001 (Người thuê)',        icon: '👤', role: 'Người thuê' },
   };
   const t = targetInfo[target] || targetInfo.seller;
