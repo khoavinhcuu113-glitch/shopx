@@ -166,7 +166,7 @@ export default function ChatScreen({ go, type, returnTo }) {
             <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận này. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
             </div>
-            <button onClick={() => go('s-service-order-hirer')}
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', backTarget); go('s-service-order-hirer'); }}
               style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
               📋 Theo dõi đơn dịch vụ
             </button>
@@ -210,7 +210,7 @@ export default function ChatScreen({ go, type, returnTo }) {
             <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
             </div>
-            <button onClick={() => go('s-service-order-worker')}
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', backTarget); go('s-service-order-worker'); }}
               style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
               📋 Vào đơn dịch vụ — Bắt đầu làm việc
             </button>

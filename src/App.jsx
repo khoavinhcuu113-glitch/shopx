@@ -1007,7 +1007,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
               <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>Sửa điện phòng ngủ</div>
               <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +25h</div>
             </div>
-            <button onClick={() => go('s-service-order-hirer')}
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); go('s-service-order-hirer'); }}
               style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
               Xem đơn
             </button>

@@ -56,6 +56,7 @@ export function ServiceOrderAlert({ hoursElapsed, status, isKOL = false }) {
 
 // Màn hình chính theo dõi đơn
 export default function ServiceOrderScreen({ go, role = 'worker' }) {
+  const returnTo = sessionStorage.getItem('sx_service_return') || 's-service';
   const contact = (() => {
     try { return JSON.parse(sessionStorage.getItem('sx_chat_contact') || 'null'); } catch (e) { return null; }
   })();
@@ -159,7 +160,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
       {/* Header */}
       <div style={{ background: C.p, padding: '10px 16px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <button onClick={() => go('s-service')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20 }}>←</button>
+          <button onClick={() => go(returnTo)} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20 }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Đơn dịch vụ — {workerTrade}</div>
             <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>SX-00001 × {workerSxId}</div>

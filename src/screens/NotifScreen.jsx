@@ -138,7 +138,7 @@ export default function NotifScreen({ go }) {
 
             {/* Action đơn dịch vụ thợ hoàn thành */}
             {n.type === 'service' && (
-              <button onClick={() => go('s-service-order-hirer')}
+              <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-notif'); go('s-service-order-hirer'); }}
                 style={{ background: '#2e7d32', color: '#fff', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, marginTop: 4 }}>
                 ✅ Xác nhận hoàn thành
               </button>
