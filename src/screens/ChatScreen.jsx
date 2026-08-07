@@ -15,6 +15,27 @@ export default function ChatScreen({ go, type, returnTo }) {
   const [input, setInput]         = useState('');
   const [msgs, setMsgs]           = useState(getInitMsgs(type));
 
+  // Thẻ hợp đồng — trích xuất nội dung thỏa thuận thành bản cố định
+  const [contract, setContract]       = useState(null); // null | { price, platform, duration, status }
+  const [showContractForm, setShowContractForm] = useState(false);
+  const [cfPrice, setCfPrice]         = useState(contact ? contact.price : '');
+  const [cfPlatform, setCfPlatform]   = useState(contact && contact.trade.includes('KOL') ? 'TikTok' : 'Biên Hòa, Đồng Nai');
+  const [cfDuration, setCfDuration]   = useState('3 ngày kể từ khi xác nhận');
+
+  function proposeContract() {
+    if (!cfPrice.trim()) { alert('Vui lòng nhập giá thỏa thuận.'); return; }
+    setContract({ price: cfPrice, platform: cfPlatform, duration: cfDuration, status: 'proposed' });
+    setShowContractForm(false);
+  }
+
+  function confirmContract() {
+    setContract(c => ({ ...c, status: 'confirmed' }));
+  }
+
+  function editContract() {
+    setShowContractForm(true);
+  }
+
   function getInitMsgs(t) {
     if (t === 'buy') return [
       { me: false, from: 'Anh Trần Minh Tuấn • SX-00127 (Người bán)', text: 'Xin chào! Bạn quan tâm đến iPhone 13 Pro của mình ạ?', time: '10:30' },
@@ -111,6 +132,92 @@ export default function ChatScreen({ go, type, returnTo }) {
           </div>
         ))}
 
+        {/* Thẻ hợp đồng — trích xuất nội dung thỏa thuận thành bản cố định */}
+        {contract && (
+          <div style={{ background: contract.status === 'confirmed' ? '#e8f5e9' : '#fff8e1', border: `2px solid ${contract.status === 'confirmed' ? '#4caf50' : '#f59e0b'}`, borderRadius: 12, padding: 12, margin: '10px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+              <span style={{ fontSize: 16 }}>📄</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: contract.status === 'confirmed' ? '#2e7d32' : '#e65100' }}>
+                {contract.status === 'confirmed' ? 'Bản hợp đồng — Đã xác nhận cả 2 bên' : 'Bản hợp đồng — Đang chờ xác nhận'}
+              </span>
+            </div>
+            <div style={{ fontSize: 11, color: C.t, lineHeight: 1.8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Dịch vụ</span><span style={{ fontWeight: 600 }}>{c.sub}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Bên A</span><span style={{ fontWeight: 600 }}>{c.t1} — {c.v1}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Bên B</span><span style={{ fontWeight: 600 }}>{c.t2} — {c.v2}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Giá thỏa thuận</span><span style={{ fontWeight: 600 }}>{contract.price}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>{type === 'worker' && contact && contact.trade.includes('KOL') ? 'Nền tảng' : 'Địa điểm'}</span><span style={{ fontWeight: 600 }}>{contract.platform}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Thời hạn</span><span style={{ fontWeight: 600 }}>{contract.duration}</span></div>
+            </div>
+            {contract.status === 'proposed' && (
+              <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #ffe082' }}>
+                <div style={{ fontSize: 10, color: '#bf360c', marginBottom: 8 }}>🧪 Demo — giả lập phản hồi của bên kia:</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={confirmContract}
+                    style={{ flex: 1, background: '#2e7d32', color: '#fff', border: 'none', padding: '8px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                    ✅ Bên kia đồng ý
+                  </button>
+                  <button onClick={editContract}
+                    style={{ flex: 1, background: '#fff', color: '#e65100', border: '1px solid #ffe082', padding: '8px 10px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                    ✏️ Đề nghị chỉnh sửa
+                  </button>
+                </div>
+              </div>
+            )}
+            {contract.status === 'confirmed' && (
+              <div style={{ fontSize: 10, color: '#2e7d32', marginTop: 8, paddingTop: 8, borderTop: '1px solid #c8e6c9' }}>
+                🔒 Nội dung đã đóng băng, dùng làm căn cứ khi có tranh chấp.
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Form tạo/chỉnh sửa hợp đồng */}
+        {showContractForm && (
+          <div style={{ background: C.w, border: `2px solid ${C.p}`, borderRadius: 12, padding: 12, margin: '10px 0' }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.pd, marginBottom: 10 }}>📄 {contract ? 'Chỉnh sửa' : 'Tạo'} bản hợp đồng</div>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>Giá thỏa thuận</div>
+              <input value={cfPrice} onChange={e => setCfPrice(e.target.value)} placeholder="VD: 500.000đ/bài"
+                style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ marginBottom: 8 }}>
+              <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>{type === 'worker' && contact && contact.trade.includes('KOL') ? 'Nền tảng' : 'Địa điểm'}</div>
+              <input value={cfPlatform} onChange={e => setCfPlatform(e.target.value)}
+                style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>Thời hạn</div>
+              <input value={cfDuration} onChange={e => setCfDuration(e.target.value)}
+                style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={proposeContract}
+                style={{ flex: 2, background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                Gửi đề xuất
+              </button>
+              <button onClick={() => setShowContractForm(false)}
+                style={{ flex: 1, background: 'none', border: `1px solid ${C.b}`, color: C.m, padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer' }}>
+                Hủy
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Nút tạo hợp đồng — chỉ hiện khi chưa có hợp đồng nào */}
+        {(type === 'worker' || type === 'job') && !contract && !showContractForm && (
+          <button onClick={() => setShowContractForm(true)}
+            style={{ width: '100%', background: 'none', border: `1.5px dashed ${C.p}`, color: C.pd, padding: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 4 }}>
+            📄 Tạo bản hợp đồng
+          </button>
+        )}
+
+        {(type === 'worker' || type === 'job') && step === 'chat' && (!contract || contract.status !== 'confirmed') && (
+          <div style={{ fontSize: 11, color: C.m, textAlign: 'center', padding: '8px 0' }}>
+            💡 Tạo và xác nhận bản hợp đồng ở trên trước khi chốt {type === 'worker' ? 'thuê' : 'nhận việc'}.
+          </div>
+        )}
+
         {/* Chọn hình thức — chỉ hiện trong chat mua bán */}
         {type === 'buy' && step === 'chat' && (
           <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #c8e6c9' }}>
@@ -130,7 +237,7 @@ export default function ChatScreen({ go, type, returnTo }) {
         )}
 
         {/* Nút thuê thợ/KOL — chỉ hiện trong chat tìm thợ */}
-        {type === 'worker' && step === 'chat' && (
+        {type === 'worker' && step === 'chat' && contract && contract.status === 'confirmed' && (
           <div style={{ background: '#f3e5f5', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #d1c4e9' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#4a148c', marginBottom: 4 }}>
               {contact && contact.trade.includes('KOL') ? '🎥 Chốt thuê KOL/KOC' : '🔨 Chốt thuê thợ'}
@@ -166,7 +273,7 @@ export default function ChatScreen({ go, type, returnTo }) {
             <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận này. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
             </div>
-            <button onClick={() => { sessionStorage.setItem('sx_service_return', backTarget); go('s-service-order-hirer'); }}
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-chat-worker'); go('s-service-order-hirer'); }}
               style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
               📋 Theo dõi đơn dịch vụ
             </button>
@@ -174,7 +281,7 @@ export default function ChatScreen({ go, type, returnTo }) {
         )}
 
         {/* Nút nhận việc — chỉ hiện trong chat tin tìm thợ (thợ xem) */}
-        {type === 'job' && step === 'chat' && (
+        {type === 'job' && step === 'chat' && contract && contract.status === 'confirmed' && (
           <div style={{ background: '#fff3e0', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #ffe082' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#e65100', marginBottom: 4 }}>
               🔧 Chốt nhận việc
@@ -210,7 +317,7 @@ export default function ChatScreen({ go, type, returnTo }) {
             <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
             </div>
-            <button onClick={() => { sessionStorage.setItem('sx_service_return', backTarget); go('s-service-order-worker'); }}
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-chat-job'); go('s-service-order-worker'); }}
               style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
               📋 Vào đơn dịch vụ — Bắt đầu làm việc
             </button>
