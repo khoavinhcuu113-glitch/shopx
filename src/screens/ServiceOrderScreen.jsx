@@ -78,6 +78,8 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   const [rated, setRated]           = useState({ worker: false, hirer: false });
   const [contentApproved, setContentApproved]   = useState(false);
   const [contentApprovedAt, setContentApprovedAt] = useState('');
+  const [contentLink, setContentLink]           = useState('');
+  const [contentLinkInput, setContentLinkInput] = useState('https://www.youtube.com/watch?v=PsSxcWT-iMU');
   const [msgs, setMsgs]             = useState([
     { from: 'system', text: '✅ Hai bên đã xác nhận. Đơn dịch vụ bắt đầu.' },
     { from: 'hirer',  name: 'SX-00001 (Người thuê)', text: 'Chào bạn, mình đã sẵn sàng trao đổi tiếp về công việc này.' },
@@ -111,8 +113,10 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
 
   function markDone() {
     if (needsApproval && !contentApproved) { alert('Cần người thuê xác nhận đã duyệt nội dung trước khi báo hoàn thành.'); return; }
+    if (needsContentLink && !contentLinkInput.trim()) { alert('Vui lòng dán link nội dung đã đăng công khai trước khi báo hoàn thành.'); return; }
+    if (needsContentLink) setContentLink(contentLinkInput.trim());
     setStatus('done_worker');
-    setMsgs(m => [...m, { from: 'system', text: '✅ Đối tác báo đã hoàn thành. Chờ người thuê xác nhận.' }]);
+    setMsgs(m => [...m, { from: 'system', text: needsContentLink ? `✅ Đối tác báo đã hoàn thành và đã đăng nội dung công khai. Chờ người thuê xác nhận.` : '✅ Đối tác báo đã hoàn thành. Chờ người thuê xác nhận.' }]);
   }
 
   function confirmDone() {
@@ -195,6 +199,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
             { label: 'Người thuê',   val: 'SX-00001' },
             ...(needsAddress ? [{ label: 'Địa chỉ', val: '45 Bùi Thị Xuân, Hố Nai' }] : []),
             ...(needsContentLink ? [{ label: 'Nền tảng', val: '🎵 TikTok / 📷 Instagram' }] : []),
+            ...(contentLink ? [{ label: 'Link nội dung', val: '🔗 Đã đăng — bấm để xem bên dưới' }] : []),
             { label: 'Giá thỏa thuận', val: workerPrice },
           ].map((r, i, arr) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: i < arr.length - 1 ? '1px solid #f5f0ff' : 'none' }}>
@@ -300,6 +305,13 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
               {needsContentLink && ' Nhớ đăng nội dung lên đúng nền tảng đã thỏa thuận trước khi báo hoàn thành.'}
               {contentApproved && ` Người thuê đã duyệt nội dung lúc ${contentApprovedAt}.`}
             </div>
+            {needsContentLink && (
+              <div style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 10, color: '#2e7d32', marginBottom: 3 }}>Link nội dung đã đăng công khai</div>
+                <input value={contentLinkInput} onChange={e => setContentLinkInput(e.target.value)} placeholder="VD: https://www.tiktok.com/@..."
+                  style={{ width: '100%', border: '1.5px solid #a5d6a7', borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+            )}
             <Btn onClick={markDone}>✅ Đã hoàn thành công việc</Btn>
             <div style={{ fontSize: 10, color: C.m, marginTop: 6, textAlign: 'center' }}>
               ⚠️ Hệ thống sẽ nhắc nếu bạn chưa cập nhật sau 48h
@@ -317,6 +329,14 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
               {needsContentLink ? 'Kiểm tra nội dung đã đăng đúng thỏa thuận. ' : 'Kiểm tra kết quả công việc. '}
               Nếu OK bấm xác nhận để hoàn tất đơn và đánh giá {workerName}.
             </div>
+            {needsContentLink && contentLink && (
+              <a href={contentLink} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: '1.5px solid #4caf50', borderRadius: 8, padding: '8px 10px', marginBottom: 10, textDecoration: 'none' }}>
+                <span style={{ fontSize: 16 }}>🔗</span>
+                <span style={{ fontSize: 11, color: '#1565c0', wordBreak: 'break-all', flex: 1 }}>{contentLink}</span>
+                <span style={{ fontSize: 10, color: '#2e7d32', fontWeight: 600, flexShrink: 0 }}>Xem →</span>
+              </a>
+            )}
             <Btn onClick={confirmDone} style={{ marginBottom: 8 }}>
               ✅ Xác nhận công việc hoàn thành
             </Btn>
@@ -346,6 +366,13 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
             <div style={{ fontSize: 11, color: '#388e3c', marginBottom: 10 }}>
               Thống kê hoạt động của cả 2 bên đã được cập nhật.
             </div>
+            {contentLink && (
+              <a href={contentLink} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: '1.5px solid #4caf50', borderRadius: 8, padding: '8px 10px', marginBottom: 10, textDecoration: 'none', textAlign: 'left' }}>
+                <span style={{ fontSize: 16 }}>🔗</span>
+                <span style={{ fontSize: 11, color: '#1565c0', wordBreak: 'break-all', flex: 1 }}>{contentLink}</span>
+              </a>
+            )}
             <button onClick={() => setShowRating(true)}
               style={{ background: C.p, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
               ⭐ Đánh giá → nhận 5 SX Points
