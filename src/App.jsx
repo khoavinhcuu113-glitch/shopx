@@ -47,7 +47,7 @@ function CategoriesScreen({ go, nav }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: 12 }}>
         {CATEGORIES.map((c, i) => (
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: '14px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-            onClick={() => go(CATEGORY_ROUTES[i] || 's-prod1')}>
+            onClick={() => { sessionStorage.setItem('sx_product_return', 's-categories'); go(CATEGORY_ROUTES[i] || 's-prod1'); }}>
             <div style={{ width: 44, height: 44, background: C.pl, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{c.icon}</div>
             <span style={{ fontSize: 12, fontWeight: 600, color: C.t, lineHeight: 1.3 }}>{c.name}</span>
           </div>
@@ -76,11 +76,16 @@ function ProductScreen({ go, chkLogin, type }) {
     p9:  { icon: '👕', bg: '#fff8e1', title: 'Túi xách da thật hàng hiệu', price: '850.000đ', cond: 'Như mới (98%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 27 giao dịch', desc: 'Túi xách da bò thật, khóa kim loại chắc chắn, ít sử dụng, còn nguyên hộp.', defect: 'Không có', count: '1/5 ảnh', cat: 'Thời trang & Đồ dùng cá nhân', shippable: true },
     p10: { icon: '🚲', bg: '#e0f7fa', title: 'Xe đạp Trek FX3 2022', price: '8.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 11 giao dịch', desc: 'Xe đạp Trek FX3 2022, khung nhôm nhẹ, phù hợp đi làm/tập thể dục, bảo dưỡng định kỳ.', defect: 'Không có', count: '1/6 ảnh', cat: 'Giải trí & Thể thao', shippable: true },
     p11: { icon: '🚜', bg: '#efebe9', title: 'Máy in Canon LBP2900 còn mới', price: '1.200.000đ', cond: 'Như mới (95%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 8 giao dịch', desc: 'Máy in Canon LBP2900, in laser đen trắng, tốc độ nhanh, còn hộp mực gần đầy.', defect: 'Không có', count: '1/4 ảnh', cat: 'Văn phòng & Nông nghiệp', shippable: true },
+    p12: { icon: '📱', bg: C.pl, title: 'iPhone 15 Pro 256GB', price: '28.500.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'iPhone 15 Pro 256GB chính hãng VN/A, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/6 ảnh', cat: 'Điện thoại', shippable: true, storeRoute: 's-store-business' },
+    p13: { icon: '📱', bg: C.pl, title: 'Samsung S24 Ultra 256GB', price: '22.900.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Samsung S24 Ultra 256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/6 ảnh', cat: 'Điện thoại', shippable: true, storeRoute: 's-store-business' },
+    p14: { icon: '💻', bg: '#e3f2fd', title: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'MacBook Air M2 8GB/256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/5 ảnh', cat: 'Laptop', shippable: true, storeRoute: 's-store-business' },
+    p15: { icon: '🎧', bg: '#f3e5f5', title: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'AirPods Pro thế hệ 2 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/4 ảnh', cat: 'Phụ kiện', shippable: true, storeRoute: 's-store-business' },
+    p16: { icon: '⌚', bg: '#fff8e1', title: 'Apple Watch Series 9', price: '9.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Apple Watch Series 9 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Tạm hết hàng, có thể đặt trước.', count: '1/4 ảnh', cat: 'Đồng hồ', shippable: false, storeRoute: 's-store-business' },
   };
   const p = data[type] || data.p1;
   return (
     <div>
-      <Shdr title="Chi tiết sản phẩm" onBack={() => go('s-categories')} />
+      <Shdr title="Chi tiết sản phẩm" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-categories')} />
       <div style={{ background: p.bg, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: 60 }}>
         {p.icon}<span style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 11, padding: '3px 8px', borderRadius: 10 }}>{p.count}</span>
       </div>
@@ -94,7 +99,7 @@ function ProductScreen({ go, chkLogin, type }) {
         <VidPlaceholder title="Clip giới thiệu sản phẩm" desc="Sắp ra mắt — người bán quay clip 15-30s thực tế" />
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
-          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{p.seller}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div><div onClick={() => go('s-store-personal')} style={{ fontSize: 11, color: C.pd, marginTop: 2, cursor: 'pointer', textDecoration: 'underline' }}>🏪 Xem gian hàng</div></div>
+          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{p.seller}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div><div onClick={() => go(p.storeRoute || 's-store-personal')} style={{ fontSize: 11, color: C.pd, marginTop: 2, cursor: 'pointer', textDecoration: 'underline' }}>🏪 Xem gian hàng</div></div>
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Mô tả</h3>
@@ -1544,6 +1549,11 @@ export default function App() {
       case 's-prod9':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p9" />;
       case 's-prod10':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p10" />;
       case 's-prod11':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p11" />;
+      case 's-prod12':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p12" />;
+      case 's-prod13':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p13" />;
+      case 's-prod14':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p14" />;
+      case 's-prod15':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p15" />;
+      case 's-prod16':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p16" />;
       case 's-chat-buy':         return <ChatScreen             go={go} type="buy" />;
       case 's-chat-buy-mine':    return <ChatScreen             go={go} type="buy" returnTo="s-account" />;
       case 's-chat-job':         return <ChatScreen             go={go} type="job" />;

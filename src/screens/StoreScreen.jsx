@@ -46,14 +46,23 @@ const OTHER_STORE_PERSONAL = {
   avatar: 'TT',
   avatarBg: '#2e7d32',
   location: 'Biên Hòa, Đồng Nai',
-  bio: 'Bán đồ điện tử cũ còn tốt, đã kiểm tra kỹ trước khi đăng bán.',
+  bio: 'Bán đa dạng mặt hàng đã qua kiểm tra kỹ trước khi đăng bán — đồ điện tử, xe cộ, nhà đất, thú cưng và nhiều danh mục khác.',
   verified: ['✅ SĐT', '🪪 Căn cước KYC'],
   stats: { orders: 34, rate: 97, thumbsUp: 98.2 },
   hasCV: false,
 
   products: [
-    { id: 'p1', icon: '📱', name: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cat: 'Đồ điện tử', loc: 'Biên Hòa', status: 'selling' },
-    { id: 'p2', icon: '🏍️', name: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cat: 'Xe cộ', loc: 'Long Khánh', status: 'selling' },
+    { id: 'p1',  icon: '📱', name: 'iPhone 13 Pro 256GB — Sierra Blue',        price: '18.500.000đ',    cat: 'Đồ điện tử',                    loc: 'Biên Hòa',   status: 'selling', scr: 's-prod1' },
+    { id: 'p2',  icon: '🏍️', name: 'Honda SH 125i 2021 — Đen bóng láng',       price: '62.000.000đ',    cat: 'Xe cộ',                          loc: 'Long Khánh', status: 'selling', scr: 's-prod2' },
+    { id: 'p3',  icon: '🏢', name: 'Phòng trọ có gác lửng, gần KCN Biên Hòa 2', price: '2.500.000đ/tháng', cat: 'Bất động sản',                 loc: 'Biên Hòa',   status: 'selling', scr: 's-prod3' },
+    { id: 'p4',  icon: '🐾', name: 'Chó Poodle Tiny 2 tháng tuổi',              price: '4.500.000đ',     cat: 'Thú cưng',                       loc: 'Biên Hòa',   status: 'selling', scr: 's-prod4' },
+    { id: 'p5',  icon: '🍖', name: 'Bánh Trung Thu thủ công thập cẩm hộp 4 cái', price: '180.000đ',       cat: 'Đồ ăn & Thực phẩm',              loc: 'Hố Nai',     status: 'selling', scr: 's-prod5' },
+    { id: 'p6',  icon: '❄️', name: 'Tủ lạnh Samsung Inverter 236L',            price: '4.200.000đ',     cat: 'Tủ lạnh, máy lạnh, máy giặt',    loc: 'Biên Hòa',   status: 'selling', scr: 's-prod6' },
+    { id: 'p7',  icon: '🛋️', name: 'Bàn ăn gỗ sồi 6 ghế',                      price: '3.500.000đ',     cat: 'Đồ gia dụng & Nội thất',         loc: 'Trảng Bom',  status: 'selling', scr: 's-prod7' },
+    { id: 'p8',  icon: '👶', name: 'Xe đẩy em bé Fatboy gấp gọn',               price: '1.800.000đ',     cat: 'Mẹ và bé',                        loc: 'Biên Hòa',   status: 'selling', scr: 's-prod8' },
+    { id: 'p9',  icon: '👕', name: 'Túi xách da thật hàng hiệu',                price: '850.000đ',       cat: 'Thời trang & Đồ dùng cá nhân',   loc: 'Biên Hòa',   status: 'selling', scr: 's-prod9' },
+    { id: 'p10', icon: '🚲', name: 'Xe đạp Trek FX3 2022',                      price: '8.200.000đ',     cat: 'Giải trí & Thể thao',            loc: 'Trảng Bom',  status: 'selling', scr: 's-prod10' },
+    { id: 'p11', icon: '🚜', name: 'Máy in Canon LBP2900 còn mới',              price: '1.200.000đ',     cat: 'Văn phòng & Nông nghiệp',        loc: 'Biên Hòa',   status: 'selling', scr: 's-prod11' },
   ],
   services: [],
 
@@ -78,11 +87,11 @@ const OTHER_STORE = {
   adBanner: true,
 
   products: [
-    { id: 'p1', icon: '📱', name: 'iPhone 15 Pro 256GB', price: '28.500.000đ', cat: 'Điện thoại', loc: 'Biên Hòa', status: 'selling' },
-    { id: 'p2', icon: '📱', name: 'Samsung S24 Ultra 256GB', price: '22.900.000đ', cat: 'Điện thoại', loc: 'Biên Hòa', status: 'selling' },
-    { id: 'p3', icon: '💻', name: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cat: 'Laptop', loc: 'Biên Hòa', status: 'selling' },
-    { id: 'p4', icon: '🎧', name: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cat: 'Phụ kiện', loc: 'Biên Hòa', status: 'selling' },
-    { id: 'p5', icon: '⌚', name: 'Apple Watch Series 9', price: '9.990.000đ', cat: 'Đồng hồ', loc: 'Biên Hòa', status: 'out' },
+    { id: 'p12', icon: '📱', name: 'iPhone 15 Pro 256GB', price: '28.500.000đ', cat: 'Điện thoại', loc: 'Biên Hòa', status: 'selling', scr: 's-prod12' },
+    { id: 'p13', icon: '📱', name: 'Samsung S24 Ultra 256GB', price: '22.900.000đ', cat: 'Điện thoại', loc: 'Biên Hòa', status: 'selling', scr: 's-prod13' },
+    { id: 'p14', icon: '💻', name: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cat: 'Laptop', loc: 'Biên Hòa', status: 'selling', scr: 's-prod14' },
+    { id: 'p15', icon: '🎧', name: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cat: 'Phụ kiện', loc: 'Biên Hòa', status: 'selling', scr: 's-prod15' },
+    { id: 'p16', icon: '⌚', name: 'Apple Watch Series 9', price: '9.990.000đ', cat: 'Đồng hồ', loc: 'Biên Hòa', status: 'out', scr: 's-prod16' },
   ],
   services: [], // Không có CV thợ → ẩn tab Dịch vụ
 
@@ -288,7 +297,8 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
                       </div>
                       <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 8, marginRight: -12 }}>
                         {items.map(p => (
-                          <div key={p.id} style={{ minWidth: 140, maxWidth: 140, background: C.w, borderRadius: 12, border: `1px solid ${p.status === 'out' ? '#f5f5f5' : '#e8def8'}`, overflow: 'hidden', flexShrink: 0, opacity: p.status === 'out' ? 0.6 : 1 }}>
+                          <div key={p.id} onClick={() => { if (p.scr) { sessionStorage.setItem('sx_product_return', storeType === 'business' ? 's-store-business' : 's-store-personal'); go(p.scr); } }}
+                            style={{ minWidth: 140, maxWidth: 140, background: C.w, borderRadius: 12, border: `1px solid ${p.status === 'out' ? '#f5f5f5' : '#e8def8'}`, overflow: 'hidden', flexShrink: 0, opacity: p.status === 'out' ? 0.6 : 1, cursor: p.scr ? 'pointer' : 'default' }}>
                             <div style={{ height: 90, background: C.pl, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36 }}>
                               {p.icon}
                             </div>
@@ -298,14 +308,14 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
                               {p.status === 'out' ? (
                                 <div style={{ fontSize: 10, color: '#e53935', textAlign: 'center' }}>Hết hàng</div>
                               ) : isOwner ? (
-                                <button onClick={() => go('s-post')}
+                                <button onClick={e => { e.stopPropagation(); go('s-post'); }}
                                   style={{ width: '100%', background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '4px 0', borderRadius: 6, fontSize: 10, cursor: 'pointer' }}>
                                   ✏️ Sửa
                                 </button>
                               ) : (
-                                <button onClick={() => chkLogin('s-chat-buy')}
+                                <button onClick={e => { e.stopPropagation(); sessionStorage.setItem('sx_product_return', storeType === 'business' ? 's-store-business' : 's-store-personal'); go(p.scr || 's-prod1'); }}
                                   style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: '5px 0', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-                                  Mua ngay
+                                  Xem
                                 </button>
                               )}
                             </div>
@@ -333,7 +343,8 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
               // CÁ NHÂN: Danh sách dọc đơn giản
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {store.products.map(p => (
-                  <div key={p.id} style={{ background: C.w, borderRadius: 12, padding: 12, border: `1px solid ${p.status === 'out' ? '#f5f5f5' : '#e8def8'}`, display: 'flex', alignItems: 'center', gap: 10, opacity: p.status === 'out' ? 0.6 : 1 }}>
+                  <div key={p.id} onClick={() => { if (p.scr) { sessionStorage.setItem('sx_product_return', storeType === 'business' ? 's-store-business' : 's-store-personal'); go(p.scr); } }}
+                    style={{ background: C.w, borderRadius: 12, padding: 12, border: `1px solid ${p.status === 'out' ? '#f5f5f5' : '#e8def8'}`, display: 'flex', alignItems: 'center', gap: 10, opacity: p.status === 'out' ? 0.6 : 1, cursor: p.scr ? 'pointer' : 'default' }}>
                     <div style={{ width: 48, height: 48, background: C.pl, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
                       {p.icon}
                     </div>
@@ -344,14 +355,14 @@ export default function StoreScreen({ go, chkLogin, storeType = 'personal', isOw
                       {p.status === 'out' && <div style={{ fontSize: 10, color: '#e53935' }}>Tạm hết hàng</div>}
                     </div>
                     {isOwner ? (
-                      <button style={{ background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '6px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
+                      <button onClick={e => e.stopPropagation()} style={{ background: C.pl, color: C.p, border: `1px solid ${C.b}`, padding: '6px 10px', borderRadius: 8, fontSize: 11, cursor: 'pointer', flexShrink: 0 }}>
                         ✏️ Sửa
                       </button>
                     ) : (
-                      <button onClick={() => p.status !== 'out' && chkLogin('s-chat-buy')}
+                      <button onClick={e => { e.stopPropagation(); if (p.status !== 'out') { sessionStorage.setItem('sx_product_return', storeType === 'business' ? 's-store-business' : 's-store-personal'); go(p.scr || 's-prod1'); } }}
                         disabled={p.status === 'out'}
                         style={{ background: p.status === 'out' ? '#ccc' : C.p, color: '#fff', border: 'none', padding: '8px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: p.status === 'out' ? 'default' : 'pointer', flexShrink: 0 }}>
-                        {p.status === 'out' ? 'Hết' : 'Mua'}
+                        {p.status === 'out' ? 'Hết' : 'Xem'}
                       </button>
                     )}
                   </div>

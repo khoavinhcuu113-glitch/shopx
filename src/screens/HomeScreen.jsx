@@ -66,7 +66,7 @@ export default function HomeScreen({ go, chkLogin, nav }) {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {listings.map((l, i) => (
-            <div key={i} style={{ background: C.w, borderRadius: 12, overflow: 'hidden', border: `1px solid #e8def8`, cursor: 'pointer' }} onClick={() => go(l.scr)}>
+            <div key={i} style={{ background: C.w, borderRadius: 12, overflow: 'hidden', border: `1px solid #e8def8`, cursor: 'pointer' }} onClick={() => { sessionStorage.setItem('sx_product_return', 's-home'); go(l.scr); }}>
               <div style={{ width: '100%', height: 80, background: C.pl, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30 }}>{l.icon}</div>
               <div style={{ padding: 8 }}>
                 <div style={{ fontSize: 11, fontWeight: 500, color: C.t, marginBottom: 2, lineHeight: 1.3 }}>{l.title}</div>
