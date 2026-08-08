@@ -4,8 +4,8 @@ export default function HomeScreen({ go, chkLogin, nav }) {
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH',    price: '18.500.000đ', loc: 'Biên Hòa',  scr: 's-prod1' },
     { icon: '🏍️', title: 'Honda SH 125i 2021 đen bóng',  price: '62.000.000đ', loc: 'Long Khánh', scr: 's-prod2' },
-    { icon: '❄️', title: 'Máy lạnh Daikin 1.5HP inverter', price: '5.800.000đ', loc: 'Hố Nai',    scr: 's-prod1' },
-    { icon: '🚲', title: 'Xe đạp Trek FX3 2022',           price: '8.200.000đ', loc: 'Trảng Bom', scr: 's-prod2' },
+    { icon: '❄️', title: 'Tủ lạnh Samsung Inverter 236L', price: '4.200.000đ',  loc: 'Biên Hòa',   scr: 's-prod6' },
+    { icon: '🚲', title: 'Xe đạp Trek FX3 2022',           price: '8.200.000đ', loc: 'Trảng Bom', scr: 's-prod10' },
   ];
   return (
     <div>

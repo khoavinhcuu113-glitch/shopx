@@ -21,6 +21,25 @@ import { SAMPLE_USER_RATINGS, getRatingLevel } from './constants';
 import ShipperCommunityScreen, { ShipperSuccessScreen } from './screens/ShipperScreens';
 
 // ─── CATEGORIES SCREEN ───────────────────────────────────────────────
+// Ánh xạ đúng từng danh mục (theo thứ tự CATEGORIES trong constants.js) tới màn tương ứng.
+// 3 danh mục dịch vụ (nội khu, chăm sóc người thân, vệ sinh) dẫn vào Dịch vụ & Việc làm, không tạo sản phẩm giả.
+const CATEGORY_ROUTES = [
+  's-prod3',   // Bất động sản
+  's-prod2',   // Xe cộ
+  's-prod1',   // Đồ điện tử
+  's-service', // Dịch vụ & Việc làm
+  's-service', // Dịch vụ nội khu & Chung cư
+  's-service', // Chăm sóc người thân
+  's-service', // Vệ sinh & Giặt ủi
+  's-prod4',   // Thú cưng
+  's-prod5',   // Đồ ăn & Thực phẩm
+  's-prod6',   // Tủ lạnh, máy lạnh, máy giặt
+  's-prod7',   // Đồ gia dụng & Nội thất
+  's-prod8',   // Mẹ và bé
+  's-prod9',   // Thời trang & Đồ dùng cá nhân
+  's-prod10',  // Giải trí & Thể thao
+  's-prod11',  // Văn phòng & Nông nghiệp
+];
 function CategoriesScreen({ go, nav }) {
   return (
     <div>
@@ -28,7 +47,7 @@ function CategoriesScreen({ go, nav }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: 12 }}>
         {CATEGORIES.map((c, i) => (
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: '14px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-            onClick={() => i === 3 ? go('s-service') : go('s-prod1')}>
+            onClick={() => go(CATEGORY_ROUTES[i] || 's-prod1')}>
             <div style={{ width: 44, height: 44, background: C.pl, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{c.icon}</div>
             <span style={{ fontSize: 12, fontWeight: 600, color: C.t, lineHeight: 1.3 }}>{c.name}</span>
           </div>
@@ -46,8 +65,17 @@ function ProductScreen({ go, chkLogin, type }) {
   const [reportNote, setReportNote] = useState('');
   const [reportSent, setReportSent] = useState(false);
   const data = {
-    p1: { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh' },
-    p2: { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh' },
+    p1:  { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true },
+    p2:  { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh', cat: 'Xe cộ', shippable: true },
+    p3:  { icon: '🏢', bg: '#e0f2f1', title: 'Phòng trọ có gác lửng, gần KCN Biên Hòa 2', price: '2.500.000đ/tháng', cond: 'Đang cho thuê', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 12 giao dịch', desc: 'Phòng 25m², có gác lửng, WC riêng, chỗ để xe, gần KCN Biên Hòa 2, an ninh khu vực tốt.', defect: 'Không có', count: '1/5 ảnh', cat: 'Bất động sản', shippable: false },
+    p4:  { icon: '🐾', bg: '#fff3e0', title: 'Chó Poodle Tiny 2 tháng tuổi, đã tiêm phòng', price: '4.500.000đ', cond: 'Khỏe mạnh, đã tiêm phòng', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 9 giao dịch', desc: 'Poodle Tiny lông xoăn màu socola, 2 tháng tuổi, đã tiêm phòng mũi 1, có sổ khám thú y.', defect: 'Không có', count: '1/4 ảnh', cat: 'Thú cưng', shippable: true },
+    p5:  { icon: '🍖', bg: '#fce4ec', title: 'Bánh Trung Thu thủ công thập cẩm hộp 4 cái', price: '180.000đ', cond: 'Mới làm trong ngày', loc: 'Hố Nai', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 56 giao dịch', desc: 'Bánh trung thu thập cẩm nhà làm, không chất bảo quản, đặt trước 1 ngày.', defect: 'Không có', count: '1/3 ảnh', cat: 'Đồ ăn & Thực phẩm', shippable: true },
+    p6:  { icon: '❄️', bg: '#e3f2fd', title: 'Tủ lạnh Samsung Inverter 236L', price: '4.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 21 giao dịch', desc: 'Tủ lạnh Samsung Inverter 236L, 2 cánh, làm lạnh tốt, tiết kiệm điện, dùng 2 năm.', defect: 'Trầy nhẹ mặt trước.', count: '1/5 ảnh', cat: 'Tủ lạnh, máy lạnh, máy giặt', shippable: true },
+    p7:  { icon: '🛋️', bg: '#f3e5f5', title: 'Bàn ăn gỗ sồi 6 ghế', price: '3.500.000đ', cond: 'Như mới (95%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 15 giao dịch', desc: 'Bàn ăn gỗ sồi tự nhiên, kèm 6 ghế bọc nệm, phong cách hiện đại, không mối mọt.', defect: 'Không có', count: '1/6 ảnh', cat: 'Đồ gia dụng & Nội thất', shippable: true },
+    p8:  { icon: '👶', bg: '#e8f5e9', title: 'Xe đẩy em bé Fatboy gấp gọn', price: '1.800.000đ', cond: 'Đã dùng (còn tốt 85%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 18 giao dịch', desc: 'Xe đẩy Fatboy gấp gọn 1 tay, có mái che, giỏ đựng đồ rộng, phù hợp bé 0-3 tuổi.', defect: 'Bánh sau hơi mòn.', count: '1/4 ảnh', cat: 'Mẹ và bé', shippable: true },
+    p9:  { icon: '👕', bg: '#fff8e1', title: 'Túi xách da thật hàng hiệu', price: '850.000đ', cond: 'Như mới (98%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 27 giao dịch', desc: 'Túi xách da bò thật, khóa kim loại chắc chắn, ít sử dụng, còn nguyên hộp.', defect: 'Không có', count: '1/5 ảnh', cat: 'Thời trang & Đồ dùng cá nhân', shippable: true },
+    p10: { icon: '🚲', bg: '#e0f7fa', title: 'Xe đạp Trek FX3 2022', price: '8.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 11 giao dịch', desc: 'Xe đạp Trek FX3 2022, khung nhôm nhẹ, phù hợp đi làm/tập thể dục, bảo dưỡng định kỳ.', defect: 'Không có', count: '1/6 ảnh', cat: 'Giải trí & Thể thao', shippable: true },
+    p11: { icon: '🚜', bg: '#efebe9', title: 'Máy in Canon LBP2900 còn mới', price: '1.200.000đ', cond: 'Như mới (95%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 8 giao dịch', desc: 'Máy in Canon LBP2900, in laser đen trắng, tốc độ nhanh, còn hộp mực gần đầy.', defect: 'Không có', count: '1/4 ảnh', cat: 'Văn phòng & Nông nghiệp', shippable: true },
   };
   const p = data[type] || data.p1;
   return (
@@ -77,13 +105,20 @@ function ProductScreen({ go, chkLogin, type }) {
           <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6 }}>{p.defect}</p>
         </div>
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: p.shippable ? '1fr 1fr' : '1fr', gap: 8, marginBottom: 8 }}>
           <button style={{ background: C.w, color: C.p, border: `1.5px solid ${C.p}`, padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-buy')}>💬 Chat người bán</button>
-          <button style={{ background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
-            onClick={() => { sessionStorage.setItem('sx_order_product', JSON.stringify({ title: p.title, price: p.price, seller: p.seller, icon: p.icon })); chkLogin('s-delivery'); }}>
-            🚚 Đặt giao hàng
-          </button>
+          {p.shippable && (
+            <button style={{ background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+              onClick={() => { sessionStorage.setItem('sx_order_product', JSON.stringify({ title: p.title, price: p.price, seller: p.seller, icon: p.icon })); chkLogin('s-delivery'); }}>
+              🚚 Đặt giao hàng
+            </button>
+          )}
         </div>
+        {!p.shippable && (
+          <div style={{ fontSize: 11, color: C.m, textAlign: 'center', marginBottom: 8 }}>
+            💡 Loại tin đăng này cần xem trực tiếp — liên hệ người bán để hẹn xem.
+          </div>
+        )}
         <button onClick={() => setShowReport(true)} style={{ width: '100%', background: 'none', color: C.m, border: '1px solid #e0d4f7', padding: 8, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>🚩 Báo cáo tin đăng</button>
       </div>
       <div style={{ height: 80 }} />
@@ -1500,6 +1535,15 @@ export default function App() {
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
       case 's-prod1':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p1" />;
       case 's-prod2':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p2" />;
+      case 's-prod3':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p3" />;
+      case 's-prod4':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p4" />;
+      case 's-prod5':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p5" />;
+      case 's-prod6':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p6" />;
+      case 's-prod7':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p7" />;
+      case 's-prod8':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p8" />;
+      case 's-prod9':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p9" />;
+      case 's-prod10':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p10" />;
+      case 's-prod11':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p11" />;
       case 's-chat-buy':         return <ChatScreen             go={go} type="buy" />;
       case 's-chat-buy-mine':    return <ChatScreen             go={go} type="buy" returnTo="s-account" />;
       case 's-chat-job':         return <ChatScreen             go={go} type="job" />;
