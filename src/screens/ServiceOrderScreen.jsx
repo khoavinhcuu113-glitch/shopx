@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { C } from '../constants';
 import { Shdr, Btn, Btn2 } from '../components/UI';
 import RatingScreen from './RatingScreen';
@@ -102,7 +102,6 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   function confirmDone() {
     setStatus('completed');
     setMsgs(m => [...m, { from: 'system', text: '🎉 Người thuê đã xác nhận hoàn thành! Đơn dịch vụ kết thúc.' }]);
-    setTimeout(() => setShowRating(true), 800);
   }
 
   function reportIssue() {
