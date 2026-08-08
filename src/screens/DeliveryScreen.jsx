@@ -33,7 +33,7 @@ export default function DeliveryScreen({ go, chkLogin, orderValue, hasCCCD = tru
 
   return (
     <div>
-      <Shdr title="Giao hàng cộng đồng" onBack={() => go('s-post')} />
+      <Shdr title="Giao hàng cộng đồng" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-home')} />
       <div style={{ padding: 12 }}>
 
         {/* Bản đồ minh họa */}

@@ -1554,7 +1554,7 @@ export default function App() {
       case 's-prod14':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p14" />;
       case 's-prod15':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p15" />;
       case 's-prod16':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p16" />;
-      case 's-chat-buy':         return <ChatScreen             go={go} type="buy" />;
+      case 's-chat-buy':         return <ChatScreen             go={go} type="buy" returnTo={sessionStorage.getItem('sx_product_return') || 's-home'} />;
       case 's-chat-buy-mine':    return <ChatScreen             go={go} type="buy" returnTo="s-account" />;
       case 's-chat-job':         return <ChatScreen             go={go} type="job" />;
       case 's-chat-worker':      return <ChatScreen             go={go} type="worker" />;
