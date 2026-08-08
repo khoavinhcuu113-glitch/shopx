@@ -41,17 +41,43 @@ const CATEGORY_ROUTES = [
   's-prod11',  // Văn phòng & Nông nghiệp
 ];
 function CategoriesScreen({ go, nav }) {
-  return (
-    <div>
-      <Shdr title="Tất cả danh mục" onBack={() => { go('s-home'); nav('ni-home'); }} />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: 12 }}>
-        {CATEGORIES.map((c, i) => (
+  // Tách 2 nhóm dựa trên chính CATEGORY_ROUTES đã có — route 's-service' = Dịch vụ, còn lại = Sản phẩm
+  const productItems = CATEGORIES.map((c, i) => ({ ...c, route: CATEGORY_ROUTES[i] })).filter(c => c.route !== 's-service');
+  const serviceItems = CATEGORIES.map((c, i) => ({ ...c, route: CATEGORY_ROUTES[i] })).filter(c => c.route === 's-service');
+
+  function renderGrid(items, iconBg) {
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {items.map((c, i) => (
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: '14px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-            onClick={() => { sessionStorage.setItem('sx_product_return', 's-categories'); go(CATEGORY_ROUTES[i] || 's-prod1'); }}>
-            <div style={{ width: 44, height: 44, background: C.pl, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{c.icon}</div>
+            onClick={() => { sessionStorage.setItem('sx_product_return', 's-categories'); go(c.route === 's-service' ? 's-service' : (c.route || 's-prod1')); }}>
+            <div style={{ width: 44, height: 44, background: iconBg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{c.icon}</div>
             <span style={{ fontSize: 12, fontWeight: 600, color: C.t, lineHeight: 1.3 }}>{c.name}</span>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Shdr title="Tất cả danh mục" onBack={() => { go('s-home'); nav('ni-home'); }} />
+      <div style={{ padding: 12 }}>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+          <span style={{ fontSize: 15 }}>🛍️</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: C.t }}>Sản phẩm</span>
+          <span style={{ fontSize: 11, color: C.m }}>({productItems.length} danh mục)</span>
+        </div>
+        {renderGrid(productItems, C.pl)}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '20px 0 10px' }}>
+          <span style={{ fontSize: 15 }}>🔧</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: C.t }}>Dịch vụ</span>
+          <span style={{ fontSize: 11, color: C.m }}>({serviceItems.length} danh mục)</span>
+        </div>
+        {renderGrid(serviceItems, '#e3f2fd')}
+
       </div>
       <div style={{ height: 80 }} />
     </div>
@@ -64,30 +90,57 @@ function ProductScreen({ go, chkLogin, type }) {
   const [reportReason, setReportReason] = useState('');
   const [reportNote, setReportNote] = useState('');
   const [reportSent, setReportSent] = useState(false);
+  const [imgIdx, setImgIdx] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
   const data = {
-    p1:  { icon: '📱', bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true },
-    p2:  { icon: '🏍️', bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh', cat: 'Xe cộ', shippable: true },
-    p3:  { icon: '🏢', bg: '#e0f2f1', title: 'Phòng trọ có gác lửng, gần KCN Biên Hòa 2', price: '2.500.000đ/tháng', cond: 'Đang cho thuê', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 12 giao dịch', desc: 'Phòng 25m², có gác lửng, WC riêng, chỗ để xe, gần KCN Biên Hòa 2, an ninh khu vực tốt.', defect: 'Không có', count: '1/5 ảnh', cat: 'Bất động sản', shippable: false },
-    p4:  { icon: '🐾', bg: '#fff3e0', title: 'Chó Poodle Tiny 2 tháng tuổi, đã tiêm phòng', price: '4.500.000đ', cond: 'Khỏe mạnh, đã tiêm phòng', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 9 giao dịch', desc: 'Poodle Tiny lông xoăn màu socola, 2 tháng tuổi, đã tiêm phòng mũi 1, có sổ khám thú y.', defect: 'Không có', count: '1/4 ảnh', cat: 'Thú cưng', shippable: true },
-    p5:  { icon: '🍖', bg: '#fce4ec', title: 'Bánh Trung Thu thủ công thập cẩm hộp 4 cái', price: '180.000đ', cond: 'Mới làm trong ngày', loc: 'Hố Nai', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 56 giao dịch', desc: 'Bánh trung thu thập cẩm nhà làm, không chất bảo quản, đặt trước 1 ngày.', defect: 'Không có', count: '1/3 ảnh', cat: 'Đồ ăn & Thực phẩm', shippable: true },
-    p6:  { icon: '❄️', bg: '#e3f2fd', title: 'Tủ lạnh Samsung Inverter 236L', price: '4.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 21 giao dịch', desc: 'Tủ lạnh Samsung Inverter 236L, 2 cánh, làm lạnh tốt, tiết kiệm điện, dùng 2 năm.', defect: 'Trầy nhẹ mặt trước.', count: '1/5 ảnh', cat: 'Tủ lạnh, máy lạnh, máy giặt', shippable: true },
-    p7:  { icon: '🛋️', bg: '#f3e5f5', title: 'Bàn ăn gỗ sồi 6 ghế', price: '3.500.000đ', cond: 'Như mới (95%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 15 giao dịch', desc: 'Bàn ăn gỗ sồi tự nhiên, kèm 6 ghế bọc nệm, phong cách hiện đại, không mối mọt.', defect: 'Không có', count: '1/6 ảnh', cat: 'Đồ gia dụng & Nội thất', shippable: true },
-    p8:  { icon: '👶', bg: '#e8f5e9', title: 'Xe đẩy em bé Fatboy gấp gọn', price: '1.800.000đ', cond: 'Đã dùng (còn tốt 85%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 18 giao dịch', desc: 'Xe đẩy Fatboy gấp gọn 1 tay, có mái che, giỏ đựng đồ rộng, phù hợp bé 0-3 tuổi.', defect: 'Bánh sau hơi mòn.', count: '1/4 ảnh', cat: 'Mẹ và bé', shippable: true },
-    p9:  { icon: '👕', bg: '#fff8e1', title: 'Túi xách da thật hàng hiệu', price: '850.000đ', cond: 'Như mới (98%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 27 giao dịch', desc: 'Túi xách da bò thật, khóa kim loại chắc chắn, ít sử dụng, còn nguyên hộp.', defect: 'Không có', count: '1/5 ảnh', cat: 'Thời trang & Đồ dùng cá nhân', shippable: true },
-    p10: { icon: '🚲', bg: '#e0f7fa', title: 'Xe đạp Trek FX3 2022', price: '8.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 11 giao dịch', desc: 'Xe đạp Trek FX3 2022, khung nhôm nhẹ, phù hợp đi làm/tập thể dục, bảo dưỡng định kỳ.', defect: 'Không có', count: '1/6 ảnh', cat: 'Giải trí & Thể thao', shippable: true },
-    p11: { icon: '🚜', bg: '#efebe9', title: 'Máy in Canon LBP2900 còn mới', price: '1.200.000đ', cond: 'Như mới (95%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 8 giao dịch', desc: 'Máy in Canon LBP2900, in laser đen trắng, tốc độ nhanh, còn hộp mực gần đầy.', defect: 'Không có', count: '1/4 ảnh', cat: 'Văn phòng & Nông nghiệp', shippable: true },
-    p12: { icon: '📱', bg: C.pl, title: 'iPhone 15 Pro 256GB', price: '28.500.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'iPhone 15 Pro 256GB chính hãng VN/A, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/6 ảnh', cat: 'Điện thoại', shippable: true, storeRoute: 's-store-business' },
-    p13: { icon: '📱', bg: C.pl, title: 'Samsung S24 Ultra 256GB', price: '22.900.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Samsung S24 Ultra 256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/6 ảnh', cat: 'Điện thoại', shippable: true, storeRoute: 's-store-business' },
-    p14: { icon: '💻', bg: '#e3f2fd', title: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'MacBook Air M2 8GB/256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/5 ảnh', cat: 'Laptop', shippable: true, storeRoute: 's-store-business' },
-    p15: { icon: '🎧', bg: '#f3e5f5', title: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'AirPods Pro thế hệ 2 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/4 ảnh', cat: 'Phụ kiện', shippable: true, storeRoute: 's-store-business' },
-    p16: { icon: '⌚', bg: '#fff8e1', title: 'Apple Watch Series 9', price: '9.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Apple Watch Series 9 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Tạm hết hàng, có thể đặt trước.', count: '1/4 ảnh', cat: 'Đồng hồ', shippable: false, storeRoute: 's-store-business' },
+    p1:  { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true },
+    p2:  { icon: '🏍️', imgs: ['🏍️','🔑','🪪','📋','🛞','⛽','🔧','✅'], bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh', cat: 'Xe cộ', shippable: true },
+    p3:  { icon: '🏢', imgs: ['🏢','🛏️','🚪','🚽','🅿️'], bg: '#e0f2f1', title: 'Phòng trọ có gác lửng, gần KCN Biên Hòa 2', price: '2.500.000đ/tháng', cond: 'Đang cho thuê', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 12 giao dịch', desc: 'Phòng 25m², có gác lửng, WC riêng, chỗ để xe, gần KCN Biên Hòa 2, an ninh khu vực tốt.', defect: 'Không có', count: '1/5 ảnh', cat: 'Bất động sản', shippable: false },
+    p4:  { icon: '🐾', imgs: ['🐾','🐕','💉','📋'], bg: '#fff3e0', title: 'Chó Poodle Tiny 2 tháng tuổi, đã tiêm phòng', price: '4.500.000đ', cond: 'Khỏe mạnh, đã tiêm phòng', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 9 giao dịch', desc: 'Poodle Tiny lông xoăn màu socola, 2 tháng tuổi, đã tiêm phòng mũi 1, có sổ khám thú y.', defect: 'Không có', count: '1/4 ảnh', cat: 'Thú cưng', shippable: true },
+    p5:  { icon: '🍖', imgs: ['🍖','📦','🎁'], bg: '#fce4ec', title: 'Bánh Trung Thu thủ công thập cẩm hộp 4 cái', price: '180.000đ', cond: 'Mới làm trong ngày', loc: 'Hố Nai', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 56 giao dịch', desc: 'Bánh trung thu thập cẩm nhà làm, không chất bảo quản, đặt trước 1 ngày.', defect: 'Không có', count: '1/3 ảnh', cat: 'Đồ ăn & Thực phẩm', shippable: true },
+    p6:  { icon: '❄️', imgs: ['❄️','🚪','🔌','📏','✅'], bg: '#e3f2fd', title: 'Tủ lạnh Samsung Inverter 236L', price: '4.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 21 giao dịch', desc: 'Tủ lạnh Samsung Inverter 236L, 2 cánh, làm lạnh tốt, tiết kiệm điện, dùng 2 năm.', defect: 'Trầy nhẹ mặt trước.', count: '1/5 ảnh', cat: 'Tủ lạnh, máy lạnh, máy giặt', shippable: true },
+    p7:  { icon: '🛋️', imgs: ['🛋️','🪑','📏','🎨','✅','📦'], bg: '#f3e5f5', title: 'Bàn ăn gỗ sồi 6 ghế', price: '3.500.000đ', cond: 'Như mới (95%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 15 giao dịch', desc: 'Bàn ăn gỗ sồi tự nhiên, kèm 6 ghế bọc nệm, phong cách hiện đại, không mối mọt.', defect: 'Không có', count: '1/6 ảnh', cat: 'Đồ gia dụng & Nội thất', shippable: true },
+    p8:  { icon: '👶', imgs: ['👶','🛞','☂️','✅'], bg: '#e8f5e9', title: 'Xe đẩy em bé Fatboy gấp gọn', price: '1.800.000đ', cond: 'Đã dùng (còn tốt 85%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 18 giao dịch', desc: 'Xe đẩy Fatboy gấp gọn 1 tay, có mái che, giỏ đựng đồ rộng, phù hợp bé 0-3 tuổi.', defect: 'Bánh sau hơi mòn.', count: '1/4 ảnh', cat: 'Mẹ và bé', shippable: true },
+    p9:  { icon: '👕', imgs: ['👕','🎀','🔒','✅','📦'], bg: '#fff8e1', title: 'Túi xách da thật hàng hiệu', price: '850.000đ', cond: 'Như mới (98%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 27 giao dịch', desc: 'Túi xách da bò thật, khóa kim loại chắc chắn, ít sử dụng, còn nguyên hộp.', defect: 'Không có', count: '1/5 ảnh', cat: 'Thời trang & Đồ dùng cá nhân', shippable: true },
+    p10: { icon: '🚲', imgs: ['🚲','⚙️','🛞','🔧','📏','✅'], bg: '#e0f7fa', title: 'Xe đạp Trek FX3 2022', price: '8.200.000đ', cond: 'Đã dùng (còn tốt 90%)', loc: 'Trảng Bom', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 11 giao dịch', desc: 'Xe đạp Trek FX3 2022, khung nhôm nhẹ, phù hợp đi làm/tập thể dục, bảo dưỡng định kỳ.', defect: 'Không có', count: '1/6 ảnh', cat: 'Giải trí & Thể thao', shippable: true },
+    p11: { icon: '🚜', imgs: ['🚜','🔌','📄','✅'], bg: '#efebe9', title: 'Máy in Canon LBP2900 còn mới', price: '1.200.000đ', cond: 'Như mới (95%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 8 giao dịch', desc: 'Máy in Canon LBP2900, in laser đen trắng, tốc độ nhanh, còn hộp mực gần đầy.', defect: 'Không có', count: '1/4 ảnh', cat: 'Văn phòng & Nông nghiệp', shippable: true },
+    p12: { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 15 Pro 256GB', price: '28.500.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'iPhone 15 Pro 256GB chính hãng VN/A, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/6 ảnh', cat: 'Điện thoại', shippable: true, storeRoute: 's-store-business' },
+    p13: { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'Samsung S24 Ultra 256GB', price: '22.900.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Samsung S24 Ultra 256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/6 ảnh', cat: 'Điện thoại', shippable: true, storeRoute: 's-store-business' },
+    p14: { icon: '💻', imgs: ['💻','📦','🔌','⌨️','✅'], bg: '#e3f2fd', title: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'MacBook Air M2 8GB/256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/5 ảnh', cat: 'Laptop', shippable: true, storeRoute: 's-store-business' },
+    p15: { icon: '🎧', imgs: ['🎧','📦','🔋','✅'], bg: '#f3e5f5', title: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'AirPods Pro thế hệ 2 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/4 ảnh', cat: 'Phụ kiện', shippable: true, storeRoute: 's-store-business' },
+    p16: { icon: '⌚', imgs: ['⌚','📦','🔋','✅'], bg: '#fff8e1', title: 'Apple Watch Series 9', price: '9.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Apple Watch Series 9 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Tạm hết hàng, có thể đặt trước.', count: '1/4 ảnh', cat: 'Đồng hồ', shippable: false, storeRoute: 's-store-business' },
   };
   const p = data[type] || data.p1;
   return (
     <div>
       <Shdr title="Chi tiết sản phẩm" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-categories')} />
-      <div style={{ background: p.bg, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: 60 }}>
-        {p.icon}<span style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 11, padding: '3px 8px', borderRadius: 10 }}>{p.count}</span>
+      <div
+        onTouchStart={e => setTouchStartX(e.touches[0].clientX)}
+        onTouchEnd={e => {
+          if (touchStartX === null) return;
+          const dx = e.changedTouches[0].clientX - touchStartX;
+          const imgs = p.imgs || [p.icon];
+          if (dx < -40) setImgIdx(i => Math.min(i + 1, imgs.length - 1));   // vuốt trái -> ảnh sau
+          if (dx > 40)  setImgIdx(i => Math.max(i - 1, 0));                  // vuốt phải -> ảnh trước
+          setTouchStartX(null);
+        }}
+        style={{ background: p.bg, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: 60, overflow: 'hidden' }}>
+        {(p.imgs || [p.icon])[imgIdx]}
+        <span style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 11, padding: '3px 8px', borderRadius: 10 }}>{imgIdx + 1}/{(p.imgs || [p.icon]).length} ảnh</span>
+        {(p.imgs || [p.icon]).length > 1 && (
+          <>
+            <button onClick={() => setImgIdx(i => Math.max(i - 1, 0))} disabled={imgIdx === 0}
+              style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 16, cursor: imgIdx === 0 ? 'default' : 'pointer', opacity: imgIdx === 0 ? 0.3 : 1 }}>‹</button>
+            <button onClick={() => setImgIdx(i => Math.min(i + 1, (p.imgs || [p.icon]).length - 1))} disabled={imgIdx === (p.imgs || [p.icon]).length - 1}
+              style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 16, cursor: imgIdx === (p.imgs || [p.icon]).length - 1 ? 'default' : 'pointer', opacity: imgIdx === (p.imgs || [p.icon]).length - 1 ? 0.3 : 1 }}>›</button>
+            <div style={{ position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 4 }}>
+              {(p.imgs || [p.icon]).map((_, i) => (
+                <div key={i} onClick={() => setImgIdx(i)}
+                  style={{ width: i === imgIdx ? 14 : 6, height: 6, borderRadius: 3, background: i === imgIdx ? '#fff' : 'rgba(255,255,255,0.5)', cursor: 'pointer', transition: 'width 0.2s' }} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
       <div style={{ padding: 12 }}>
         <div style={{ fontSize: 16, fontWeight: 600, color: C.t, marginBottom: 4 }}>{p.title}</div>
@@ -1538,22 +1591,22 @@ export default function App() {
     switch (screen) {
       case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
-      case 's-prod1':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p1" />;
-      case 's-prod2':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p2" />;
-      case 's-prod3':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p3" />;
-      case 's-prod4':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p4" />;
-      case 's-prod5':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p5" />;
-      case 's-prod6':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p6" />;
-      case 's-prod7':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p7" />;
-      case 's-prod8':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p8" />;
-      case 's-prod9':            return <ProductScreen          go={go} chkLogin={chkLogin} type="p9" />;
-      case 's-prod10':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p10" />;
-      case 's-prod11':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p11" />;
-      case 's-prod12':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p12" />;
-      case 's-prod13':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p13" />;
-      case 's-prod14':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p14" />;
-      case 's-prod15':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p15" />;
-      case 's-prod16':           return <ProductScreen          go={go} chkLogin={chkLogin} type="p16" />;
+      case 's-prod1':            return <ProductScreen          key="p1" go={go} chkLogin={chkLogin} type="p1" />;
+      case 's-prod2':            return <ProductScreen          key="p2" go={go} chkLogin={chkLogin} type="p2" />;
+      case 's-prod3':            return <ProductScreen          key="p3" go={go} chkLogin={chkLogin} type="p3" />;
+      case 's-prod4':            return <ProductScreen          key="p4" go={go} chkLogin={chkLogin} type="p4" />;
+      case 's-prod5':            return <ProductScreen          key="p5" go={go} chkLogin={chkLogin} type="p5" />;
+      case 's-prod6':            return <ProductScreen          key="p6" go={go} chkLogin={chkLogin} type="p6" />;
+      case 's-prod7':            return <ProductScreen          key="p7" go={go} chkLogin={chkLogin} type="p7" />;
+      case 's-prod8':            return <ProductScreen          key="p8" go={go} chkLogin={chkLogin} type="p8" />;
+      case 's-prod9':            return <ProductScreen          key="p9" go={go} chkLogin={chkLogin} type="p9" />;
+      case 's-prod10':           return <ProductScreen          key="p10" go={go} chkLogin={chkLogin} type="p10" />;
+      case 's-prod11':           return <ProductScreen          key="p11" go={go} chkLogin={chkLogin} type="p11" />;
+      case 's-prod12':           return <ProductScreen          key="p12" go={go} chkLogin={chkLogin} type="p12" />;
+      case 's-prod13':           return <ProductScreen          key="p13" go={go} chkLogin={chkLogin} type="p13" />;
+      case 's-prod14':           return <ProductScreen          key="p14" go={go} chkLogin={chkLogin} type="p14" />;
+      case 's-prod15':           return <ProductScreen          key="p15" go={go} chkLogin={chkLogin} type="p15" />;
+      case 's-prod16':           return <ProductScreen          key="p16" go={go} chkLogin={chkLogin} type="p16" />;
       case 's-chat-buy':         return <ChatScreen             go={go} type="buy" returnTo={sessionStorage.getItem('sx_product_return') || 's-home'} />;
       case 's-chat-buy-mine':    return <ChatScreen             go={go} type="buy" returnTo="s-account" />;
       case 's-chat-job':         return <ChatScreen             go={go} type="job" />;
