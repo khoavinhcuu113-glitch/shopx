@@ -53,7 +53,7 @@ export function RatingStats({ role = 'seller', data }) {
 }
 
 // Màn hình đánh giá sau giao dịch
-export default function RatingScreen({ go, target = 'seller', onSkip }) {
+export default function RatingScreen({ go, target = 'seller', onSkip, onDone }) {
   const [thumb, setThumb]       = useState(null); // 'up' | 'down'
   const [comment, setComment]   = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -98,7 +98,7 @@ export default function RatingScreen({ go, target = 'seller', onSkip }) {
             Tổng: 1.255 SX Points
           </div>
         </div>
-        <Btn onClick={() => go('s-home')}>🏠 Về trang chủ</Btn>
+        <Btn onClick={() => onDone ? onDone() : go('s-home')}>🏠 Về trang chủ</Btn>
       </div>
     );
   }
@@ -167,7 +167,7 @@ export default function RatingScreen({ go, target = 'seller', onSkip }) {
 
       {/* Nút bỏ qua */}
       <button
-        onClick={() => go('s-home')}
+        onClick={() => onSkip ? onSkip() : go('s-home')}
         style={{ width: '100%', background: 'none', border: 'none', color: C.m, fontSize: 13, cursor: 'pointer', padding: 8 }}>
         Bỏ qua — không đánh giá
       </button>

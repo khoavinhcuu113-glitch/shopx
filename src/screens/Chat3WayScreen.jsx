@@ -260,15 +260,8 @@ export default function Chat3WayScreen({ go }) {
           go={go}
           target={ratingTarget}
           onSkip={() => handleRatingDone(ratingTarget)}
+          onDone={() => handleRatingDone(ratingTarget)}
         />
-
-        {/* Override nút về trang chủ để xử lý multi-step */}
-        <div style={{ padding: '0 16px 16px' }}>
-          <button onClick={() => handleRatingDone(ratingTarget)}
-            style={{ width: '100%', background: 'none', border: 'none', color: C.m, fontSize: 12, cursor: 'pointer' }}>
-            Bỏ qua — đánh giá sau
-          </button>
-        </div>
       </div>
     );
   }

@@ -137,15 +137,9 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
         <RatingScreen
           go={go}
           target={role === 'hirer' ? 'worker' : 'seller'}
-          onSkip={() => { setShowRating(false); go(returnTo); }}
+          onSkip={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-home'); }}
+          onDone={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-home'); }}
         />
-
-        <div style={{ padding: '0 16px 16px' }}>
-          <button onClick={() => { setShowRating(false); go(returnTo); }}
-            style={{ width: '100%', background: 'none', border: 'none', color: C.m, fontSize: 12, cursor: 'pointer' }}>
-            Bỏ qua
-          </button>
-        </div>
       </div>
     );
   }
