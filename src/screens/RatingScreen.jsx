@@ -66,7 +66,7 @@ export default function RatingScreen({ go, target = 'seller', onSkip }) {
     seller:  { name: 'SX-00127 (Người bán)',       icon: '🏷️', role: 'Người bán' },
     shipper: { name: 'SP-001 (Trần Văn Cường)',      icon: '🚚', role: 'Shipper' },
     worker:  chatContact
-      ? { name: `${chatContact.sxId} (${chatContact.trade})`, icon: chatContact.trade.includes('KOL') ? '🎥' : '🔨', role: chatContact.trade.includes('KOL') ? 'KOL/KOC' : 'Thợ' }
+      ? { name: `${chatContact.name} • ${chatContact.sxId}`, icon: chatContact.needsContentLink ? '🎥' : '🔨', role: chatContact.trade }
       : { name: 'SX-00199 (Thợ điện)',          icon: '🔨', role: 'Thợ' },
     hirer:   { name: 'SX-00001 (Người thuê)',        icon: '👤', role: 'Người thuê' },
   };

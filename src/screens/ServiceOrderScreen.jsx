@@ -66,7 +66,6 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   // 2 thuộc tính độc lập — không đoán qua tên nghề, xử lý đúng cả trường hợp lai (cần cả 2)
   const needsAddress     = contact ? !!contact.needsAddress     : true;
   const needsContentLink = contact ? !!contact.needsContentLink : false;
-  const roleNoun    = workerTrade;
 
   const [status, setStatus]         = useState('waiting');
   const [hoursElapsed, setHours]    = useState(0);
@@ -120,14 +119,14 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
       <div style={{ position: 'absolute', inset: 0, background: C.w, overflow: 'auto' }}>
         <div style={{ background: C.p, padding: '10px 16px' }}>
           <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>
-            Đánh giá {target === 'worker' ? roleNoun : 'Người thuê'}
+            Đánh giá {target === 'worker' ? workerName : 'Người thuê'}
           </div>
         </div>
 
         {/* 2 chiều */}
         <div style={{ background: C.pl, padding: '8px 16px', display: 'flex', gap: 8 }}>
           {[
-            { key: role === 'hirer' ? 'worker' : 'hirer', label: role === 'hirer' ? `1. Đánh giá ${roleNoun}` : '1. Đánh giá Người thuê' },
+            { key: role === 'hirer' ? 'worker' : 'hirer', label: role === 'hirer' ? `1. Đánh giá ${workerName}` : '1. Đánh giá Người thuê' },
             { key: role === 'hirer' ? 'hirer' : 'worker',  label: '2. Nhận đánh giá' },
           ].map((s, i) => (
             <div key={s.key} style={{ flex: 1, textAlign: 'center', padding: '6px 0', borderRadius: 8, background: i === 0 ? C.p : '#e8f5e9', color: i === 0 ? '#fff' : '#2e7d32', fontSize: 12, fontWeight: i === 0 ? 600 : 400 }}>
@@ -280,7 +279,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
             </div>
             <div style={{ fontSize: 11, color: '#388e3c', marginBottom: 10 }}>
               {needsContentLink ? 'Kiểm tra nội dung đã đăng đúng thỏa thuận. ' : 'Kiểm tra kết quả công việc. '}
-              Nếu OK bấm xác nhận để hoàn tất đơn và đánh giá {roleNoun}.
+              Nếu OK bấm xác nhận để hoàn tất đơn và đánh giá {workerName}.
             </div>
             <Btn onClick={confirmDone} style={{ marginBottom: 8 }}>
               ✅ Xác nhận công việc hoàn thành
@@ -297,8 +296,8 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
           <div style={{ background: C.pl, borderRadius: 10, padding: 10, margin: '8px 0', border: `1px solid ${C.b}` }}>
             <div style={{ fontSize: 11, color: C.pd }}>
               {status === 'waiting'
-                ? `⏳ Đang chờ ${roleNoun} bắt đầu. Hệ thống sẽ thông báo khi bắt đầu công việc.`
-                : `🔨 ${roleNoun} đang thực hiện công việc. Hệ thống sẽ thông báo khi hoàn thành.`}
+                ? `⏳ Đang chờ ${workerName} bắt đầu. Hệ thống sẽ thông báo khi bắt đầu công việc.`
+                : `🔨 ${workerName} đang thực hiện công việc. Hệ thống sẽ thông báo khi hoàn thành.`}
             </div>
           </div>
         )}
@@ -333,7 +332,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
         <div style={{ background: '#f5f5f5', borderRadius: 8, padding: 8, marginTop: 8 }}>
           <div style={{ fontSize: 10, color: C.m, marginBottom: 6 }}>👁️ Demo — Xem theo vai trò:</div>
           <div style={{ display: 'flex', gap: 6 }}>
-            {[{ val: 'worker', label: `🔨 ${roleNoun}` }, { val: 'hirer', label: '👤 Người thuê' }].map(r => (
+            {[{ val: 'worker', label: '🔨 Đối tác' }, { val: 'hirer', label: '👤 Người thuê' }].map(r => (
               <button key={r.val} onClick={() => go(r.val === 'worker' ? 's-service-order-worker' : 's-service-order-hirer')}
                 style={{ flex: 1, padding: '6px 8px', borderRadius: 6, border: `1px solid ${role === r.val ? C.p : '#ccc'}`, background: role === r.val ? C.pl : '#fff', color: role === r.val ? C.p : C.m, fontSize: 11, cursor: 'pointer', fontWeight: role === r.val ? 600 : 400 }}>
                 {r.label}
