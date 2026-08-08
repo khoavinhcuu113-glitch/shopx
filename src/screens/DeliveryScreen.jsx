@@ -4,10 +4,14 @@ import { Shdr, Infobox } from '../components/UI';
 import ShipperCard from '../components/ShipperCard';
 import TrackingSteps from '../components/TrackingSteps';
 
-export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000, hasCCCD = true, buyCount = 0, incrementBuyCount = () => {} }) {
+export default function DeliveryScreen({ go, chkLogin, orderValue, hasCCCD = true, buyCount = 0, incrementBuyCount = () => {} }) {
+  const product = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_order_product') || 'null'); } catch (e) { return null; }
+  })();
+  const resolvedOrderValue = orderValue || (product ? parseInt(product.price.replace(/\D/g, '')) : 18500000) || 18500000;
   const [selectedShipper, setSelectedShipper] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
-  const platformFee = calcPlatformFee(orderValue);
+  const platformFee = calcPlatformFee(resolvedOrderValue);
 
   function handleSelectShipper(shipper) {
     setSelectedShipper(shipper);
@@ -23,6 +27,7 @@ export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000, ha
     }
     incrementBuyCount();
     // Trigger tạo chat 3 bên
+    sessionStorage.setItem('sx_3way_return', 's-delivery');
     go('s-chat-3way');
   }
 
@@ -64,7 +69,7 @@ export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000, ha
         {/* Phí nền tảng ShopX */}
         <div style={{ background: '#e8f5e9', border: '1px solid #c8e6c9', borderRadius: 10, padding: '10px 12px', fontSize: 12, marginBottom: 12 }}>
           <div style={{ fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>📋 Phí nền tảng ShopX</div>
-          <div style={{ color: '#388e3c' }}>Đơn {orderValue.toLocaleString('vi-VN')}đ → Phí: <strong>{platformFee.toLocaleString('vi-VN')}đ</strong></div>
+          <div style={{ color: '#388e3c' }}>Đơn {resolvedOrderValue.toLocaleString('vi-VN')}đ → Phí: <strong>{platformFee.toLocaleString('vi-VN')}đ</strong></div>
           <div style={{ fontSize: 10, color: '#4caf50', marginTop: 2 }}>Thu sau khi giao hàng thành công</div>
         </div>
 
@@ -90,7 +95,7 @@ export default function DeliveryScreen({ go, chkLogin, orderValue = 18500000, ha
         <div style={{ background: C.pl, border: `1px solid ${C.b}`, borderRadius: 10, padding: '10px 12px', marginBottom: 10 }}>
           <div style={{ fontSize: 12, fontWeight: 600, color: C.pd, marginBottom: 4 }}>🛡️ Bảo hiểm hàng hóa</div>
           <div style={{ fontSize: 11, color: C.m, marginBottom: 6 }}>
-            Đơn {orderValue.toLocaleString('vi-VN')}đ → Phí bảo hiểm: <strong>20.000đ</strong> (qua PTI/MIC)
+            Đơn {resolvedOrderValue.toLocaleString('vi-VN')}đ → Phí bảo hiểm: <strong>20.000đ</strong> (qua PTI/MIC)
           </div>
           <button style={{ background: '#ccc', color: '#888', border: 'none', padding: '7px 14px', borderRadius: 8, fontSize: 11, cursor: 'not-allowed', fontWeight: 600 }}>
             🛡️ Mua bảo hiểm hàng hóa — Sắp có

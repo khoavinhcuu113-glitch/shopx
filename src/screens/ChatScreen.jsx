@@ -60,8 +60,8 @@ export default function ChatScreen({ go, type, returnTo }) {
     buy:    { title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB', t1: 'Nguyễn Văn Bình (người mua)', v1: 'SX-00234', t2: 'Anh Trần Minh Tuấn (người bán)', v2: 'SX-00127', ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e', ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa' },
     job:    { title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh', t1: 'Anh Trần Văn Nhân (thợ)', v1: 'SX-00199', t2: 'Nguyễn Văn Bình (người thuê)', v2: 'SX-00234', ctxBg: '#fff3e0', ctxBorder: '#ffe0b2', ctxColor: '#e65100', ctxTitle: '🔧 Tin tìm thợ — Sửa máy lạnh', ctxDesc: 'Ngân sách: 200.000đ • Biên Hòa' },
     worker: contact
-      ? { title: `Liên hệ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, sub: `Hồ sơ • ${contact.trade}`, t1: 'Người cần dịch vụ (bạn)', v1: 'SX-00001', t2: contact.trade, v2: contact.sxId, ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: `✅ Liên hệ từ Hồ sơ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, ctxDesc: `${contact.name} • ${contact.exp} • ${contact.price}` }
-      : { title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện', t1: 'Người cần thợ (bạn)', v1: 'SX-00001', t2: 'Thợ điện', v2: 'SX-00199', ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: '✅ Liên hệ từ Hồ sơ thợ', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ' },
+      ? { title: `Liên hệ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, sub: `Hồ sơ • ${contact.trade}`, t1: 'Người thuê (bạn)', v1: 'Khoavinhcuu113 • SX-00001', t2: contact.trade, v2: `${contact.name} • ${contact.sxId}`, ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: `✅ Liên hệ từ Hồ sơ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, ctxDesc: `${contact.name} • ${contact.exp} • ${contact.price}` }
+      : { title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện', t1: 'Người thuê (bạn)', v1: 'Khoavinhcuu113 • SX-00001', t2: 'Thợ điện', v2: 'Anh Trần Văn Nhân • SX-00199', ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: '✅ Liên hệ từ Hồ sơ thợ', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ' },
   };
   const c = cfgMap[type] || cfgMap.buy;
 
@@ -104,10 +104,16 @@ export default function ChatScreen({ go, type, returnTo }) {
             <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>{c.sub}</div>
           </div>
         </div>
-        <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between' }}>
-          <div><div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t1}</div><div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{c.v1}</div></div>
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 18 }}>↔</span>
-          <div style={{ textAlign: 'right' }}><div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t2}</div><div style={{ fontSize: 11, fontWeight: 600, color: '#fff' }}>{c.v2}</div></div>
+        <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t1}</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.v1}</div>
+          </div>
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 18, flexShrink: 0 }}>↔</span>
+          <div style={{ flex: 1, minWidth: 0, textAlign: 'right' }}>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.7)' }}>{c.t2}</div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.v2}</div>
+          </div>
         </div>
       </div>
 
@@ -441,7 +447,7 @@ export default function ChatScreen({ go, type, returnTo }) {
                   Khi Shipper đồng ý, chat 3 bên sẽ tự động mở.<br/>
                   Nếu sau 60 phút không phản hồi, bạn có thể chọn Shipper khác.
                 </div>
-                <button onClick={() => go('s-chat-3way')}
+                <button onClick={() => { sessionStorage.setItem('sx_3way_return', backTarget); go('s-chat-3way'); }}
                   style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 11, borderRadius: 10, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
                   💬 Vào chat 3 bên (demo)
                 </button>

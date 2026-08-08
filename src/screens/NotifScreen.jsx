@@ -203,7 +203,7 @@ export default function NotifScreen({ go }) {
                   </div>
                 </div>
 
-                <button onClick={() => go('s-chat-3way')} style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 10, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600, marginTop: 8 }}>
+                <button onClick={() => { sessionStorage.setItem('sx_3way_return', 's-notif'); go('s-chat-3way'); }} style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 10, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600, marginTop: 8 }}>
                   💬 Vào chat 3 bên
                 </button>
               </div>

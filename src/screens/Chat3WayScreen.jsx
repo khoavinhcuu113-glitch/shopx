@@ -188,9 +188,14 @@ function ShipperView({ setShipperArrived, shipperArrived, otpDone, setOtpDone, m
 
 // ── MAIN ──
 export default function Chat3WayScreen({ go }) {
+  const product = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_order_product') || 'null'); } catch (e) { return null; }
+  })();
+  const productTitle = product ? product.title : 'iPhone 13 Pro';
+
   const [msgs, setMsgs]               = useState([
     { from: 'system',  text: '🚀 Chat 3 bên đã được tạo. Cả 3 bên cùng trao đổi tại đây.' },
-    { from: 'seller',  name: 'Anh Trần Minh Tuấn • SX-00127 (Người bán)',  text: 'Chào Shipper! Hàng iPhone 13 Pro đóng gói kỹ rồi. Địa chỉ: 123 Nguyễn Ái Quốc, Biên Hòa.' },
+    { from: 'seller',  name: 'Anh Trần Minh Tuấn • SX-00127 (Người bán)',  text: `Chào Shipper! Hàng ${productTitle} đóng gói kỹ rồi. Địa chỉ: 123 Nguyễn Ái Quốc, Biên Hòa.` },
     { from: 'shipper', name: 'Trần Văn Cường • SP-001 (Shipper)',             text: 'Dạ mình sẽ qua lấy lúc 18h. Người mua vui lòng có mặt tại Hố Nai nhé!' },
     { from: 'buyer',   name: 'Nguyễn Văn Bình • SX-00234 (Người mua)',       text: 'Mình ở nhà cả buổi tối. SĐT: 0901234567.' },
   ]);
@@ -273,10 +278,10 @@ export default function Chat3WayScreen({ go }) {
       {/* Header */}
       <div style={{ background: C.p, padding: '10px 16px', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-          <button onClick={() => go('s-delivery')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
+          <button onClick={() => go(sessionStorage.getItem('sx_3way_return') || 's-delivery')} style={{ color: '#fff', border: 'none', background: 'none', cursor: 'pointer', fontSize: 20, padding: 4 }}>←</button>
           <div style={{ flex: 1 }}>
             <div style={{ color: '#fff', fontSize: 14, fontWeight: 600 }}>Chat 3 bên</div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>iPhone 13 Pro • Người bán: SX-00127 × Người mua: SX-00234 × Shipper: SP-001</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11 }}>{productTitle} • Người bán: SX-00127 × Người mua: SX-00234 × Shipper: SP-001</div>
           </div>
         </div>
         <div style={{ background: 'rgba(255,255,255,0.15)', borderRadius: 8, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>

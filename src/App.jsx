@@ -79,7 +79,10 @@ function ProductScreen({ go, chkLogin, type }) {
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
           <button style={{ background: C.w, color: C.p, border: `1.5px solid ${C.p}`, padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-buy')}>💬 Chat người bán</button>
-          <button style={{ background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-delivery')}>🚚 Đặt giao hàng</button>
+          <button style={{ background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            onClick={() => { sessionStorage.setItem('sx_order_product', JSON.stringify({ title: p.title, price: p.price, seller: p.seller, icon: p.icon })); chkLogin('s-delivery'); }}>
+            🚚 Đặt giao hàng
+          </button>
         </div>
         <button onClick={() => setShowReport(true)} style={{ width: '100%', background: 'none', color: C.m, border: '1px solid #e0d4f7', padding: 8, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>🚩 Báo cáo tin đăng</button>
       </div>

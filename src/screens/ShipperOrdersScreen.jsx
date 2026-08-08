@@ -93,7 +93,7 @@ export default function ShipperOrdersScreen({ go }) {
               🔐 OTP sẽ được tạo và gửi đến người mua.<br/>
               Khi giao hàng thành công, yêu cầu người mua cung cấp OTP hoặc cho quét QR.
             </div>
-            <button onClick={() => go('s-chat-3way')}
+            <button onClick={() => { sessionStorage.setItem('sx_3way_return', 's-shipper-orders'); go('s-chat-3way'); }}
               style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 11, borderRadius: 10, fontSize: 13, cursor: 'pointer', fontWeight: 600 }}>
               💬 Vào chat 3 bên với người bán & người mua
             </button>
