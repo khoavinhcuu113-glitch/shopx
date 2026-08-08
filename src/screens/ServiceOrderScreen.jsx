@@ -137,8 +137,8 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
         <RatingScreen
           go={go}
           target={role === 'hirer' ? 'worker' : 'seller'}
-          onSkip={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-home'); }}
-          onDone={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-home'); }}
+          onSkip={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-service'); }}
+          onDone={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-service'); }}
         />
       </div>
     );
