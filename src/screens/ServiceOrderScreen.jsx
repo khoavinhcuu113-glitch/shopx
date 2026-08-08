@@ -67,10 +67,17 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   const needsAddress     = contact ? !!contact.needsAddress     : true;
   const needsContentLink = contact ? !!contact.needsContentLink : false;
 
+  const contract = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_contract') || 'null'); } catch (e) { return null; }
+  })();
+  const needsApproval = needsContentLink && contract && contract.requireApproval; // bắt buộc Người thuê duyệt trước khi Đối tác báo hoàn thành
+
   const [status, setStatus]         = useState('waiting');
   const [hoursElapsed, setHours]    = useState(0);
   const [showRating, setShowRating] = useState(false);
   const [rated, setRated]           = useState({ worker: false, hirer: false });
+  const [contentApproved, setContentApproved]   = useState(false);
+  const [contentApprovedAt, setContentApprovedAt] = useState('');
   const [msgs, setMsgs]             = useState([
     { from: 'system', text: '✅ Hai bên đã xác nhận. Đơn dịch vụ bắt đầu.' },
     { from: 'hirer',  name: 'SX-00001 (Người thuê)', text: 'Chào bạn, mình đã sẵn sàng trao đổi tiếp về công việc này.' },
@@ -80,6 +87,14 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
 
   // Giả lập đếm giờ (demo)
   function simulateHours(h) { setHours(h); }
+
+  function approveContent() {
+    const now = new Date();
+    const stamp = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} ${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}`;
+    setContentApproved(true);
+    setContentApprovedAt(stamp);
+    setMsgs(m => [...m, { from: 'system', text: `✅ Người thuê đã xem và đồng ý nội dung lúc ${stamp}. Đối tác có thể đăng công khai và báo hoàn thành.` }]);
+  }
 
   function sendMsg() {
     if (!input.trim()) return;
@@ -95,6 +110,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
   }
 
   function markDone() {
+    if (needsApproval && !contentApproved) { alert('Cần người thuê xác nhận đã duyệt nội dung trước khi báo hoàn thành.'); return; }
     setStatus('done_worker');
     setMsgs(m => [...m, { from: 'system', text: '✅ Đối tác báo đã hoàn thành. Chờ người thuê xác nhận.' }]);
   }
@@ -139,6 +155,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
           target={role === 'hirer' ? 'worker' : 'seller'}
           onSkip={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-service'); }}
           onDone={() => { setShowRating(false); go(role === 'hirer' ? 's-my-store' : 's-service'); }}
+          doneLabel={role === 'hirer' ? '🏪 Về gian hàng của tôi' : '🔧 Về Dịch vụ & Việc làm'}
         />
       </div>
     );
@@ -247,8 +264,33 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
           </div>
         )}
 
+        {/* NGƯỜI THUÊ — Duyệt nội dung trước khi Đối tác được báo hoàn thành */}
+        {role === 'hirer' && status === 'working' && needsApproval && !contentApproved && (
+          <div style={{ background: '#fff3e0', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ffb74d' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100', marginBottom: 6 }}>
+              📋 Cần duyệt nội dung trước khi đăng công khai
+            </div>
+            <div style={{ fontSize: 11, color: '#bf360c', marginBottom: 10, lineHeight: 1.5 }}>
+              Đối tác đã cho bạn xem nội dung nháp (qua kênh bất kỳ — Zalo, gọi video, chụp màn hình...). Sau khi xem xong và đồng ý, bấm xác nhận bên dưới — hệ thống chỉ ghi nhận thời điểm xác nhận, không lưu file.
+            </div>
+            <Btn onClick={approveContent}>✅ Tôi đã xem và đồng ý nội dung</Btn>
+          </div>
+        )}
+
+        {/* ĐỐI TÁC — Đang chờ duyệt nội dung */}
+        {role === 'worker' && status === 'working' && needsApproval && !contentApproved && (
+          <div style={{ background: '#fff3e0', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ffb74d' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100', marginBottom: 6 }}>
+              ⏳ Đang chờ người thuê duyệt nội dung
+            </div>
+            <div style={{ fontSize: 11, color: '#bf360c' }}>
+              Theo hợp đồng đã thỏa thuận, cần người thuê xác nhận đã xem và đồng ý nội dung trước khi bạn được đăng công khai và báo hoàn thành.
+            </div>
+          </div>
+        )}
+
         {/* ĐỐI TÁC — Báo hoàn thành */}
-        {role === 'worker' && status === 'working' && (
+        {role === 'worker' && status === 'working' && (!needsApproval || contentApproved) && (
           <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 12, margin: '8px 0', border: '1px solid #c8e6c9' }}>
             <div style={{ fontSize: 12, fontWeight: 600, color: '#2e7d32', marginBottom: 6 }}>
               ✅ Công việc đã xong?
@@ -256,6 +298,7 @@ export default function ServiceOrderScreen({ go, role = 'worker' }) {
             <div style={{ fontSize: 11, color: '#388e3c', marginBottom: 10 }}>
               Bấm "Đã hoàn thành" để thông báo cho người thuê xác nhận và nhận đánh giá.
               {needsContentLink && ' Nhớ đăng nội dung lên đúng nền tảng đã thỏa thuận trước khi báo hoàn thành.'}
+              {contentApproved && ` Người thuê đã duyệt nội dung lúc ${contentApprovedAt}.`}
             </div>
             <Btn onClick={markDone}>✅ Đã hoàn thành công việc</Btn>
             <div style={{ fontSize: 10, color: C.m, marginTop: 6, textAlign: 'center' }}>

@@ -20,21 +20,26 @@ export default function ChatScreen({ go, type, returnTo }) {
   const [msgs, setMsgs]           = useState(getInitMsgs(type));
 
   // Thẻ hợp đồng — trích xuất nội dung thỏa thuận thành bản cố định
-  const [contract, setContract]       = useState(null); // null | { price, location, platform, duration, status }
+  const [contract, setContract]       = useState(null); // null | { price, location, platform, duration, requireApproval, status }
   const [showContractForm, setShowContractForm] = useState(false);
   const [cfPrice, setCfPrice]         = useState(contact ? contact.price : '');
   const [cfLocation, setCfLocation]   = useState('Biên Hòa, Đồng Nai');
   const [cfPlatform, setCfPlatform]   = useState('TikTok');
   const [cfDuration, setCfDuration]   = useState('3 ngày kể từ khi xác nhận');
+  const [cfRequireApproval, setCfRequireApproval] = useState(false);
 
   function proposeContract() {
     if (!cfPrice.trim()) { alert('Vui lòng nhập giá thỏa thuận.'); return; }
-    setContract({ price: cfPrice, location: needsAddress ? cfLocation : null, platform: needsContentLink ? cfPlatform : null, duration: cfDuration, status: 'proposed' });
+    setContract({ price: cfPrice, location: needsAddress ? cfLocation : null, platform: needsContentLink ? cfPlatform : null, duration: cfDuration, requireApproval: needsContentLink && cfRequireApproval, status: 'proposed' });
     setShowContractForm(false);
   }
 
   function confirmContract() {
-    setContract(c => ({ ...c, status: 'confirmed' }));
+    setContract(c => {
+      const next = { ...c, status: 'confirmed' };
+      sessionStorage.setItem('sx_contract', JSON.stringify(next));
+      return next;
+    });
   }
 
   function editContract() {
@@ -164,6 +169,9 @@ export default function ChatScreen({ go, type, returnTo }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Nền tảng</span><span style={{ fontWeight: 600 }}>{contract.platform}</span></div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Thời hạn</span><span style={{ fontWeight: 600 }}>{contract.duration}</span></div>
+              {contract.requireApproval && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Duyệt trước khi đăng</span><span style={{ fontWeight: 600, color: '#e65100' }}>Bắt buộc</span></div>
+              )}
             </div>
             {contract.status === 'proposed' && (
               <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #ffe082' }}>
@@ -216,6 +224,14 @@ export default function ChatScreen({ go, type, returnTo }) {
               <input value={cfDuration} onChange={e => setCfDuration(e.target.value)}
                 style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
             </div>
+            {needsContentLink && (
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 10, cursor: 'pointer', background: '#fff3e0', borderRadius: 8, padding: '8px 10px' }}>
+                <input type="checkbox" checked={cfRequireApproval} onChange={e => setCfRequireApproval(e.target.checked)} style={{ accentColor: C.p, marginTop: 2 }} />
+                <span style={{ fontSize: 11, color: '#e65100', lineHeight: 1.5 }}>
+                  Yêu cầu duyệt nội dung trước khi đăng công khai — đối tác cho xem trước (qua kênh bất kỳ), bạn xác nhận đã xem trong chat trước khi họ được phép báo hoàn thành.
+                </span>
+              </label>
+            )}
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={proposeContract}
                 style={{ flex: 2, background: C.p, color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
