@@ -84,15 +84,8 @@ function CategoriesScreen({ go, nav }) {
   );
 }
 
-// ─── PRODUCT SCREEN ───────────────────────────────────────────────────
-function ProductScreen({ go, chkLogin, type }) {
-  const [showReport, setShowReport] = useState(false);
-  const [reportReason, setReportReason] = useState('');
-  const [reportNote, setReportNote] = useState('');
-  const [reportSent, setReportSent] = useState(false);
-  const [imgIdx, setImgIdx] = useState(0);
-  const [touchStartX, setTouchStartX] = useState(null);
-  const data = {
+// ─── DỮ LIỆU SẢN PHẨM DÙNG CHUNG (ProductScreen + AllListingsScreen) ──
+const PRODUCT_DATA = {
     p1:  { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true },
     p2:  { icon: '🏍️', imgs: ['🏍️','🔑','🪪','📋','🛞','⛽','🔧','✅'], bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh', cat: 'Xe cộ', shippable: true },
     p3:  { icon: '🏢', imgs: ['🏢','🛏️','🚪','🚽','🅿️'], bg: '#e0f2f1', title: 'Phòng trọ có gác lửng, gần KCN Biên Hòa 2', price: '2.500.000đ/tháng', cond: 'Đang cho thuê', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 12 giao dịch', desc: 'Phòng 25m², có gác lửng, WC riêng, chỗ để xe, gần KCN Biên Hòa 2, an ninh khu vực tốt.', defect: 'Không có', count: '1/5 ảnh', cat: 'Bất động sản', shippable: false },
@@ -109,7 +102,41 @@ function ProductScreen({ go, chkLogin, type }) {
     p14: { icon: '💻', imgs: ['💻','📦','🔌','⌨️','✅'], bg: '#e3f2fd', title: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'MacBook Air M2 8GB/256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/5 ảnh', cat: 'Laptop', shippable: true, storeRoute: 's-store-business' },
     p15: { icon: '🎧', imgs: ['🎧','📦','🔋','✅'], bg: '#f3e5f5', title: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'AirPods Pro thế hệ 2 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/4 ảnh', cat: 'Phụ kiện', shippable: true, storeRoute: 's-store-business' },
     p16: { icon: '⌚', imgs: ['⌚','📦','🔋','✅'], bg: '#fff8e1', title: 'Apple Watch Series 9', price: '9.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Apple Watch Series 9 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Tạm hết hàng, có thể đặt trước.', count: '1/4 ảnh', cat: 'Đồng hồ', shippable: false, storeRoute: 's-store-business' },
-  };
+};
+
+// ─── TẤT CẢ TIN ĐĂNG — danh sách phẳng toàn bộ sản phẩm ───────────────
+function AllListingsScreen({ go }) {
+  const items = Object.entries(PRODUCT_DATA);
+  return (
+    <div>
+      <Shdr title={`Tất cả tin đăng (${items.length})`} onBack={() => go('s-home')} />
+      <div style={{ padding: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+        {items.map(([id, p]) => (
+          <div key={id} onClick={() => { sessionStorage.setItem('sx_product_return', 's-all-listings'); go(`s-prod${id.slice(1)}`); }}
+            style={{ background: C.w, borderRadius: 12, overflow: 'hidden', border: '1px solid #e8def8', cursor: 'pointer' }}>
+            <div style={{ width: '100%', height: 80, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30 }}>{p.icon}</div>
+            <div style={{ padding: 8 }}>
+              <div style={{ fontSize: 11, fontWeight: 500, color: C.t, marginBottom: 2, lineHeight: 1.3 }}>{p.title}</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: C.p, marginBottom: 2 }}>{p.price}</div>
+              <div style={{ fontSize: 10, color: C.m }}>📍 {p.loc} · {p.cat}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ height: 80 }} />
+    </div>
+  );
+}
+
+// ─── PRODUCT SCREEN ───────────────────────────────────────────────────
+function ProductScreen({ go, chkLogin, type }) {
+  const [showReport, setShowReport] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportNote, setReportNote] = useState('');
+  const [reportSent, setReportSent] = useState(false);
+  const [imgIdx, setImgIdx] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const data = PRODUCT_DATA;
   const p = data[type] || data.p1;
   return (
     <div>
@@ -1591,6 +1618,7 @@ export default function App() {
     switch (screen) {
       case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
+      case 's-all-listings':     return <AllListingsScreen      go={go} />;
       case 's-prod1':            return <ProductScreen          key="p1" go={go} chkLogin={chkLogin} type="p1" />;
       case 's-prod2':            return <ProductScreen          key="p2" go={go} chkLogin={chkLogin} type="p2" />;
       case 's-prod3':            return <ProductScreen          key="p3" go={go} chkLogin={chkLogin} type="p3" />;

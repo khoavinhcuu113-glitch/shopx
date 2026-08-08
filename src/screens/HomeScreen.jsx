@@ -62,7 +62,7 @@ export default function HomeScreen({ go, chkLogin, nav }) {
       <div style={{ padding: '0 12px 8px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0 8px' }}>
           <h2 style={{ fontSize: 14, fontWeight: 600, color: C.t }}>Tin đăng mới nhất</h2>
-          <span style={{ fontSize: 12, color: C.p, cursor: 'pointer' }}>Xem tất cả</span>
+          <span style={{ fontSize: 12, color: C.p, cursor: 'pointer' }} onClick={() => go('s-all-listings')}>Xem tất cả</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           {listings.map((l, i) => (
