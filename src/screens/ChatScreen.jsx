@@ -7,6 +7,10 @@ export default function ChatScreen({ go, type, returnTo }) {
   const contact = (() => {
     try { return JSON.parse(sessionStorage.getItem('sx_chat_contact') || 'null'); } catch (e) { return null; }
   })();
+  // 2 thuộc tính độc lập quyết định tính năng chat cần có — không đoán qua tên nghề
+  const needsAddress     = contact ? !!contact.needsAddress     : true;  // mặc định coi như cần địa chỉ (VD: job tự do, thợ)
+  const needsContentLink = contact ? !!contact.needsContentLink : false;
+
   const [step, setStep]           = useState('chat'); // chat | addr | map | shippers | invited
   const [address, setAddress]     = useState('');
   const [addrConfirmed, setAddrConfirmed] = useState(false);
@@ -16,15 +20,16 @@ export default function ChatScreen({ go, type, returnTo }) {
   const [msgs, setMsgs]           = useState(getInitMsgs(type));
 
   // Thẻ hợp đồng — trích xuất nội dung thỏa thuận thành bản cố định
-  const [contract, setContract]       = useState(null); // null | { price, platform, duration, status }
+  const [contract, setContract]       = useState(null); // null | { price, location, platform, duration, status }
   const [showContractForm, setShowContractForm] = useState(false);
   const [cfPrice, setCfPrice]         = useState(contact ? contact.price : '');
-  const [cfPlatform, setCfPlatform]   = useState(contact && contact.trade.includes('KOL') ? 'TikTok' : 'Biên Hòa, Đồng Nai');
+  const [cfLocation, setCfLocation]   = useState('Biên Hòa, Đồng Nai');
+  const [cfPlatform, setCfPlatform]   = useState('TikTok');
   const [cfDuration, setCfDuration]   = useState('3 ngày kể từ khi xác nhận');
 
   function proposeContract() {
     if (!cfPrice.trim()) { alert('Vui lòng nhập giá thỏa thuận.'); return; }
-    setContract({ price: cfPrice, platform: cfPlatform, duration: cfDuration, status: 'proposed' });
+    setContract({ price: cfPrice, location: needsAddress ? cfLocation : null, platform: needsContentLink ? cfPlatform : null, duration: cfDuration, status: 'proposed' });
     setShowContractForm(false);
   }
 
@@ -60,7 +65,7 @@ export default function ChatScreen({ go, type, returnTo }) {
     buy:    { title: 'Chat với người bán', sub: 'iPhone 13 Pro 256GB', t1: 'Nguyễn Văn Bình (người mua)', v1: 'SX-00234', t2: 'Anh Trần Minh Tuấn (người bán)', v2: 'SX-00127', ctxBg: '#e8f0fe', ctxBorder: '#c5d8ff', ctxColor: '#1a237e', ctxTitle: '🛒 Mua bán — iPhone 13 Pro 256GB', ctxDesc: 'Giá: 18.500.000đ • Người bán tại Biên Hòa' },
     job:    { title: 'Trao đổi công việc', sub: 'Tin tìm thợ • Sửa máy lạnh', t1: 'Anh Trần Văn Nhân (thợ)', v1: 'SX-00199', t2: 'Nguyễn Văn Bình (người thuê)', v2: 'SX-00234', ctxBg: '#fff3e0', ctxBorder: '#ffe0b2', ctxColor: '#e65100', ctxTitle: '🔧 Tin tìm thợ — Sửa máy lạnh', ctxDesc: 'Ngân sách: 200.000đ • Biên Hòa' },
     worker: contact
-      ? { title: `Liên hệ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, sub: `Hồ sơ • ${contact.trade}`, t1: 'Người thuê (bạn)', v1: 'Khoavinhcuu113 • SX-00001', t2: contact.trade, v2: `${contact.name} • ${contact.sxId}`, ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: `✅ Liên hệ từ Hồ sơ ${contact.trade.includes('KOL') ? 'KOL/KOC' : 'thợ'}`, ctxDesc: `${contact.name} • ${contact.exp} • ${contact.price}` }
+      ? { title: `Liên hệ ${contact.trade}`, sub: `Hồ sơ • ${contact.trade}`, t1: 'Người thuê (bạn)', v1: 'Khoavinhcuu113 • SX-00001', t2: contact.trade, v2: `${contact.name} • ${contact.sxId}`, ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: `✅ Liên hệ từ Hồ sơ ${contact.trade}`, ctxDesc: `${contact.name} • ${contact.exp} • ${contact.price}` }
       : { title: 'Liên hệ thợ', sub: 'Hồ sơ thợ • Thợ điện', t1: 'Người thuê (bạn)', v1: 'Khoavinhcuu113 • SX-00001', t2: 'Thợ điện', v2: 'Anh Trần Văn Nhân • SX-00199', ctxBg: '#f3e5f5', ctxBorder: '#d1c4e9', ctxColor: '#4a148c', ctxTitle: '✅ Liên hệ từ Hồ sơ thợ', ctxDesc: 'Anh Văn Nhân • 8 năm KN • 80.000đ/giờ' },
   };
   const c = cfgMap[type] || cfgMap.buy;
@@ -152,7 +157,12 @@ export default function ChatScreen({ go, type, returnTo }) {
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Bên A</span><span style={{ fontWeight: 600 }}>{c.t1} — {c.v1}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Bên B</span><span style={{ fontWeight: 600 }}>{c.t2} — {c.v2}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Giá thỏa thuận</span><span style={{ fontWeight: 600 }}>{contract.price}</span></div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>{type === 'worker' && contact && contact.trade.includes('KOL') ? 'Nền tảng' : 'Địa điểm'}</span><span style={{ fontWeight: 600 }}>{contract.platform}</span></div>
+              {contract.location && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Địa điểm</span><span style={{ fontWeight: 600 }}>{contract.location}</span></div>
+              )}
+              {contract.platform && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Nền tảng</span><span style={{ fontWeight: 600 }}>{contract.platform}</span></div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span style={{ color: C.m }}>Thời hạn</span><span style={{ fontWeight: 600 }}>{contract.duration}</span></div>
             </div>
             {contract.status === 'proposed' && (
@@ -187,11 +197,20 @@ export default function ChatScreen({ go, type, returnTo }) {
               <input value={cfPrice} onChange={e => setCfPrice(e.target.value)} placeholder="VD: 500.000đ/bài"
                 style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
             </div>
-            <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>{type === 'worker' && contact && contact.trade.includes('KOL') ? 'Nền tảng' : 'Địa điểm'}</div>
-              <input value={cfPlatform} onChange={e => setCfPlatform(e.target.value)}
-                style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
-            </div>
+            {needsAddress && (
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>Địa điểm</div>
+                <input value={cfLocation} onChange={e => setCfLocation(e.target.value)}
+                  style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+            )}
+            {needsContentLink && (
+              <div style={{ marginBottom: 8 }}>
+                <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>Nền tảng</div>
+                <input value={cfPlatform} onChange={e => setCfPlatform(e.target.value)}
+                  style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 8, padding: '7px 10px', fontSize: 12, outline: 'none', boxSizing: 'border-box' }} />
+              </div>
+            )}
             <div style={{ marginBottom: 10 }}>
               <div style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>Thời hạn</div>
               <input value={cfDuration} onChange={e => setCfDuration(e.target.value)}
@@ -246,10 +265,10 @@ export default function ChatScreen({ go, type, returnTo }) {
         {type === 'worker' && step === 'chat' && contract && contract.status === 'confirmed' && (
           <div style={{ background: '#f3e5f5', borderRadius: 10, padding: 10, margin: '8px 0', border: '1px solid #d1c4e9' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: '#4a148c', marginBottom: 4 }}>
-              {contact && contact.trade.includes('KOL') ? '🎥 Chốt thuê KOL/KOC' : '🔨 Chốt thuê thợ'}
+              📝 Chốt hợp tác
             </div>
             <div style={{ fontSize: 11, color: '#6a1b9a', marginBottom: 10, lineHeight: 1.5 }}>
-              2 bên đã thỏa thuận xong. Xác nhận {contact && contact.trade.includes('KOL') ? 'hợp tác với KOL/KOC này' : 'thuê thợ này'}?
+              2 bên đã thỏa thuận xong. Xác nhận hợp tác với {contact ? contact.trade : 'đối tác'} này?
             </div>
             <div style={{ display: 'flex', gap: 8, flexDirection: 'column' }}>
               <button
@@ -258,12 +277,12 @@ export default function ChatScreen({ go, type, returnTo }) {
                   setStep('hired');
                 }}
                 style={{ background: '#4a148c', color: '#fff', border: 'none', padding: '9px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600, textAlign: 'left' }}>
-                {contact && contact.trade.includes('KOL') ? '✅ Xác nhận thuê KOL/KOC này' : '✅ Xác nhận thuê thợ này'}
+                ✅ Xác nhận hợp tác
               </button>
               <button
                 onClick={() => go('s-service')}
                 style={{ background: '#fff', color: '#4a148c', border: '1px solid #d1c4e9', padding: '8px 12px', borderRadius: 8, fontSize: 12, cursor: 'pointer', textAlign: 'left' }}>
-                {contact && contact.trade.includes('KOL') ? '🔍 Tìm KOL/KOC khác' : '🔍 Tìm thợ khác'}
+                🔍 Tìm đối tác khác
               </button>
             </div>
           </div>
@@ -274,7 +293,7 @@ export default function ChatScreen({ go, type, returnTo }) {
           <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 12, margin: '8px 0', border: '1px solid #c8e6c9', textAlign: 'center' }}>
             <div style={{ fontSize: 24, marginBottom: 6 }}>🎉</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>
-              {contact && contact.trade.includes('KOL') ? 'Đã xác nhận hợp tác KOL/KOC!' : 'Đã xác nhận thuê thợ!'}
+              Đã xác nhận hợp tác!
             </div>
             <div style={{ fontSize: 11, color: '#388e3c', lineHeight: 1.5, marginBottom: 10 }}>
               ShopX đã ghi nhận thỏa thuận này. Lịch sử chat được lưu làm bằng chứng pháp lý nếu cần.
