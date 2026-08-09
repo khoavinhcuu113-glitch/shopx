@@ -129,6 +129,64 @@ function AllListingsScreen({ go }) {
 }
 
 // ─── PRODUCT SCREEN ───────────────────────────────────────────────────
+// ─── TÌM KIẾM SẢN PHẨM ─────────────────────────────────────────────
+function SearchScreen({ go }) {
+  const [q, setQ] = useState('');
+  const items = Object.entries(PRODUCT_DATA);
+  const query = q.trim().toLowerCase();
+  const results = query
+    ? items.filter(([, p]) => p.title.toLowerCase().includes(query) || p.cat.toLowerCase().includes(query) || p.seller.toLowerCase().includes(query))
+    : [];
+
+  return (
+    <div>
+      <div style={{ background: C.p, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10, position: 'sticky', top: 0, zIndex: 10 }}>
+        <button onClick={() => go('s-home')} style={{ background: 'none', border: 'none', color: '#fff', fontSize: 20, cursor: 'pointer', padding: 4 }}>←</button>
+        <div style={{ flex: 1, background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>🔍</span>
+          <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder="Tìm sản phẩm, danh mục, người bán..."
+            style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#fff', fontSize: 13 }} />
+          {q && (
+            <button onClick={() => setQ('')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.8)', cursor: 'pointer', fontSize: 14 }}>✕</button>
+          )}
+        </div>
+      </div>
+
+      <div style={{ padding: 12 }}>
+        {!query && (
+          <div style={{ textAlign: 'center', color: C.m, fontSize: 12, padding: '30px 0' }}>
+            Gõ tên sản phẩm, danh mục hoặc người bán để tìm kiếm
+          </div>
+        )}
+        {query && results.length === 0 && (
+          <div style={{ textAlign: 'center', color: C.m, fontSize: 12, padding: '30px 0' }}>
+            😕 Không tìm thấy kết quả nào cho "{q}"
+          </div>
+        )}
+        {query && results.length > 0 && (
+          <>
+            <div style={{ fontSize: 11, color: C.m, marginBottom: 8 }}>Tìm thấy {results.length} kết quả</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {results.map(([id, p]) => (
+                <div key={id} onClick={() => { sessionStorage.setItem('sx_product_return', 's-search'); go(`s-prod${id.slice(1)}`); }}
+                  style={{ background: C.w, borderRadius: 12, overflow: 'hidden', border: '1px solid #e8def8', cursor: 'pointer' }}>
+                  <div style={{ width: '100%', height: 80, background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30 }}>{p.icon}</div>
+                  <div style={{ padding: 8 }}>
+                    <div style={{ fontSize: 11, fontWeight: 500, color: C.t, marginBottom: 2, lineHeight: 1.3 }}>{p.title}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: C.p, marginBottom: 2 }}>{p.price}</div>
+                    <div style={{ fontSize: 10, color: C.m }}>📍 {p.loc} · {p.cat}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+      <div style={{ height: 80 }} />
+    </div>
+  );
+}
+
 function ProductScreen({ go, chkLogin, type }) {
   const [showReport, setShowReport] = useState(false);
   const [reportReason, setReportReason] = useState('');
@@ -1892,6 +1950,7 @@ export default function App() {
       case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
       case 's-all-listings':     return <AllListingsScreen      go={go} />;
+      case 's-search':           return <SearchScreen           go={go} />;
       case 's-prod1':            return <ProductScreen          key="p1" go={go} chkLogin={chkLogin} type="p1" />;
       case 's-prod2':            return <ProductScreen          key="p2" go={go} chkLogin={chkLogin} type="p2" />;
       case 's-prod3':            return <ProductScreen          key="p3" go={go} chkLogin={chkLogin} type="p3" />;

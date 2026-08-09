@@ -12,7 +12,7 @@ export default function HomeScreen({ go, chkLogin, nav }) {
       {/* Header */}
       <div style={{ background: C.p, padding: '10px 16px', display: 'flex', alignItems: 'center', gap: 10, position: 'sticky', top: 0, zIndex: 10 }}>
         <div style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>ShopX</div>
-        <div style={{ flex: 1, background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div onClick={() => go('s-search')} style={{ flex: 1, background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
           <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>🔍 Tìm kiếm sản phẩm...</span>
         </div>
         <button onClick={() => { go('s-notif'); nav('ni-bell'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 4, fontSize: 18 }}>
