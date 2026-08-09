@@ -775,15 +775,24 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
 
 // ─── CHIẾN DỊCH KOL — theo dõi hiệu quả cho Doanh nghiệp ────────────
 function KolCampaignScreen({ go }) {
+  // Mỗi KOL: đủ phễu Bấm link → Xem sản phẩm → Thêm giỏ hàng → Đặt hàng → (Giao thành công / Hủy / Hoàn trả)
   const campaigns = [
-    { name: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Máy lạnh Daikin 1.5HP', link: 'shopx.vn/s/kol-a8f3x2', clicks: 342, orders: 12, revenue: 69600000 },
-    { name: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Sofa góc L màu xám', link: 'shopx.vn/s/kol-b91k7p', clicks: 156, orders: 3, revenue: 9600000 },
-    { name: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB', link: 'shopx.vn/s/kol-c4m2q8', clicks: 89, orders: 1, revenue: 18500000 },
-  ];
-  const totalClicks  = campaigns.reduce((s, c) => s + c.clicks, 0);
-  const totalOrders  = campaigns.reduce((s, c) => s + c.orders, 0);
-  const totalRevenue = campaigns.reduce((s, c) => s + c.revenue, 0);
+    { name: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Máy lạnh Daikin 1.5HP', link: 'shopx.vn/s/kol-a8f3x2', price: 5800000,
+      clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
+    { name: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Sofa góc L màu xám', link: 'shopx.vn/s/kol-b91k7p', price: 3200000,
+      clicks: 156, views: 120, carts: 18, orders: 3, completed: 3, cancelled: 0, returned: 0, reviews: 3, avgRating: 5.0 },
+    { name: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB', link: 'shopx.vn/s/kol-c4m2q8', price: 18500000,
+      clicks: 89, views: 70, carts: 8, orders: 1, completed: 0, cancelled: 0, returned: 1, reviews: 0, avgRating: 0 },
+  ].map(c => ({ ...c, revenueGross: c.orders * c.price, revenueNet: c.completed * c.price, badRate: c.orders ? ((c.cancelled + c.returned) / c.orders) * 100 : 0 }));
+
+  const total = campaigns.reduce((s, c) => ({
+    clicks: s.clicks + c.clicks, views: s.views + c.views, carts: s.carts + c.carts, orders: s.orders + c.orders,
+    completed: s.completed + c.completed, cancelled: s.cancelled + c.cancelled, returned: s.returned + c.returned,
+    revenueGross: s.revenueGross + c.revenueGross, revenueNet: s.revenueNet + c.revenueNet,
+  }), { clicks: 0, views: 0, carts: 0, orders: 0, completed: 0, cancelled: 0, returned: 0, revenueGross: 0, revenueNet: 0 });
   const fmt = n => n.toLocaleString('vi-VN') + 'đ';
+  const cvr = ((total.orders / total.clicks) * 100).toFixed(1);
+  const badRateTotal = total.orders ? (((total.cancelled + total.returned) / total.orders) * 100).toFixed(1) : '0.0';
 
   return (
     <div>
@@ -791,11 +800,34 @@ function KolCampaignScreen({ go }) {
       <div style={{ padding: 12 }}>
         <Infobox text="Đơn hàng được tự động gắn đúng KOL khi khách mua trong vòng 7 ngày sau khi bấm link — không cần bạn tự đối chiếu." />
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+        {/* Phễu chuyển đổi tổng */}
+        <Sechdr num="🔻" title="Phễu chuyển đổi (tổng)" />
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 14 }}>
           {[
-            { val: totalClicks, lbl: 'Lượt bấm link', color: C.p },
-            { val: totalOrders, lbl: 'Đơn phát sinh', color: '#2e7d32' },
-            { val: `${((totalOrders / totalClicks) * 100).toFixed(1)}%`, lbl: 'Tỷ lệ chuyển đổi', color: '#e65100' },
+            { lbl: 'Lượt bấm link', val: total.clicks, pct: 100 },
+            { lbl: 'Xem sản phẩm', val: total.views, pct: (total.views / total.clicks) * 100 },
+            { lbl: 'Thêm giỏ hàng / Lưu', val: total.carts, pct: (total.carts / total.clicks) * 100 },
+            { lbl: 'Đặt hàng', val: total.orders, pct: (total.orders / total.clicks) * 100 },
+            { lbl: 'Giao thành công', val: total.completed, pct: (total.completed / total.clicks) * 100 },
+          ].map((r, i) => (
+            <div key={i} style={{ marginBottom: i < 4 ? 8 : 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 3 }}>
+                <span style={{ color: C.m }}>{r.lbl}</span>
+                <span style={{ fontWeight: 600, color: C.t }}>{r.val} <span style={{ color: C.m, fontWeight: 400 }}>({r.pct.toFixed(1)}%)</span></span>
+              </div>
+              <div style={{ background: '#f0ebfa', borderRadius: 6, height: 6 }}>
+                <div style={{ background: i === 4 ? '#2e7d32' : C.p, borderRadius: 6, height: 6, width: `${Math.max(r.pct, 2)}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Chỉ số tổng quan */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
+          {[
+            { val: total.clicks, lbl: 'Lượt bấm link', color: C.p },
+            { val: total.orders, lbl: 'Đơn phát sinh', color: '#2e7d32' },
+            { val: `${cvr}%`, lbl: 'Tỷ lệ chuyển đổi', color: '#e65100' },
           ].map((s, i) => (
             <div key={i} style={{ background: C.pl, borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
               <div style={{ fontSize: 16, fontWeight: 700, color: s.color }}>{s.val}</div>
@@ -804,34 +836,71 @@ function KolCampaignScreen({ go }) {
           ))}
         </div>
 
-        <div style={{ background: '#e8f5e9', borderRadius: 12, padding: 12, marginBottom: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#388e3c' }}>Tổng doanh thu từ các chiến dịch KOL</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#2e7d32', marginTop: 2 }}>{fmt(totalRevenue)}</div>
+        {/* Cảnh báo rủi ro hủy/hoàn trả */}
+        <div style={{ background: badRateTotal > 15 ? '#ffebee' : '#fff8e1', border: `1px solid ${badRateTotal > 15 ? '#ef9a9a' : '#ffe082'}`, borderRadius: 10, padding: '8px 12px', marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 11, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>⚠️ Tỷ lệ hủy/hoàn trả chung</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>{badRateTotal}% ({total.cancelled} hủy, {total.returned} hoàn trả)</span>
+        </div>
+
+        {/* Doanh thu — tách tạm tính vs thực */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
+          <div style={{ background: '#f5f5f5', borderRadius: 12, padding: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: C.m }}>Doanh thu tạm tính</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: C.t, marginTop: 2 }}>{fmt(total.revenueGross)}</div>
+            <div style={{ fontSize: 9, color: C.m, marginTop: 2 }}>Gồm cả đơn chưa chắc thành công</div>
+          </div>
+          <div style={{ background: '#e8f5e9', borderRadius: 12, padding: 12, textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: '#388e3c' }}>Doanh thu thực</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: '#2e7d32', marginTop: 2 }}>{fmt(total.revenueNet)}</div>
+            <div style={{ fontSize: 9, color: '#388e3c', marginTop: 2 }}>Chỉ tính đơn đã giao thành công</div>
+          </div>
         </div>
 
         <Sechdr num="📋" title="Chi tiết từng KOL" />
-        {campaigns.map((c, i) => {
-          const rate = ((c.orders / c.clicks) * 100).toFixed(1);
-          return (
-            <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.name}</div>
-                  <div style={{ fontSize: 11, color: C.m }}>{c.platform} · {c.product}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: '#2e7d32' }}>{fmt(c.revenue)}</div>
-                  <div style={{ fontSize: 10, color: C.m }}>{c.orders} đơn</div>
-                </div>
+        {campaigns.map((c, i) => (
+          <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.name}</div>
+                <div style={{ fontSize: 11, color: C.m }}>{c.platform} · {c.product}</div>
               </div>
-              <div style={{ fontSize: 10, color: C.pd, marginBottom: 6, wordBreak: 'break-all' }}>🔗 {c.link}</div>
-              <div style={{ display: 'flex', gap: 10, fontSize: 11, color: C.m }}>
-                <span>👆 {c.clicks} lượt bấm</span>
-                <span>📈 {rate}% chuyển đổi</span>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#2e7d32' }}>{fmt(c.revenueNet)}</div>
+                <div style={{ fontSize: 9, color: C.m }}>thực nhận · {fmt(c.revenueGross)} tạm tính</div>
               </div>
             </div>
-          );
-        })}
+
+            <div style={{ fontSize: 10, color: C.pd, marginBottom: 8, wordBreak: 'break-all' }}>🔗 {c.link}</div>
+
+            {/* Phễu rút gọn theo từng KOL */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginBottom: 8, textAlign: 'center' }}>
+              {[
+                { v: c.clicks, l: 'Bấm' }, { v: c.views, l: 'Xem' }, { v: c.carts, l: 'Giỏ hàng' }, { v: c.orders, l: 'Đặt' }, { v: c.completed, l: 'Thành công' },
+              ].map((s, j) => (
+                <div key={j} style={{ background: C.pl, borderRadius: 6, padding: '4px 2px' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: C.p }}>{s.v}</div>
+                  <div style={{ fontSize: 8, color: C.m }}>{s.l}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
+              <span style={{ fontSize: 10, background: '#e3f2fd', color: '#1565c0', padding: '3px 8px', borderRadius: 8, fontWeight: 600 }}>
+                📈 {((c.orders / c.clicks) * 100).toFixed(1)}% chuyển đổi
+              </span>
+              {c.reviews > 0 && (
+                <span style={{ fontSize: 10, background: '#fff8e1', color: '#e65100', padding: '3px 8px', borderRadius: 8, fontWeight: 600 }}>
+                  ⭐ {c.avgRating} ({c.reviews} đánh giá)
+                </span>
+              )}
+              {(c.cancelled + c.returned) > 0 && (
+                <span style={{ fontSize: 10, background: c.badRate > 15 ? '#ffebee' : '#fff3e0', color: c.badRate > 15 ? '#c62828' : '#e65100', padding: '3px 8px', borderRadius: 8, fontWeight: 600 }}>
+                  ⚠️ {c.cancelled} hủy · {c.returned} hoàn trả ({c.badRate.toFixed(0)}%)
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
 
         <div style={{ height: 80 }} />
       </div>
