@@ -130,12 +130,22 @@ function AllListingsScreen({ go }) {
 
 // ─── PRODUCT SCREEN ───────────────────────────────────────────────────
 // ─── TÌM KIẾM SẢN PHẨM ─────────────────────────────────────────────
+// Chuẩn hóa bỏ dấu tiếng Việt để tìm kiếm không phân biệt có dấu/không dấu
+function removeAccents(str) {
+  return str
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
 function SearchScreen({ go }) {
   const [q, setQ] = useState('');
   const items = Object.entries(PRODUCT_DATA);
-  const query = q.trim().toLowerCase();
+  const query = removeAccents(q.trim().toLowerCase());
   const results = query
-    ? items.filter(([, p]) => p.title.toLowerCase().includes(query) || p.cat.toLowerCase().includes(query) || p.seller.toLowerCase().includes(query))
+    ? items.filter(([, p]) =>
+        removeAccents(p.title.toLowerCase()).includes(query) ||
+        removeAccents(p.cat.toLowerCase()).includes(query) ||
+        removeAccents(p.seller.toLowerCase()).includes(query))
     : [];
 
   return (
