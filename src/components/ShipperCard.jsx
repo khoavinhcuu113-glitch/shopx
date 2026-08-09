@@ -1,14 +1,14 @@
 import { C } from '../constants';
 import { Avatar } from './UI';
 
-export default function ShipperCard({ shipper, onSelect, rank }) {
+export default function ShipperCard({ shipper, onSelect, onViewProfile, rank }) {
   const isPriority = shipper.priority;
   return (
-    <div style={{
+    <div onClick={() => onViewProfile && onViewProfile(shipper)} style={{
       background: isPriority ? '#fffbf0' : C.w,
       border: `1px solid ${isPriority ? '#f59e0b' : '#e8def8'}`,
       borderRadius: 12, padding: 12, marginBottom: 8,
-      display: 'flex', gap: 10, alignItems: 'center'
+      display: 'flex', gap: 10, alignItems: 'center', cursor: onViewProfile ? 'pointer' : 'default'
     }}>
       {/* Rank số thứ tự */}
       <div style={{ fontSize: 11, fontWeight: 700, color: rank <= 3 ? '#f59e0b' : C.m, width: 16, textAlign: 'center', flexShrink: 0 }}>
@@ -37,7 +37,7 @@ export default function ShipperCard({ shipper, onSelect, rank }) {
         </div>
       </div>
 
-      <button onClick={() => onSelect(shipper)} style={{ background: C.p, color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, flexShrink: 0 }}>
+      <button onClick={e => { e.stopPropagation(); onSelect(shipper); }} style={{ background: C.p, color: '#fff', border: 'none', padding: '8px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600, flexShrink: 0 }}>
         Chọn
       </button>
     </div>

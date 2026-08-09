@@ -88,6 +88,16 @@ export default function DeliveryScreen({ go, chkLogin, orderValue, hasCCCD = tru
             shipper={shipper}
             rank={i + 1}
             onSelect={handleSelectShipper}
+            onViewProfile={s => {
+              sessionStorage.setItem('sx_view_profile', JSON.stringify({
+                av: s.initials, id: s.id, name: s.name, bg: s.color,
+                orders: s.orders, completeRate: s.rate, stars: s.stars, route: s.route,
+                price: `Chịu trách nhiệm đến ${(s.maxValue / 1000000).toFixed(0)} triệu`,
+                badges: [{ label: '🪪 Căn cước KYC', ok: true }, { label: s.badge, ok: true }],
+              }));
+              sessionStorage.setItem('sx_profile_return', 's-delivery');
+              go('s-worker-profile');
+            }}
           />
         ))}
 

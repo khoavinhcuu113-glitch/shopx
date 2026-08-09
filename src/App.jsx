@@ -255,12 +255,111 @@ function ProductScreen({ go, chkLogin, type }) {
 
 // ─── CHAT SCREEN ─────────────────────────────────────────────────────
 // ─── SERVICE SCREEN (Fix E: 3 tab mới) ────────────────────────────────
+// ─── HỒ SƠ CV ĐẦY ĐỦ — xem chi tiết Thợ/Shipper/KOL-KOC ──────────────
+function WorkerProfileScreen({ go }) {
+  const w = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_view_profile') || 'null'); } catch (e) { return null; }
+  })();
+  const returnTo = sessionStorage.getItem('sx_profile_return') || 's-service';
+  if (!w) return (
+    <div>
+      <Shdr title="Hồ sơ" onBack={() => go(returnTo)} />
+      <div style={{ padding: 20, textAlign: 'center', color: C.m, fontSize: 13 }}>Không tìm thấy hồ sơ.</div>
+    </div>
+  );
+  const tier = w.orders >= 20 ? '🏅 Chuyên nghiệp' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới';
+  const hasCCCD = (w.badges || []).some(b => b.label.includes('Căn cước') && b.ok);
+
+  return (
+    <div>
+      <Shdr title="Hồ sơ đầy đủ" onBack={() => go(returnTo)} />
+      <div style={{ padding: 12 }}>
+
+        {/* Header hồ sơ */}
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 14, marginBottom: 12, textAlign: 'center' }}>
+          <div style={{ width: 64, height: 64, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', color: '#fff', fontSize: 22, fontWeight: 700 }}>{w.av}</div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: C.t, marginBottom: 2 }}>{w.name}</div>
+          <div style={{ fontSize: 12, color: C.m, marginBottom: 6 }}>{w.trade ? `${w.trade} • ${w.exp} kinh nghiệm` : `Shipper cộng đồng • ${w.route || ''}`}</div>
+          <span style={{ fontSize: 11, background: C.pl, color: C.pd, padding: '3px 10px', borderRadius: 10, fontWeight: 600 }}>{tier}</span>
+        </div>
+
+        {/* Thống kê hoạt động */}
+        <Sechdr num="📊" title="Thống kê hoạt động" />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+          {[
+            { val: w.orders, lbl: 'Đơn hoàn thành' },
+            { val: `${w.completeRate ?? w.rate}%`, lbl: 'Tỷ lệ hoàn thành' },
+            w.stars ? { val: `⭐ ${w.stars}`, lbl: 'Đánh giá sao' } : { val: `${w.thumbsUp}%`, lbl: 'Đánh giá tích cực' },
+          ].map((s, i) => (
+            <div key={i} style={{ background: C.pl, borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: C.p }}>{s.val}</div>
+              <div style={{ fontSize: 9, color: C.m, marginTop: 2 }}>{s.lbl}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Xác minh danh tính — ẩn hoàn toàn dữ liệu nhạy cảm, chỉ hiện trạng thái */}
+        <Sechdr num="🔒" title="Xác minh danh tính" />
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 6 }}>
+          {[
+            { lbl: 'Số Căn cước', val: hasCCCD ? '•••• •••• ••••' : 'Chưa xác minh', ok: hasCCCD },
+            { lbl: 'Số điện thoại', val: '••• ••• ••••', ok: true },
+          ].map((r, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: i === 0 ? '1px solid #f5f0ff' : 'none' }}>
+              <span style={{ fontSize: 12, color: C.m }}>{r.lbl}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: C.t, letterSpacing: 1 }}>{r.val} {r.ok && <span style={{ color: '#2e7d32' }}>✓</span>}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: C.m, marginBottom: 16 }}>🔒 Dữ liệu Căn cước/SĐT được ẩn — chỉ hiện trạng thái đã xác minh, không hiển thị số thật cho người xem khác.</div>
+
+        {/* Huy hiệu */}
+        <Sechdr num="🏅" title="Huy hiệu" />
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+          {(w.badges || []).map((b, i) => (
+            <span key={i} style={{ fontSize: 11, padding: '5px 10px', borderRadius: 10, background: b.ok ? '#e8f5e9' : '#ffebee', border: `1px solid ${b.ok ? '#c8e6c9' : '#ef9a9a'}`, color: b.ok ? '#2e7d32' : '#c62828', fontWeight: 600 }}>
+              {b.label} {b.ok ? '✅' : '❌'}
+            </span>
+          ))}
+        </div>
+
+        {/* Portfolio */}
+        <Sechdr num="🖼️" title="Portfolio / Công trình đã làm" />
+        <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 12, marginBottom: 16, textAlign: 'center' }}>
+          <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
+          <div style={{ fontSize: 11, color: '#1565c0', lineHeight: 1.6 }}>
+            Chưa có hợp đồng nào hoàn thành qua ShopX để tự động cập nhật Portfolio.<br/>
+            Portfolio sẽ tự xây dựng sau mỗi đơn hoàn thành + được người thuê xác nhận.
+          </div>
+        </div>
+
+        {w.trade && (
+          <button onClick={() => {
+            sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id, needsAddress: w.needsAddress, needsContentLink: w.needsContentLink }));
+            go('s-chat-worker');
+          }} style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 12, borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            💬 Liên hệ {w.name}
+          </button>
+        )}
+        {!w.trade && (
+          <button onClick={() => go(returnTo)} style={{ width: '100%', background: C.p, color: '#fff', border: 'none', padding: 12, borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            ← Quay lại chọn Shipper
+          </button>
+        )}
+
+        <div style={{ height: 80 }} />
+      </div>
+    </div>
+  );
+}
+
 function ServiceScreen({ go, chkLogin }) {
   const [tab, setTab] = useState('cv');
   const [nganh, setNganh] = useState('');
+  const [ngheCuThe, setNgheCuThe] = useState('');
   const workers = [
     {
-      av: 'VN', id: 'SX-00199', name: 'Anh Trần Văn Nhân', trade: 'Thợ điện dân dụng', exp: '8 năm', needsAddress: true, needsContentLink: false,
+      av: 'VN', id: 'SX-00199', name: 'Anh Trần Văn Nhân', trade: 'Thợ điện dân dụng', nganh: 'nha', exp: '8 năm', needsAddress: true, needsContentLink: false,
       price: '80.000đ/giờ', orders: 788, completeRate: 98, cancelRate: 2,
       thumbsUp: 98.2, bg: C.p,
       badges: [
@@ -269,7 +368,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'TL', id: 'SX-00201', name: 'Anh Nguyễn Thanh Long', trade: 'Thợ sửa máy lạnh', exp: '5 năm', needsAddress: true, needsContentLink: false,
+      av: 'TL', id: 'SX-00201', name: 'Anh Nguyễn Thanh Long', trade: 'Thợ sửa máy lạnh', nganh: 'dien', exp: '5 năm', needsAddress: true, needsContentLink: false,
       price: '150.000đ/ca', orders: 234, completeRate: 95, cancelRate: 5,
       thumbsUp: 94.5, bg: C.pm,
       badges: [
@@ -278,7 +377,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'TH', id: 'SX-00198', name: 'Chị Nguyễn Thu Hương', trade: 'Dọn dẹp vệ sinh nhà', exp: '3 năm', needsAddress: true, needsContentLink: false,
+      av: 'TH', id: 'SX-00198', name: 'Chị Nguyễn Thu Hương', trade: 'Dọn dẹp vệ sinh nhà', nganh: 'nha2', exp: '3 năm', needsAddress: true, needsContentLink: false,
       price: '200.000đ/lần', orders: 56, completeRate: 100, cancelRate: 0,
       thumbsUp: 100, bg: C.pd,
       badges: [
@@ -287,7 +386,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'QH', id: 'SX-00202', name: 'Anh Lê Quốc Hùng', trade: 'Thợ sơn & chống thấm', exp: '10 năm', needsAddress: true, needsContentLink: false,
+      av: 'QH', id: 'SX-00202', name: 'Anh Lê Quốc Hùng', trade: 'Thợ sơn tường', nganh: 'nha', exp: '10 năm', needsAddress: true, needsContentLink: false,
       price: '400.000đ/ngày', orders: 412, completeRate: 96, cancelRate: 4,
       thumbsUp: 96.8, bg: '#6B2F9E',
       badges: [
@@ -296,7 +395,7 @@ function ServiceScreen({ go, chkLogin }) {
       ],
     },
     {
-      av: 'MT', id: 'SX-00203', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', exp: '2 năm', needsAddress: false, needsContentLink: true,
+      av: 'MT', id: 'SX-00203', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '2 năm', needsAddress: false, needsContentLink: true,
       price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3,
       thumbsUp: 97.5, bg: '#ad1457',
       badges: [
@@ -339,7 +438,7 @@ function ServiceScreen({ go, chkLogin }) {
       {tab === 'cv' && (
         <div>
           <div style={{ position: 'relative', margin: '0 12px 10px' }}>
-            <select style={{ width: '100%', background: C.w, border: `1.5px solid ${C.p}`, borderRadius: 10, padding: '10px 14px', fontSize: 13, color: C.t, appearance: 'none', outline: 'none' }} value={nganh} onChange={e => setNganh(e.target.value)}>
+            <select style={{ width: '100%', background: C.w, border: `1.5px solid ${C.p}`, borderRadius: 10, padding: '10px 14px', fontSize: 13, color: C.t, appearance: 'none', outline: 'none' }} value={nganh} onChange={e => { setNganh(e.target.value); setNgheCuThe(''); }}>
               <option value="">-- Tất cả ngành nghề --</option>
               {NGANH_LIST.map(n => <option key={n.value} value={n.value}>{n.label}</option>)}
             </select>
@@ -347,15 +446,16 @@ function ServiceScreen({ go, chkLogin }) {
           </div>
           {nganh && (
             <div style={{ margin: '0 12px 10px' }}>
-              <select style={{ width: '100%', background: C.pl, border: `1px solid ${C.b}`, borderRadius: 10, padding: '9px 14px', fontSize: 12, color: C.t, appearance: 'none', outline: 'none' }}>
-                <option>-- Chọn nghề cụ thể --</option>
+              <select style={{ width: '100%', background: C.pl, border: `1px solid ${C.b}`, borderRadius: 10, padding: '9px 14px', fontSize: 12, color: C.t, appearance: 'none', outline: 'none' }} value={ngheCuThe} onChange={e => setNgheCuThe(e.target.value)}>
+                <option value="">-- Chọn nghề cụ thể --</option>
                 {(NGHES[nganh] || []).map(n => <option key={n}>{n}</option>)}
               </select>
             </div>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 12px 12px' }}>
-            {workers.map((w, i) => (
-              <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px' }}>
+            {workers.filter(w => (!nganh || w.nganh === nganh) && (!ngheCuThe || w.trade === ngheCuThe)).map((w, i) => (
+              <div key={i} onClick={() => { sessionStorage.setItem('sx_view_profile', JSON.stringify(w)); sessionStorage.setItem('sx_profile_return', 's-service'); go('s-worker-profile'); }}
+                style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', cursor: 'pointer' }}>
 
                 {/* Hàng 1: Avatar + Tên + Giá + Nút */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
@@ -371,7 +471,7 @@ function ServiceScreen({ go, chkLogin }) {
                       {w.trade} • {w.exp} • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span>
                     </div>
                   </div>
-                  <button onClick={() => { sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id, needsAddress: w.needsAddress, needsContentLink: w.needsContentLink })); chkLogin('s-chat-worker'); }}
+                  <button onClick={e => { e.stopPropagation(); sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id, needsAddress: w.needsAddress, needsContentLink: w.needsContentLink })); chkLogin('s-chat-worker'); }}
                     style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
                     💬 Liên hệ
                   </button>
@@ -455,7 +555,8 @@ function ServiceScreen({ go, chkLogin }) {
 
           <Sechdr num="🌟" title="Hồ sơ KOL/KOC đã có" />
           {workers.filter(w => w.trade === 'KOL/KOC quảng bá sản phẩm').map((w, i) => (
-            <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 8 }}>
+            <div key={i} onClick={() => { sessionStorage.setItem('sx_view_profile', JSON.stringify(w)); sessionStorage.setItem('sx_profile_return', 's-service'); go('s-worker-profile'); }}
+              style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 8, cursor: 'pointer' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                 <div style={{ width: 42, height: 42, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fff', fontSize: 14, fontWeight: 700 }}>{w.av}</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -467,7 +568,7 @@ function ServiceScreen({ go, chkLogin }) {
                   </div>
                   <div style={{ fontSize: 11, color: C.m }}>{w.exp} kinh nghiệm • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span></div>
                 </div>
-                <button onClick={() => { sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id, needsAddress: w.needsAddress, needsContentLink: w.needsContentLink })); chkLogin('s-chat-worker'); }}
+                <button onClick={e => { e.stopPropagation(); sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id, needsAddress: w.needsAddress, needsContentLink: w.needsContentLink })); chkLogin('s-chat-worker'); }}
                   style={{ background: '#ad1457', color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
                   💬 Liên hệ
                 </button>
@@ -1641,6 +1742,7 @@ export default function App() {
       case 's-chat-worker':      return <ChatScreen             go={go} type="worker" />;
       case 's-chat-3way':        return <Chat3WayScreen         go={go} />;
       case 's-service':          return <ServiceScreen          go={go} chkLogin={chkLogin} />;
+      case 's-worker-profile':   return <WorkerProfileScreen    go={go} />;
       case 's-post':             return hasPhone
                                      ? <PostScreen             go={go} chkLogin={chkLogin} hasCCCD={hasCCCD} />
                                      : <PhoneGateScreen go={go} onVerified={verifyPhoneGate} actionLabel="đăng tin bán" />;
