@@ -845,6 +845,16 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
 // ─── CHIẾN DỊCH KOL — 3 cấp dữ liệu: Hợp đồng (gốc) → gộp theo KOL / theo Sản phẩm ──
 function KolCampaignScreen({ go }) {
   // Cấp GỐC: mỗi dòng = 1 Hợp đồng = đúng 1 KOL + đúng 1 Sản phẩm (1 KOL có thể có nhiều hợp đồng, nhiều sản phẩm)
+  // Số follower từng KOL — dùng để tự động gắn nhãn KOL (≥1.000) hay KOC (<1.000)
+  const KOL_FOLLOWERS = { 'Chị Thu Hương': 15000, 'Anh Minh Tuấn': 3500, 'Bé Gạo Vlog': 600 };
+  function kolLabel(name) {
+    const f = KOL_FOLLOWERS[name] || 0;
+    return f >= 1000 ? 'KOL' : 'KOC';
+  }
+  function fmtFollowers(n) {
+    return n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `${n}`;
+  }
+
   const contracts = [
     { id: 'c1', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Máy lạnh Daikin 1.5HP', price: 5800000, link: 'shopx.vn/s/kol-a8f3x2',
       clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
@@ -987,8 +997,11 @@ function KolCampaignScreen({ go }) {
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{k.name}</span>
+                  <span style={{ fontSize: 9, background: kolLabel(k.name) === 'KOL' ? '#e3f2fd' : '#fce4ec', color: kolLabel(k.name) === 'KOL' ? '#1565c0' : '#ad1457', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>
+                    {kolLabel(k.name)} · {fmtFollowers(KOL_FOLLOWERS[k.name] || 0)} follower
+                  </span>
                   {i === 0 && <span style={{ fontSize: 9, background: '#fff3e0', color: '#e65100', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>🏆 Hiệu quả nhất</span>}
                 </div>
                 <div style={{ fontSize: 11, color: C.m }}>{k.platform} · {k.items.length} hợp đồng ({k.items.map(it => it.product).join(', ')})</div>
@@ -1047,7 +1060,12 @@ function KolCampaignScreen({ go }) {
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.kol}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.kol}</span>
+                  <span style={{ fontSize: 9, background: kolLabel(c.kol) === 'KOL' ? '#e3f2fd' : '#fce4ec', color: kolLabel(c.kol) === 'KOL' ? '#1565c0' : '#ad1457', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>
+                    {kolLabel(c.kol)}
+                  </span>
+                </div>
                 <div style={{ fontSize: 11, color: C.m }}>{c.platform} · {c.product}</div>
               </div>
               <div style={{ textAlign: 'right' }}>

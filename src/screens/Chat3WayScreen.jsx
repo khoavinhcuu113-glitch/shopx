@@ -2,6 +2,19 @@ import { useState } from 'react';
 import { C } from '../constants';
 import RatingScreen from './RatingScreen';
 
+// 4 lý do từ chối nhận hàng — mỗi lý do gắn đúng 1 bên chịu trách nhiệm
+const REFUSE_REASONS = [
+  { id: 'r1', label: 'Tôi đổi ý, không muốn mua nữa', fault: 'buyer' },
+  { id: 'r2', label: 'Không liên lạc được / không có mặt', fault: 'buyer' },
+  { id: 'r3', label: 'Hàng không đúng mô tả / hư hỏng khi tới', fault: 'seller' },
+  { id: 'r4', label: 'Giao sai địa chỉ / Shipper thái độ không tốt', fault: 'shipper' },
+];
+const FAULT_INFO = {
+  buyer:   { label: 'Người mua', color: '#c62828', feeNote: 'Người mua vẫn phải trả phí công tối thiểu cho Shipper (đã tới nơi, mất công đi).' },
+  seller:  { label: 'Người bán', color: '#e65100', feeNote: 'Shipper không có lỗi, được trả phí công đầy đủ. Người bán tự xử lý tiếp với người mua.' },
+  shipper: { label: 'Shipper',   color: '#1565c0', feeNote: 'Shipper không được tính phí công do lỗi thuộc về Shipper.' },
+};
+
 function StarRating({ value, onChange }) {
   return (
     <div style={{ display: 'flex', gap: 6 }}>
@@ -14,9 +27,10 @@ function StarRating({ value, onChange }) {
 }
 
 // ── NGƯỜI MUA ──
-function BuyerView({ otpDone, setOtpDone, msgs, setMsgs, setShowRating }) {
+function BuyerView({ otpDone, setOtpDone, msgs, setMsgs, setShowRating, orderStatus, startRefuse }) {
   const [otpInput, setOtpInput] = useState('');
   const [showOtp, setShowOtp]   = useState(false);
+  const [choiceMade, setChoiceMade] = useState(false); // đã chọn "vẫn nhận" chưa
   const OTP = '482916';
 
   function confirmOtp() {
@@ -29,7 +43,28 @@ function BuyerView({ otpDone, setOtpDone, msgs, setMsgs, setShowRating }) {
     }
   }
 
-  if (otpDone) return null;
+  if (otpDone || orderStatus === 'refused' || orderStatus === 'cancelled') return null;
+
+  // Bước chọn đầu tiên khi Shipper vừa tới: Vẫn nhận / Từ chối
+  if (!choiceMade) {
+    return (
+      <div style={{ background: '#fff3e0', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ffb74d' }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100', marginBottom: 8 }}>
+          🚪 Shipper đã tới nơi giao hàng. Bạn muốn làm gì?
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <button onClick={() => setChoiceMade(true)}
+            style={{ background: C.p, color: '#fff', border: 'none', padding: 10, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+            📝 Vẫn nhận hàng, khiếu nại sau (nếu có vấn đề)
+          </button>
+          <button onClick={startRefuse}
+            style={{ background: '#fff', color: '#c62828', border: '1.5px solid #ef9a9a', padding: 10, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+            ❌ Từ chối nhận, trả hàng lại
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 12, margin: '8px 0', border: '1px solid #c8e6c9' }}>
@@ -67,7 +102,7 @@ function BuyerView({ otpDone, setOtpDone, msgs, setMsgs, setShowRating }) {
         </div>
       )}
       <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #c8e6c9' }}>
-        <div style={{ fontSize: 11, color: '#e65100', marginBottom: 6 }}>⚠️ Có vấn đề?</div>
+        <div style={{ fontSize: 11, color: '#e65100', marginBottom: 6 }}>⚠️ Có vấn đề nhưng vẫn muốn nhận hàng?</div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           <button onClick={() => setMsgs(m => [...m, { from: 'buyer', name: 'SX-00001 (Bạn)', text: '⚠️ Hàng không đúng mô tả. Đề nghị mở khiếu nại.' }])}
             style={{ background: '#fff3e0', color: '#e65100', border: '1px solid #ffe082', padding: '5px 10px', borderRadius: 8, fontSize: 10, cursor: 'pointer' }}>
@@ -83,16 +118,46 @@ function BuyerView({ otpDone, setOtpDone, msgs, setMsgs, setShowRating }) {
   );
 }
 
+// Khối chọn lý do từ chối — dùng chung cho cả người mua bấm và người bán/shipper xem lại
+function RefuseReasonPicker({ onConfirm }) {
+  const [reasonId, setReasonId] = useState('');
+  return (
+    <div style={{ background: '#ffebee', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ef9a9a' }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#c62828', marginBottom: 8 }}>❌ Chọn lý do từ chối nhận hàng</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 10 }}>
+        {REFUSE_REASONS.map(r => (
+          <label key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: C.t, cursor: 'pointer', padding: '8px 10px', borderRadius: 8, background: reasonId === r.id ? '#fff' : 'transparent', border: `1px solid ${reasonId === r.id ? '#ef9a9a' : '#f5c6c6'}` }}>
+            <input type="radio" name="refuseReason" checked={reasonId === r.id} onChange={() => setReasonId(r.id)} style={{ accentColor: '#c62828' }} />
+            {r.label}
+          </label>
+        ))}
+      </div>
+      <button onClick={() => { if (!reasonId) { alert('Vui lòng chọn lý do trước khi xác nhận.'); return; } onConfirm(REFUSE_REASONS.find(r => r.id === reasonId)); }}
+        style={{ width: '100%', background: '#c62828', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+        Xác nhận lý do
+      </button>
+    </div>
+  );
+}
+
 // ── NGƯỜI BÁN ──
-function SellerView({ shipperArrived, msgs, setMsgs }) {
+function SellerView({ shipperArrived, msgs, setMsgs, orderStatus, canCancel, onCancel }) {
   const [confirmed, setConfirmed] = useState(false);
+  if (orderStatus === 'refused' || orderStatus === 'cancelled') return null;
+
   if (!shipperArrived) {
     return (
       <div style={{ background: C.pl, borderRadius: 10, padding: 10, margin: '8px 0', border: `1px solid ${C.b}` }}>
-        <div style={{ fontSize: 11, color: C.pd }}>
+        <div style={{ fontSize: 11, color: C.pd, marginBottom: canCancel ? 10 : 0 }}>
           ⏳ Đang chờ Shipper đến lấy hàng tại điểm A...<br/>
           Khi Shipper đến, bạn sẽ thấy nút xác nhận tại đây.
         </div>
+        {canCancel && (
+          <button onClick={onCancel}
+            style={{ width: '100%', background: '#fff', color: '#c62828', border: '1px solid #ef9a9a', padding: 8, borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>
+            ❌ Hủy đơn (chưa giao cho Shipper, hủy tự do)
+          </button>
+        )}
       </div>
     );
   }
@@ -110,7 +175,7 @@ function SellerView({ shipperArrived, msgs, setMsgs }) {
       ) : (
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 13, fontWeight: 600, color: '#2e7d32' }}>✅ Đã xác nhận giao cho Shipper</div>
-          <div style={{ fontSize: 11, color: C.m, marginTop: 4 }}>Hàng đang trên đường giao đến người mua</div>
+          <div style={{ fontSize: 11, color: C.m, marginTop: 4 }}>Hàng đang trên đường giao đến người mua — không thể hủy đơn ở bước này nữa.</div>
         </div>
       )}
     </div>
@@ -118,7 +183,7 @@ function SellerView({ shipperArrived, msgs, setMsgs }) {
 }
 
 // ── SHIPPER ──
-function ShipperView({ setShipperArrived, shipperArrived, otpDone, setOtpDone, msgs, setMsgs }) {
+function ShipperView({ setShipperArrived, shipperArrived, otpDone, setOtpDone, msgs, setMsgs, orderStatus, refuseReason, refusePhotoTaken, onTakeRefusePhoto }) {
   const [arrived, setArrived]   = useState(false);
   const [otpInput, setOtpInput] = useState('');
   const [showOtp, setShowOtp]   = useState(false);
@@ -137,6 +202,33 @@ function ShipperView({ setShipperArrived, shipperArrived, otpDone, setOtpDone, m
     } else {
       alert('OTP không đúng! Yêu cầu người mua cung cấp lại.');
     }
+  }
+
+  // Người mua vừa từ chối — Shipper phải chụp ảnh bằng chứng
+  if (orderStatus === 'refusing') {
+    return (
+      <div style={{ background: '#ffebee', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ef9a9a' }}>
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#c62828', marginBottom: 6 }}>⚠️ Người mua từ chối nhận hàng</div>
+        <div style={{ fontSize: 11, color: '#e53935', marginBottom: 10 }}>
+          {refuseReason ? `Lý do: ${refuseReason.label}` : 'Đang chờ người mua chọn lý do...'}
+        </div>
+        {refuseReason && !refusePhotoTaken && (
+          <button onClick={onTakeRefusePhoto}
+            style={{ width: '100%', background: '#c62828', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+            📷 Chụp ảnh bằng chứng từ chối (bắt buộc)
+          </button>
+        )}
+      </div>
+    );
+  }
+  if (orderStatus === 'refused') {
+    const fault = FAULT_INFO[refuseReason.fault];
+    return (
+      <div style={{ background: '#ffebee', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ef9a9a', textAlign: 'center' }}>
+        <div style={{ fontSize: 24, marginBottom: 4 }}>📦↩️</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: '#c62828' }}>Đang mang hàng quay về người bán</div>
+      </div>
+    );
   }
 
   return (
@@ -208,6 +300,12 @@ export default function Chat3WayScreen({ go }) {
   const [ratedSeller, setRatedSeller] = useState(false);
   const [ratedShipper, setRatedShipper] = useState(false);
 
+  // Trạng thái đơn: active | cancelled (hủy trước khi giao) | refusing (người mua vừa từ chối, chờ Shipper chụp ảnh) | refused (đã hoàn tất từ chối)
+  const [orderStatus, setOrderStatus] = useState('active');
+  const [refuseReason, setRefuseReason] = useState(null);
+  const [refusePhotoTaken, setRefusePhotoTaken] = useState(false);
+  const [showReasonPicker, setShowReasonPicker] = useState(false);
+
   function sendMsg() {
     if (!input.trim()) return;
     const nameMap = { buyer: 'Nguyễn Văn Bình • SX-00234', seller: 'Anh Trần Minh Tuấn • SX-00127', shipper: 'Trần Văn Cường • SP-001' };
@@ -215,7 +313,31 @@ export default function Chat3WayScreen({ go }) {
     setInput('');
   }
 
+  // Giai đoạn 1 — Hủy tự do trước khi Shipper nhận hàng từ người bán
+  function cancelOrder() {
+    setOrderStatus('cancelled');
+    setMsgs(m => [...m, { from: 'system', text: '❌ Đơn hàng đã được hủy trước khi Shipper nhận hàng. Không phát sinh chi phí.' }]);
+  }
+
+  // Giai đoạn 3 — Người mua bấm "Từ chối nhận"
+  function startRefuse() {
+    setOrderStatus('refusing');
+    setShowReasonPicker(true);
+    setMsgs(m => [...m, { from: 'system', text: '⚠️ Người mua từ chối nhận hàng tại điểm giao. Đang chờ chọn lý do.' }]);
+  }
+  function confirmRefuseReason(reason) {
+    setRefuseReason(reason);
+    setShowReasonPicker(false);
+    setMsgs(m => [...m, { from: 'buyer', name: 'SX-00001 (Bạn)', text: `❌ Từ chối nhận hàng — Lý do: ${reason.label}` }]);
+  }
+  function takeRefusePhoto() {
+    setRefusePhotoTaken(true);
+    setOrderStatus('refused');
+    setMsgs(m => [...m, { from: 'system', text: '📷 Shipper đã chụp ảnh bằng chứng. Đơn chuyển trạng thái: Từ chối nhận — Đang hoàn về người bán.' }]);
+  }
+
   const bgMap = { seller: '#e8f0fe', shipper: '#fff3e0', buyer: C.p };
+  const canCancel = orderStatus === 'active' && !shipperArrived;
 
   // Sau khi OTP xong → đánh giá seller trước rồi shipper
   function handleRatingDone(target) {
@@ -299,6 +421,21 @@ export default function Chat3WayScreen({ go }) {
         </div>
       </div>
 
+      {/* Trạng thái đơn nổi bật nếu không phải active bình thường */}
+      {orderStatus !== 'active' && (
+        <div style={{
+          background: orderStatus === 'cancelled' ? '#f5f5f5' : '#ffebee',
+          borderBottom: `1px solid ${orderStatus === 'cancelled' ? '#ddd' : '#ef9a9a'}`,
+          padding: '8px 16px', textAlign: 'center'
+        }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: orderStatus === 'cancelled' ? '#616161' : '#c62828' }}>
+            {orderStatus === 'cancelled' && '❌ Đơn đã hủy'}
+            {orderStatus === 'refusing' && '⚠️ Đang xử lý từ chối nhận hàng...'}
+            {orderStatus === 'refused' && '⚠️ Từ chối nhận — Đang hoàn về người bán'}
+          </span>
+        </div>
+      )}
+
       {/* Body */}
       <div style={{ flex: 1, overflowY: 'auto', padding: 12, background: C.g }}>
         {msgs.map((m, i) => {
@@ -321,9 +458,24 @@ export default function Chat3WayScreen({ go }) {
         })}
 
         {/* Bảng theo vai trò */}
-        {role === 'buyer'   && <BuyerView  otpDone={otpDone} setOtpDone={setOtpDone} msgs={msgs} setMsgs={setMsgs} setShowRating={setShowRating} />}
-        {role === 'seller'  && <SellerView shipperArrived={shipperArrived} msgs={msgs} setMsgs={setMsgs} />}
-        {role === 'shipper' && <ShipperView setShipperArrived={setShipperArrived} shipperArrived={shipperArrived} otpDone={otpDone} setOtpDone={setOtpDone} msgs={msgs} setMsgs={setMsgs} />}
+        {role === 'buyer'   && <BuyerView  otpDone={otpDone} setOtpDone={setOtpDone} msgs={msgs} setMsgs={setMsgs} setShowRating={setShowRating} orderStatus={orderStatus} startRefuse={startRefuse} />}
+        {role === 'seller'  && <SellerView shipperArrived={shipperArrived} msgs={msgs} setMsgs={setMsgs} orderStatus={orderStatus} canCancel={canCancel} onCancel={cancelOrder} />}
+        {role === 'shipper' && <ShipperView setShipperArrived={setShipperArrived} shipperArrived={shipperArrived} otpDone={otpDone} setOtpDone={setOtpDone} msgs={msgs} setMsgs={setMsgs} orderStatus={orderStatus} refuseReason={refuseReason} refusePhotoTaken={refusePhotoTaken} onTakeRefusePhoto={takeRefusePhoto} />}
+
+        {/* Người mua chọn lý do từ chối — hiện cho mọi vai trò xem cùng lúc (đúng bản chất chat chung) */}
+        {showReasonPicker && role === 'buyer' && <RefuseReasonPicker onConfirm={confirmRefuseReason} />}
+
+        {/* Kết quả cuối cùng khi đã từ chối xong — hiện bảng phân loại lỗi */}
+        {orderStatus === 'refused' && refuseReason && (
+          <div style={{ background: '#fff', borderRadius: 10, padding: 12, margin: '8px 0', border: `1.5px solid ${FAULT_INFO[refuseReason.fault].color}` }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6 }}>📋 Kết quả xử lý</div>
+            <div style={{ fontSize: 11, color: C.m, marginBottom: 4 }}>Lý do: {refuseReason.label}</div>
+            <div style={{ fontSize: 11, marginBottom: 6 }}>
+              Bên chịu trách nhiệm: <span style={{ fontWeight: 700, color: FAULT_INFO[refuseReason.fault].color }}>{FAULT_INFO[refuseReason.fault].label}</span>
+            </div>
+            <div style={{ fontSize: 11, color: C.m, lineHeight: 1.5 }}>{FAULT_INFO[refuseReason.fault].feeNote}</div>
+          </div>
+        )}
 
         {/* Thông báo đơn hoàn tất */}
         {otpDone && (
