@@ -85,6 +85,42 @@ function CategoriesScreen({ go, nav }) {
 }
 
 // ─── DỮ LIỆU SẢN PHẨM DÙNG CHUNG (ProductScreen + AllListingsScreen) ──
+// ─── GIỎ HÀNG — hàm dùng chung, lưu qua sessionStorage, giới hạn 30 sản phẩm ──
+function getCart() {
+  try { return JSON.parse(sessionStorage.getItem('sx_cart') || '[]'); } catch (e) { return []; }
+}
+function saveCart(cart) {
+  sessionStorage.setItem('sx_cart', JSON.stringify(cart));
+}
+function addToCart(productId) {
+  const cart = getCart();
+  const existing = cart.find(c => c.productId === productId);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    if (cart.length >= 30) { alert('Giỏ hàng đã đầy (tối đa 30 sản phẩm khác nhau).'); return false; }
+    cart.push({ productId, qty: 1 });
+  }
+  saveCart(cart);
+  // Demo: nếu sản phẩm đang có Chiến dịch KOL đang chạy, cộng thêm 1 lượt "Thêm giỏ hàng" cho đúng KOL đó (chỉ trong phiên demo này)
+  const p = PRODUCT_DATA[productId];
+  if (p) {
+    const kolLive = (() => { try { return JSON.parse(sessionStorage.getItem('sx_kol_live_carts') || '{}'); } catch (e) { return {}; } })();
+    KOL_PRODUCT_LINKS.forEach(link => {
+      if (p.title.includes(link.match) || link.match.includes(p.title)) {
+        kolLive[link.contractId] = (kolLive[link.contractId] || 0) + 1;
+      }
+    });
+    sessionStorage.setItem('sx_kol_live_carts', JSON.stringify(kolLive));
+  }
+  return true;
+}
+// Đối chiếu gần đúng tên sản phẩm trong hợp đồng KOL với danh mục sản phẩm thật — chỉ nối khi khớp
+const KOL_PRODUCT_LINKS = [
+  { contractId: 'c2', match: 'Tủ lạnh Samsung Inverter 236L' },
+  { contractId: 'c4', match: 'iPhone 13 Pro 256GB' },
+];
+
 const PRODUCT_DATA = {
     p1:  { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true },
     p2:  { icon: '🏍️', imgs: ['🏍️','🔑','🪪','📋','🛞','⛽','🔧','✅'], bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh', cat: 'Xe cộ', shippable: true },
@@ -135,6 +171,160 @@ function removeAccents(str) {
   return str
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+}
+
+// ─── GIỎ HÀNG — nhóm theo người bán, tự tách đơn khi đặt hàng (đúng chuẩn Shopee) ──
+function CartScreen({ go }) {
+  const [cart, setCartState] = useState(getCart());
+
+  function updateQty(productId, delta) {
+    const next = cart.map(c => c.productId === productId ? { ...c, qty: Math.max(1, c.qty + delta) } : c);
+    setCartState(next);
+    saveCart(next);
+  }
+  function removeItem(productId) {
+    const next = cart.filter(c => c.productId !== productId);
+    setCartState(next);
+    saveCart(next);
+  }
+
+  const items = cart.map(c => ({ ...c, p: PRODUCT_DATA[c.productId] })).filter(i => i.p);
+  // Nhóm theo người bán — đúng logic Shopee: mỗi người bán tách thành 1 đơn giao riêng
+  const groups = {};
+  items.forEach(i => {
+    if (!groups[i.p.seller]) groups[i.p.seller] = { seller: i.p.seller, items: [], subtotal: 0 };
+    const price = parseInt(i.p.price.replace(/\D/g, '')) || 0;
+    groups[i.p.seller].items.push(i);
+    groups[i.p.seller].subtotal += price * i.qty;
+  });
+  const groupList = Object.values(groups);
+  const grandTotal = groupList.reduce((s, g) => s + g.subtotal, 0);
+  const fmt = n => n.toLocaleString('vi-VN') + 'đ';
+
+  function checkout() {
+    if (groupList.length === 0) return;
+    // Lưu danh sách đơn cần tách để màn xác nhận xử lý tiếp
+    sessionStorage.setItem('sx_checkout_groups', JSON.stringify(groupList.map(g => ({
+      seller: g.seller,
+      subtotal: g.subtotal,
+      titles: g.items.map(i => `${i.p.title} x${i.qty}`),
+      icon: g.items[0].p.icon,
+    }))));
+    go('s-checkout-split');
+  }
+
+  if (items.length === 0) {
+    return (
+      <div>
+        <Shdr title="Giỏ hàng" onBack={() => go('s-home')} />
+        <div style={{ padding: 30, textAlign: 'center', color: C.m }}>
+          <div style={{ fontSize: 40, marginBottom: 10 }}>🛒</div>
+          <div style={{ fontSize: 13 }}>Giỏ hàng đang trống</div>
+          <Btn onClick={() => go('s-categories')} style={{ marginTop: 16 }}>Bắt đầu mua sắm</Btn>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Shdr title={`Giỏ hàng (${items.reduce((s, i) => s + i.qty, 0)}/30)`} onBack={() => go('s-home')} />
+      <div style={{ padding: 12 }}>
+        {groupList.map((g, gi) => (
+          <div key={gi} style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.pd, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              🏪 {g.seller} <span style={{ fontSize: 10, color: C.m, fontWeight: 400 }}>(1 đơn giao riêng)</span>
+            </div>
+            {g.items.map(i => (
+              <div key={i.productId} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 10, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 48, height: 48, background: i.p.bg, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{i.p.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 500, color: C.t, marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.p.title}</div>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: C.p }}>{i.p.price}</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <button onClick={() => updateQty(i.productId, -1)} style={{ width: 24, height: 24, borderRadius: 6, border: `1px solid ${C.b}`, background: '#fff', cursor: 'pointer', fontSize: 14 }}>−</button>
+                  <span style={{ fontSize: 12, fontWeight: 600, minWidth: 16, textAlign: 'center' }}>{i.qty}</span>
+                  <button onClick={() => updateQty(i.productId, 1)} style={{ width: 24, height: 24, borderRadius: 6, border: `1px solid ${C.b}`, background: '#fff', cursor: 'pointer', fontSize: 14 }}>+</button>
+                </div>
+                <button onClick={() => removeItem(i.productId)} style={{ background: 'none', border: 'none', color: '#e53935', cursor: 'pointer', fontSize: 16, flexShrink: 0 }}>🗑️</button>
+              </div>
+            ))}
+            <div style={{ textAlign: 'right', fontSize: 11, color: C.m }}>Tạm tính: <span style={{ fontWeight: 700, color: C.t }}>{fmt(g.subtotal)}</span></div>
+          </div>
+        ))}
+
+        {groupList.length > 1 && (
+          <Infobox text={`Giỏ hàng có ${groupList.length} người bán khác nhau → sẽ tự động tách thành ${groupList.length} đơn giao riêng biệt khi đặt hàng.`} />
+        )}
+
+        <div style={{ background: C.pl, borderRadius: 12, padding: 14, marginTop: 10, marginBottom: 12 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>Tổng cộng ({groupList.length} đơn)</span>
+            <span style={{ fontSize: 18, fontWeight: 700, color: C.p }}>{fmt(grandTotal)}</span>
+          </div>
+        </div>
+
+        <Btn onClick={checkout}>➤ Đặt hàng</Btn>
+        <div style={{ height: 80 }} />
+      </div>
+    </div>
+  );
+}
+
+// ─── XÁC NHẬN TÁCH ĐƠN — hiện rõ giỏ hàng tách thành mấy đơn giao riêng ──
+function CheckoutSplitScreen({ go }) {
+  const groups = (() => {
+    try { return JSON.parse(sessionStorage.getItem('sx_checkout_groups') || '[]'); } catch (e) { return []; }
+  })();
+  const fmt = n => n.toLocaleString('vi-VN') + 'đ';
+
+  function startGroupDelivery(g, idx) {
+    // Xóa đúng phần đã xử lý khỏi giỏ hàng thật (theo đúng người bán này)
+    const cart = getCart();
+    const remaining = cart.filter(c => {
+      const p = PRODUCT_DATA[c.productId];
+      return !(p && p.seller === g.seller);
+    });
+    saveCart(remaining);
+    sessionStorage.setItem('sx_order_product', JSON.stringify({ title: g.titles.join(', '), price: fmt(g.subtotal), seller: g.seller, icon: g.icon }));
+    sessionStorage.setItem('sx_product_return', 's-checkout-split');
+    // Cập nhật lại hàng đợi các đơn còn lại
+    const rest = groups.filter((_, i) => i !== idx);
+    sessionStorage.setItem('sx_checkout_groups', JSON.stringify(rest));
+    go('s-delivery');
+  }
+
+  if (groups.length === 0) {
+    return (
+      <div>
+        <Shdr title="Đặt hàng" onBack={() => go('s-cart')} />
+        <div style={{ padding: 30, textAlign: 'center', color: C.m, fontSize: 13 }}>Không còn đơn nào cần xử lý.</div>
+        <div style={{ padding: 12 }}><Btn onClick={() => go('s-home')}>Về trang chủ</Btn></div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Shdr title={`Đặt hàng — ${groups.length} đơn cần xử lý`} onBack={() => go('s-cart')} />
+      <div style={{ padding: 12 }}>
+        <Infobox text="Mỗi người bán là 1 đơn giao riêng biệt (đúng chuẩn Shopee/Lazada) — vì mỗi người đóng gói ở 1 địa điểm khác nhau, không thể gộp chung 1 chuyến giao." />
+        {groups.map((g, i) => (
+          <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: C.pd, marginBottom: 6 }}>🏪 Đơn {i + 1}: {g.seller}</div>
+            <div style={{ fontSize: 11, color: C.m, marginBottom: 6 }}>{g.titles.join(', ')}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: C.p, marginBottom: 10 }}>{fmt(g.subtotal)}</div>
+            <Btn onClick={() => startGroupDelivery(g, i)}>🚚 Bắt đầu đơn này ({i + 1}/{groups.length})</Btn>
+          </div>
+        ))}
+        <div style={{ fontSize: 10, color: C.m, textAlign: 'center', marginTop: 4 }}>
+          Xử lý xong 1 đơn sẽ tự động quay lại đây để tiếp tục đơn kế tiếp.
+        </div>
+      </div>
+      <div style={{ height: 80 }} />
+    </div>
+  );
 }
 
 function SearchScreen({ go }) {
@@ -258,6 +448,12 @@ function ProductScreen({ go, chkLogin, type }) {
           <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6 }}>{p.defect}</p>
         </div>
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
+        {p.shippable && (
+          <button onClick={() => { if (addToCart(type)) alert('✅ Đã thêm vào giỏ hàng!'); }}
+            style={{ width: '100%', background: '#fff3e0', color: '#e65100', border: '1.5px dashed #ffb74d', padding: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 8 }}>
+            🛒 Thêm vào giỏ hàng
+          </button>
+        )}
         <div style={{ display: 'grid', gridTemplateColumns: p.shippable ? '1fr 1fr' : '1fr', gap: 8, marginBottom: 8 }}>
           <button style={{ background: C.w, color: C.p, border: `1.5px solid ${C.p}`, padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-buy')}>💬 Chat người bán</button>
           {p.shippable && (
@@ -845,16 +1041,7 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
 // ─── CHIẾN DỊCH KOL — 3 cấp dữ liệu: Hợp đồng (gốc) → gộp theo KOL / theo Sản phẩm ──
 function KolCampaignScreen({ go }) {
   // Cấp GỐC: mỗi dòng = 1 Hợp đồng = đúng 1 KOL + đúng 1 Sản phẩm (1 KOL có thể có nhiều hợp đồng, nhiều sản phẩm)
-  // Số follower từng KOL — dùng để tự động gắn nhãn KOL (≥1.000) hay KOC (<1.000)
-  const KOL_FOLLOWERS = { 'Chị Thu Hương': 15000, 'Anh Minh Tuấn': 3500, 'Bé Gạo Vlog': 600 };
-  function kolLabel(name) {
-    const f = KOL_FOLLOWERS[name] || 0;
-    return f >= 1000 ? 'KOL' : 'KOC';
-  }
-  function fmtFollowers(n) {
-    return n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `${n}`;
-  }
-
+  const kolLiveCarts = (() => { try { return JSON.parse(sessionStorage.getItem('sx_kol_live_carts') || '{}'); } catch (e) { return {}; } })();
   const contracts = [
     { id: 'c1', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Máy lạnh Daikin 1.5HP', price: 5800000, link: 'shopx.vn/s/kol-a8f3x2',
       clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
@@ -864,7 +1051,11 @@ function KolCampaignScreen({ go }) {
       clicks: 156, views: 120, carts: 18, orders: 3, completed: 3, cancelled: 0, returned: 0, reviews: 3, avgRating: 5.0 },
     { id: 'c4', kol: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB', price: 18500000, link: 'shopx.vn/s/kol-c4m2q8',
       clicks: 89, views: 70, carts: 8, orders: 1, completed: 0, cancelled: 0, returned: 1, reviews: 0, avgRating: 0 },
-  ].map(c => ({ ...c, revenueGross: c.orders * c.price, revenueNet: c.completed * c.price, fee: c.completed * calcPlatformFee(c.price), cvr: c.orders / c.clicks * 100, badRate: c.orders ? (c.cancelled + c.returned) / c.orders * 100 : 0 }));
+  ].map(c => {
+    const liveAdd = kolLiveCarts[c.id] || 0;
+    const carts = c.carts + liveAdd;
+    return { ...c, carts, liveAdd, revenueGross: c.orders * c.price, revenueNet: c.completed * c.price, fee: c.completed * calcPlatformFee(c.price), cvr: c.orders / c.clicks * 100, badRate: c.orders ? (c.cancelled + c.returned) / c.orders * 100 : 0 };
+  });
 
   const [tab, setTab] = useState('kol'); // kol | product | contract
   const fmt = n => n.toLocaleString('vi-VN') + 'đ';
@@ -997,11 +1188,8 @@ function KolCampaignScreen({ go }) {
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{k.name}</span>
-                  <span style={{ fontSize: 9, background: kolLabel(k.name) === 'KOL' ? '#e3f2fd' : '#fce4ec', color: kolLabel(k.name) === 'KOL' ? '#1565c0' : '#ad1457', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>
-                    {kolLabel(k.name)} · {fmtFollowers(KOL_FOLLOWERS[k.name] || 0)} follower
-                  </span>
                   {i === 0 && <span style={{ fontSize: 9, background: '#fff3e0', color: '#e65100', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>🏆 Hiệu quả nhất</span>}
                 </div>
                 <div style={{ fontSize: 11, color: C.m }}>{k.platform} · {k.items.length} hợp đồng ({k.items.map(it => it.product).join(', ')})</div>
@@ -1060,12 +1248,7 @@ function KolCampaignScreen({ go }) {
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.kol}</span>
-                  <span style={{ fontSize: 9, background: kolLabel(c.kol) === 'KOL' ? '#e3f2fd' : '#fce4ec', color: kolLabel(c.kol) === 'KOL' ? '#1565c0' : '#ad1457', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>
-                    {kolLabel(c.kol)}
-                  </span>
-                </div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.kol}</div>
                 <div style={{ fontSize: 11, color: C.m }}>{c.platform} · {c.product}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
@@ -1074,6 +1257,9 @@ function KolCampaignScreen({ go }) {
               </div>
             </div>
             <div style={{ fontSize: 10, color: C.pd, marginBottom: 8, wordBreak: 'break-all' }}>🔗 {c.link}</div>
+            {c.liveAdd > 0 && (
+              <div style={{ fontSize: 10, color: '#e53935', marginBottom: 6, fontWeight: 600 }}>🔴 Vừa cập nhật sống: +{c.liveAdd} giỏ hàng (bạn vừa bấm "Thêm vào giỏ" trong phiên demo này)</div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, marginBottom: 6, textAlign: 'center' }}>
               {[{ v: c.clicks, l: 'Bấm' }, { v: c.views, l: 'Xem' }, { v: c.carts, l: 'Giỏ hàng' }, { v: c.orders, l: 'Đặt' }, { v: c.completed, l: 'Thành công' }].map((s, j) => (
                 <div key={j} style={{ background: C.pl, borderRadius: 6, padding: '4px 2px' }}>
@@ -1979,6 +2165,8 @@ export default function App() {
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
       case 's-all-listings':     return <AllListingsScreen      go={go} />;
       case 's-search':           return <SearchScreen           go={go} />;
+      case 's-cart':             return <CartScreen             go={go} />;
+      case 's-checkout-split':   return <CheckoutSplitScreen    go={go} />;
       case 's-prod1':            return <ProductScreen          key="p1" go={go} chkLogin={chkLogin} type="p1" />;
       case 's-prod2':            return <ProductScreen          key="p2" go={go} chkLogin={chkLogin} type="p2" />;
       case 's-prod3':            return <ProductScreen          key="p3" go={go} chkLogin={chkLogin} type="p3" />;

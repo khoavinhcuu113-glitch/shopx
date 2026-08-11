@@ -1,6 +1,14 @@
 import { C, CATEGORIES } from '../constants';
 
+function getCartCount() {
+  try {
+    const cart = JSON.parse(sessionStorage.getItem('sx_cart') || '[]');
+    return cart.reduce((s, c) => s + c.qty, 0);
+  } catch (e) { return 0; }
+}
+
 export default function HomeScreen({ go, chkLogin, nav }) {
+  const cartCount = getCartCount();
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH',    price: '18.500.000đ', loc: 'Biên Hòa',  scr: 's-prod1' },
     { icon: '🏍️', title: 'Honda SH 125i 2021 đen bóng',  price: '62.000.000đ', loc: 'Long Khánh', scr: 's-prod2' },
@@ -15,6 +23,9 @@ export default function HomeScreen({ go, chkLogin, nav }) {
         <div onClick={() => go('s-search')} style={{ flex: 1, background: 'rgba(255,255,255,0.2)', borderRadius: 20, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
           <span style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13 }}>🔍 Tìm kiếm sản phẩm...</span>
         </div>
+        <button onClick={() => go('s-cart')} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 4, fontSize: 18 }}>
+          🛒{cartCount > 0 && <span style={{ position: 'absolute', top: 0, right: 0, background: '#e53935', color: '#fff', borderRadius: '50%', width: 14, height: 14, fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cartCount > 9 ? '9+' : cartCount}</span>}
+        </button>
         <button onClick={() => { go('s-notif'); nav('ni-bell'); }} style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 4, fontSize: 18 }}>
           🔔<span style={{ position: 'absolute', top: 0, right: 0, background: '#e53935', color: '#fff', borderRadius: '50%', width: 14, height: 14, fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
         </button>
