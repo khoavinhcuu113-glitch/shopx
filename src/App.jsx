@@ -176,6 +176,7 @@ function removeAccents(str) {
 // ─── GIỎ HÀNG — nhóm theo người bán, tự tách đơn khi đặt hàng (đúng chuẩn Shopee) ──
 function CartScreen({ go }) {
   const [cart, setCartState] = useState(getCart());
+  const returnTo = sessionStorage.getItem('sx_cart_return') || 's-home';
 
   function updateQty(productId, delta) {
     const next = cart.map(c => c.productId === productId ? { ...c, qty: Math.max(1, c.qty + delta) } : c);
@@ -216,7 +217,7 @@ function CartScreen({ go }) {
   if (items.length === 0) {
     return (
       <div>
-        <Shdr title="Giỏ hàng" onBack={() => go('s-home')} />
+        <Shdr title="Giỏ hàng" onBack={() => go(returnTo)} />
         <div style={{ padding: 30, textAlign: 'center', color: C.m }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>🛒</div>
           <div style={{ fontSize: 13 }}>Giỏ hàng đang trống</div>
@@ -228,7 +229,7 @@ function CartScreen({ go }) {
 
   return (
     <div>
-      <Shdr title={`Giỏ hàng (${items.reduce((s, i) => s + i.qty, 0)}/30)`} onBack={() => go('s-home')} />
+      <Shdr title={`Giỏ hàng (${items.reduce((s, i) => s + i.qty, 0)}/30)`} onBack={() => go(returnTo)} />
       <div style={{ padding: 12 }}>
         {groupList.map((g, gi) => (
           <div key={gi} style={{ marginBottom: 16 }}>
@@ -1702,6 +1703,19 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
             )}
           </div>
         ))}
+
+        {/* 5b. GIỎ HÀNG CỦA TÔI — xác nhận rõ giỏ hàng gắn với chính tài khoản này */}
+        <div onClick={() => { sessionStorage.setItem('sx_cart_return', 's-account'); go('s-cart'); }}
+          style={{ background: '#fff3e0', border: '1px solid #ffe082', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+          <span style={{ fontSize: 18 }}>🛒</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100' }}>Giỏ hàng của tôi</div>
+            <div style={{ fontSize: 10, color: '#bf360c' }}>
+              {(() => { try { const n = JSON.parse(sessionStorage.getItem('sx_cart') || '[]').reduce((s, c) => s + c.qty, 0); return n > 0 ? `${n} sản phẩm đang chờ đặt hàng` : 'Chưa có sản phẩm nào'; } catch (e) { return 'Chưa có sản phẩm nào'; } })()}
+            </div>
+          </div>
+          <span style={{ fontSize: 16, color: '#e65100' }}>›</span>
+        </div>
 
         {/* 6. NHẬT KÝ GIAO DỊCH — chỉ 2 gần nhất + xem tất cả */}
         <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6, marginTop: 4 }}>🧾 Nhật ký giao dịch</div>
