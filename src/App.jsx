@@ -399,7 +399,12 @@ function ProductScreen({ go, chkLogin, type }) {
   const p = data[type] || data.p1;
   return (
     <div>
-      <Shdr title="Chi tiết sản phẩm" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-categories')} />
+      <Shdr title="Chi tiết sản phẩm" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-categories')}>
+        <button onClick={() => { sessionStorage.setItem('sx_cart_return', `s-prod${type.slice(1)}`); go('s-cart'); }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 4, fontSize: 18 }}>
+          🛒{(() => { const n = getCart().reduce((s, c) => s + c.qty, 0); return n > 0 ? <span style={{ position: 'absolute', top: 0, right: 0, background: '#e53935', color: '#fff', borderRadius: '50%', width: 14, height: 14, fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n > 9 ? '9+' : n}</span> : null; })()}
+        </button>
+      </Shdr>
       <div
         onTouchStart={e => setTouchStartX(e.touches[0].clientX)}
         onTouchEnd={e => {
