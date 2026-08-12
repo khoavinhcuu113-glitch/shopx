@@ -412,10 +412,17 @@ function ProductScreen({ go, chkLogin, type }) {
   return (
     <div>
       <Shdr title="Chi tiết sản phẩm" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-categories')}>
-        <button onClick={() => setShowReport(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, fontSize: 18 }}>🚩</button>
+        <button onClick={() => setShowReport(true)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <span style={{ fontSize: 16 }}>🚩</span>
+          <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>Báo cáo</span>
+        </button>
         <button onClick={() => { sessionStorage.setItem('sx_cart_return', `s-prod${type.slice(1)}`); go('s-cart'); }}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 4, fontSize: 18 }}>
-          🛒{(() => { const n = getCart().reduce((s, c) => s + c.qty, 0); return n > 0 ? <span style={{ position: 'absolute', top: 0, right: 0, background: '#e53935', color: '#fff', borderRadius: '50%', width: 14, height: 14, fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n > 9 ? '9+' : n}</span> : null; })()}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: '2px 4px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <span style={{ fontSize: 16, position: 'relative' }}>
+            🛒{(() => { const n = getCart().reduce((s, c) => s + c.qty, 0); return n > 0 ? <span style={{ position: 'absolute', top: -4, right: -6, background: '#e53935', color: '#fff', borderRadius: '50%', width: 13, height: 13, fontSize: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n > 9 ? '9+' : n}</span> : null; })()}
+          </span>
+          <span style={{ fontSize: 8, color: 'rgba(255,255,255,0.85)', whiteSpace: 'nowrap' }}>Giỏ hàng</span>
         </button>
       </Shdr>
       <div
@@ -481,10 +488,16 @@ function ProductScreen({ go, chkLogin, type }) {
           </div>
           <div style={{ flexShrink: 0, textAlign: 'right' }}>
             <div style={{ fontSize: 11, color: C.p, fontWeight: 600, marginBottom: 4, whiteSpace: 'nowrap' }}>{p.stats}</div>
-            <button onClick={() => go(p.storeRoute || 's-store-personal')}
-              style={{ fontSize: 11, color: C.pd, background: C.pl, border: 'none', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
-              🏪 Xem gian hàng
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => { sessionStorage.setItem('sx_cart_return', `s-prod${type.slice(1)}`); go('s-cart'); }}
+                style={{ position: 'relative', background: C.pl, border: 'none', borderRadius: 8, width: 28, height: 28, cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                🛒{(() => { const n = getCart().reduce((s, c) => s + c.qty, 0); return n > 0 ? <span style={{ position: 'absolute', top: -3, right: -3, background: '#e53935', color: '#fff', borderRadius: '50%', width: 13, height: 13, fontSize: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n > 9 ? '9+' : n}</span> : null; })()}
+              </button>
+              <button onClick={() => go(p.storeRoute || 's-store-personal')}
+                style={{ fontSize: 11, color: C.pd, background: C.pl, border: 'none', borderRadius: 8, padding: '5px 10px', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
+                🏪 Xem gian hàng
+              </button>
+            </div>
           </div>
         </div>
         {(() => {
