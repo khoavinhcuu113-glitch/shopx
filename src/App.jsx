@@ -455,12 +455,14 @@ function ProductScreen({ go, chkLogin, type }) {
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{p.seller}</div>
-            <div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai · <span style={{ color: C.p }}>{p.stats}</span></div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.t, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              {p.seller.replace(/^(Anh|Chị)\s+/, '')} <span style={{ fontSize: 11, fontWeight: 400, color: C.p }}>· {p.stats}</span>
+            </div>
+            <div style={{ fontSize: 11, color: C.m, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📍 {p.loc}, Đồng Nai</div>
           </div>
           <button onClick={() => go(p.storeRoute || 's-store-personal')}
-            style={{ flexShrink: 0, fontSize: 11, color: C.pd, background: C.pl, border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 600 }}>
-            🏪 Gian hàng
+            style={{ flexShrink: 0, fontSize: 11, color: C.pd, background: C.pl, border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>
+            🏪 Xem gian hàng
           </button>
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
