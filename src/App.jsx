@@ -117,7 +117,7 @@ function addToCart(productId) {
   if (p) {
     const kolLive = (() => { try { return JSON.parse(sessionStorage.getItem('sx_kol_live_carts') || '{}'); } catch (e) { return {}; } })();
     KOL_PRODUCT_LINKS.forEach(link => {
-      if (p.title.includes(link.match) || link.match.includes(p.title)) {
+      if (link.productId === productId) {
         kolLive[link.contractId] = (kolLive[link.contractId] || 0) + 1;
       }
     });
@@ -127,9 +127,21 @@ function addToCart(productId) {
 }
 // Đối chiếu gần đúng tên sản phẩm trong hợp đồng KOL với danh mục sản phẩm thật — chỉ nối khi khớp
 const KOL_PRODUCT_LINKS = [
-  { contractId: 'c2', match: 'Tủ lạnh Samsung Inverter 236L' },
-  { contractId: 'c4', match: 'iPhone 13 Pro 256GB' },
+  { contractId: 'c1', productId: 'p7' },
+  { contractId: 'c2', productId: 'p6' },
+  { contractId: 'c3', productId: 'p10' },
+  { contractId: 'c4', productId: 'p1' },
 ];
+
+// Follower theo mã SX — PHẢI khớp đúng số ghi trong badge hồ sơ CV (ServiceScreen.workers) để không lệch 2 nguồn
+const KOL_FOLLOWERS_BY_ID = { 'SX-00203': 12500, 'SX-00204': 15000, 'SX-00205': 3500, 'SX-00206': 600 };
+function kolLabel(kolId) {
+  const f = KOL_FOLLOWERS_BY_ID[kolId] || 0;
+  return f >= 1000 ? 'KOL' : 'KOC';
+}
+function fmtFollowers(n) {
+  return n >= 1000 ? `${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `${n}`;
+}
 
 const PRODUCT_DATA = {
     p1:  { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true, hasVideo: true },
@@ -702,11 +714,7 @@ function WorkerProfileScreen({ go }) {
   );
 }
 
-function ServiceScreen({ go, chkLogin }) {
-  const [tab, setTab] = useState('cv');
-  const [nganh, setNganh] = useState('');
-  const [ngheCuThe, setNgheCuThe] = useState('');
-  const workers = [
+const WORKERS_DATA = [
     {
       av: 'VN', id: 'SX-00199', name: 'Anh Trần Văn Nhân', trade: 'Thợ điện dân dụng', nganh: 'nha', exp: '8 năm', needsAddress: true, needsContentLink: false,
       price: '80.000đ/giờ', orders: 788, completeRate: 98, cancelRate: 2,
@@ -745,14 +753,48 @@ function ServiceScreen({ go, chkLogin }) {
     },
     {
       av: 'MT', id: 'SX-00203', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '2 năm', needsAddress: false, needsContentLink: true,
-      price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3,
+      price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3, followers: 12500,
       thumbsUp: 97.5, bg: '#ad1457',
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
         { label: '📷 12.500 followers', ok: true },
       ],
     },
+    {
+      av: 'TH', id: 'SX-00204', name: 'Chị Thu Hương', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '3 năm', needsAddress: false, needsContentLink: true,
+      price: '580.000đ/bài', orders: 62, completeRate: 96, cancelRate: 4, followers: 15000,
+      thumbsUp: 96.8, bg: '#e91e63',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '📷 15.000 followers', ok: true },
+      ],
+    },
+    {
+      av: 'AT', id: 'SX-00205', name: 'Anh Minh Tuấn', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '1 năm', needsAddress: false, needsContentLink: true,
+      price: '320.000đ/bài', orders: 18, completeRate: 94, cancelRate: 6, followers: 3500,
+      thumbsUp: 95.0, bg: '#5e35b1',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '📷 3.500 followers', ok: true },
+      ],
+    },
+    {
+      av: 'BG', id: 'SX-00206', name: 'Bé Gạo Vlog', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '4 tháng', needsAddress: false, needsContentLink: true,
+      price: '180.000đ/bài', orders: 2, completeRate: 50, cancelRate: 0, followers: 600,
+      thumbsUp: 88.0, bg: '#fb8c00',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '📷 600 followers',   ok: true },
+      ],
+    },
   ];
+
+function ServiceScreen({ go, chkLogin }) {
+  const [tab, setTab] = useState('cv');
+  const [nganh, setNganh] = useState('');
+  const [ngheCuThe, setNgheCuThe] = useState('');
+  const workers = WORKERS_DATA;
+
   const jobs = [
     { title: 'Cần thợ sửa máy lạnh tại nhà', desc: 'Máy lạnh Daikin 1.5HP không lạnh, cần vệ sinh và nạp gas.', price: '200.000đ', loc: 'Biên Hòa', icon: '❄️' },
     { title: 'Cần người mua hộ đồ ăn sáng', desc: 'Cần mua hộ 3 phần bánh mì + cà phê, giao tại tầng 8 chung cư Pegasus.', price: '20.000đ + tiền đồ', loc: 'Biên Hòa', icon: '🍖' },
@@ -1144,13 +1186,13 @@ function KolCampaignScreen({ go }) {
   // Cấp GỐC: mỗi dòng = 1 Hợp đồng = đúng 1 KOL + đúng 1 Sản phẩm (1 KOL có thể có nhiều hợp đồng, nhiều sản phẩm)
   const kolLiveCarts = (() => { try { return JSON.parse(sessionStorage.getItem('sx_kol_live_carts') || '{}'); } catch (e) { return {}; } })();
   const contracts = [
-    { id: 'c1', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Máy lạnh Daikin 1.5HP', price: 5800000, link: 'shopx.vn/s/kol-a8f3x2',
+    { id: 'c1', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Bàn ăn gỗ sồi 6 ghế', productId: 'p7', price: 3500000, link: 'shopx.vn/s/kol-a8f3x2',
       clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
-    { id: 'c2', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Tủ lạnh Samsung Inverter 236L', price: 4200000, link: 'shopx.vn/s/kol-a8f3x2-2',
+    { id: 'c2', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Tủ lạnh Samsung Inverter 236L', productId: 'p6', price: 4200000, link: 'shopx.vn/s/kol-a8f3x2-2',
       clicks: 120, views: 95, carts: 15, orders: 4, completed: 4, cancelled: 0, returned: 0, reviews: 3, avgRating: 4.7 },
-    { id: 'c3', kol: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Sofa góc L màu xám', price: 3200000, link: 'shopx.vn/s/kol-b91k7p',
+    { id: 'c3', kolId: 'SX-00205', kol: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Xe đạp Trek FX3 2022', productId: 'p10', price: 8200000, link: 'shopx.vn/s/kol-b91k7p',
       clicks: 156, views: 120, carts: 18, orders: 3, completed: 3, cancelled: 0, returned: 0, reviews: 3, avgRating: 5.0 },
-    { id: 'c4', kol: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB', price: 18500000, link: 'shopx.vn/s/kol-c4m2q8',
+    { id: 'c4', kolId: 'SX-00206', kol: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB — Sierra Blue', productId: 'p1', price: 18500000, link: 'shopx.vn/s/kol-c4m2q8',
       clicks: 89, views: 70, carts: 8, orders: 1, completed: 0, cancelled: 0, returned: 1, reviews: 0, avgRating: 0 },
   ].map(c => {
     const liveAdd = kolLiveCarts[c.id] || 0;
@@ -1164,7 +1206,7 @@ function KolCampaignScreen({ go }) {
   // Gộp theo KOL
   const byKol = {};
   contracts.forEach(c => {
-    if (!byKol[c.kol]) byKol[c.kol] = { name: c.kol, platform: c.platform, items: [], clicks: 0, views: 0, carts: 0, orders: 0, completed: 0, cancelled: 0, returned: 0, revenueGross: 0, revenueNet: 0, fee: 0 };
+    if (!byKol[c.kol]) byKol[c.kol] = { name: c.kol, kolId: c.kolId, platform: c.platform, items: [], clicks: 0, views: 0, carts: 0, orders: 0, completed: 0, cancelled: 0, returned: 0, revenueGross: 0, revenueNet: 0, fee: 0 };
     const k = byKol[c.kol];
     k.items.push(c); k.clicks += c.clicks; k.views += c.views; k.carts += c.carts; k.orders += c.orders;
     k.completed += c.completed; k.cancelled += c.cancelled; k.returned += c.returned; k.revenueGross += c.revenueGross; k.revenueNet += c.revenueNet; k.fee += c.fee;
@@ -1289,8 +1331,15 @@ function KolCampaignScreen({ go }) {
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{k.name}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span onClick={() => {
+                      const w = WORKERS_DATA.find(w => w.id === k.kolId);
+                      if (w) { sessionStorage.setItem('sx_view_profile', JSON.stringify(w)); sessionStorage.setItem('sx_profile_return', 's-kol-campaign'); go('s-worker-profile'); }
+                    }}
+                    style={{ fontSize: 13, fontWeight: 600, color: C.pd, cursor: 'pointer', textDecoration: 'underline' }}>{k.name}</span>
+                  <span style={{ fontSize: 9, background: kolLabel(k.kolId) === 'KOL' ? '#e3f2fd' : '#fce4ec', color: kolLabel(k.kolId) === 'KOL' ? '#1565c0' : '#ad1457', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>
+                    {kolLabel(k.kolId)} · {fmtFollowers(KOL_FOLLOWERS_BY_ID[k.kolId] || 0)} follower
+                  </span>
                   {i === 0 && <span style={{ fontSize: 9, background: '#fff3e0', color: '#e65100', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>🏆 Hiệu quả nhất</span>}
                 </div>
                 <div style={{ fontSize: 11, color: C.m }}>{k.platform} · {k.items.length} hợp đồng ({k.items.map(it => it.product).join(', ')})</div>
@@ -1349,8 +1398,21 @@ function KolCampaignScreen({ go }) {
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{c.kol}</div>
-                <div style={{ fontSize: 11, color: C.m }}>{c.platform} · {c.product}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span onClick={() => {
+                      const w = WORKERS_DATA.find(w => w.id === c.kolId);
+                      if (w) { sessionStorage.setItem('sx_view_profile', JSON.stringify(w)); sessionStorage.setItem('sx_profile_return', 's-kol-campaign'); go('s-worker-profile'); }
+                    }}
+                    style={{ fontSize: 13, fontWeight: 600, color: C.pd, cursor: 'pointer', textDecoration: 'underline' }}>{c.kol}</span>
+                  <span style={{ fontSize: 9, background: kolLabel(c.kolId) === 'KOL' ? '#e3f2fd' : '#fce4ec', color: kolLabel(c.kolId) === 'KOL' ? '#1565c0' : '#ad1457', padding: '2px 6px', borderRadius: 8, fontWeight: 700 }}>
+                    {kolLabel(c.kolId)}
+                  </span>
+                </div>
+                <div style={{ fontSize: 11, color: C.m }}>
+                  {c.platform} ·{' '}
+                  <span onClick={() => { sessionStorage.setItem('sx_product_return', 's-kol-campaign'); go(`s-prod${c.productId.slice(1)}`); }}
+                    style={{ color: C.pd, cursor: 'pointer', textDecoration: 'underline' }}>{c.product}</span>
+                </div>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#2e7d32' }}>{fmt(c.revenueNet)}</div>
