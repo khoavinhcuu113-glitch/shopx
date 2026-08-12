@@ -85,6 +85,16 @@ function CategoriesScreen({ go, nav }) {
 }
 
 // ─── DỮ LIỆU SẢN PHẨM DÙNG CHUNG (ProductScreen + AllListingsScreen) ──
+// ─── BÁO CÁO TIN ĐĂNG — lưu lại để theo dõi ở màn "Báo cáo của tôi" ──
+function getReports() {
+  try { return JSON.parse(sessionStorage.getItem('sx_reports') || '[]'); } catch (e) { return []; }
+}
+function saveReport(report) {
+  const reports = getReports();
+  reports.unshift({ id: `RP-${Date.now().toString().slice(-6)}`, time: new Date().toLocaleString('vi-VN'), status: 'pending', ...report });
+  sessionStorage.setItem('sx_reports', JSON.stringify(reports));
+}
+
 // ─── GIỎ HÀNG — hàm dùng chung, lưu qua sessionStorage, giới hạn 30 sản phẩm ──
 function getCart() {
   try { return JSON.parse(sessionStorage.getItem('sx_cart') || '[]'); } catch (e) { return []; }
@@ -453,27 +463,36 @@ function ProductScreen({ go, chkLogin, type }) {
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Khuyết điểm</h3>
           <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6 }}>{p.defect}</p>
         </div>
-        <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
-        {p.shippable && (
-          <button onClick={() => { if (addToCart(type)) alert('✅ Đã thêm vào giỏ hàng!'); }}
-            style={{ width: '100%', background: '#fff3e0', color: '#e65100', border: '1.5px dashed #ffb74d', padding: 10, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer', marginBottom: 8 }}>
-            🛒 Thêm vào giỏ hàng
-          </button>
-        )}
-        <div style={{ display: 'grid', gridTemplateColumns: p.shippable ? '1fr 1fr' : '1fr', gap: 8, marginBottom: 8 }}>
-          <button style={{ background: C.w, color: C.p, border: `1.5px solid ${C.p}`, padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-buy')}>💬 Chat người bán</button>
+        {/* Huy hiệu tin cậy — gộp 1 hàng ngang, chỉ nêu đúng những gì ShopX thật sự đảm bảo */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
           {p.shippable && (
-            <button style={{ background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
+            <span style={{ fontSize: 10, background: '#e8f5e9', color: '#2e7d32', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>🛡️ ShopX bảo vệ giao dịch</span>
+          )}
+          <span style={{ fontSize: 10, background: '#e3f2fd', color: '#1565c0', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>💬 Hỗ trợ khiếu nại</span>
+          <span style={{ fontSize: 10, background: '#fff3e0', color: '#e65100', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>🚩 Có thể báo cáo</span>
+        </div>
+        <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
+
+        {/* Thanh hành động — gộp 1 hàng duy nhất: Giỏ hàng (icon) / Chat / Đặt giao hàng */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 10, marginBottom: 8 }}>
+          {p.shippable && (
+            <button onClick={() => { if (addToCart(type)) alert('✅ Đã thêm vào giỏ hàng!'); }}
+              style={{ flexShrink: 0, width: 44, background: '#fff3e0', color: '#e65100', border: '1.5px dashed #ffb74d', borderRadius: 10, fontSize: 18, cursor: 'pointer' }}>
+              🛒
+            </button>
+          )}
+          <button style={{ flex: 1, background: C.w, color: C.p, border: `1.5px solid ${C.p}`, padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }} onClick={() => chkLogin('s-chat-buy')}>💬 Chat</button>
+          {p.shippable ? (
+            <button style={{ flex: 2, background: C.p, color: C.w, border: 'none', padding: 11, borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}
               onClick={() => { sessionStorage.setItem('sx_order_product', JSON.stringify({ title: p.title, price: p.price, seller: p.seller, icon: p.icon })); chkLogin('s-delivery'); }}>
               🚚 Đặt giao hàng
             </button>
+          ) : (
+            <div style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: C.m, textAlign: 'center' }}>
+              💡 Cần xem trực tiếp
+            </div>
           )}
         </div>
-        {!p.shippable && (
-          <div style={{ fontSize: 11, color: C.m, textAlign: 'center', marginBottom: 8 }}>
-            💡 Loại tin đăng này cần xem trực tiếp — liên hệ người bán để hẹn xem.
-          </div>
-        )}
         <button onClick={() => setShowReport(true)} style={{ width: '100%', background: 'none', color: C.m, border: '1px solid #e0d4f7', padding: 8, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>🚩 Báo cáo tin đăng</button>
       </div>
       <div style={{ height: 80 }} />
@@ -494,14 +513,20 @@ function ProductScreen({ go, chkLogin, type }) {
                     </label>
                   ))}
                 </div>
-                <Fg label={`Mô tả thêm ${reportReason === 'Nội dung vi phạm quy định / Lý do khác' ? '(bắt buộc)' : '(không bắt buộc)'}`} req={reportReason === 'Nội dung vi phạm quy định / Lý do khác'}>
+                <Fg label="Mô tả cụ thể (bắt buộc)" req={true}>
                   <textarea value={reportNote} onChange={e => setReportNote(e.target.value)}
                     style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }}
-                    rows={3} placeholder="Chi tiết vấn đề bạn gặp phải..." />
+                    rows={3} placeholder="Chi tiết vấn đề bạn gặp phải — càng cụ thể càng giúp Admin xử lý nhanh (VD: khác biệt so với hàng chính hãng, không có tem/hộp...)." />
                 </Fg>
+                <div style={{ background: '#fff3e0', border: '1px solid #ffe082', borderRadius: 10, padding: '8px 10px', marginTop: 8, marginBottom: 4 }}>
+                  <div style={{ fontSize: 10, color: '#e65100', lineHeight: 1.5 }}>
+                    ⚠️ Báo cáo cần có căn cứ cụ thể. Báo cáo sai sự thật hoặc lợi dụng để cạnh tranh không lành mạnh có thể bị xử lý theo đúng quy định (áp dụng cho chính tài khoản gửi báo cáo).
+                  </div>
+                </div>
                 <Btn onClick={() => {
                   if (!reportReason) { alert('Vui lòng chọn lý do báo cáo.'); return; }
-                  if (reportReason === 'Nội dung vi phạm quy định / Lý do khác' && !reportNote.trim()) { alert('Vui lòng mô tả cụ thể để Admin xác định đúng vấn đề.'); return; }
+                  if (!reportNote.trim()) { alert('Vui lòng mô tả cụ thể để Admin xác định đúng vấn đề.'); return; }
+                  saveReport({ productTitle: p.title, reason: reportReason, note: reportNote });
                   setReportSent(true);
                 }} style={{ marginTop: 4 }}>
                   Gửi báo cáo
@@ -512,7 +537,10 @@ function ProductScreen({ go, chkLogin, type }) {
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <div style={{ fontSize: 40, marginBottom: 10 }}>✅</div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: C.t, marginBottom: 6 }}>Đã gửi báo cáo</div>
-                <div style={{ fontSize: 12, color: C.m, marginBottom: 16 }}>Admin ShopX sẽ xem xét trong vòng 24 giờ. Cảm ơn bạn đã giúp ShopX an toàn hơn.</div>
+                <div style={{ fontSize: 12, color: C.m, marginBottom: 4 }}>
+                  {reportReason === 'Nội dung vi phạm quy định / Lý do khác' ? 'Admin ShopX sẽ xem xét trong vòng 24 giờ.' : 'Admin ShopX sẽ xem xét trong 3-7 ngày làm việc.'}
+                </div>
+                <div style={{ fontSize: 11, color: C.m, marginBottom: 16 }}>Cảm ơn bạn đã giúp ShopX an toàn hơn. Xem trạng thái tại "Báo cáo của tôi" trong Tài khoản.</div>
                 <Btn onClick={() => { setShowReport(false); setReportSent(false); setReportReason(''); setReportNote(''); }}>Đóng</Btn>
               </div>
             )}
