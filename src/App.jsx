@@ -405,6 +405,7 @@ function ProductScreen({ go, chkLogin, type }) {
   const [reportSent, setReportSent] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
   const [mediaMode, setMediaMode] = useState('photo'); // photo | video
+  const [infoTab, setInfoTab] = useState('desc');
   const [touchStartX, setTouchStartX] = useState(null);
   const data = PRODUCT_DATA;
   const p = data[type] || data.p1;
@@ -486,16 +487,29 @@ function ProductScreen({ go, chkLogin, type }) {
             </button>
           </div>
         </div>
-        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', gap: 12 }}>
-          <div style={{ flex: 1.4 }}>
-            <h3 style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 4 }}>Mô tả</h3>
-            <p style={{ fontSize: 11, color: C.m, lineHeight: 1.5, margin: 0 }}>{p.desc}</p>
-          </div>
-          <div style={{ flex: 1, borderLeft: '1px solid #f0ebfa', paddingLeft: 12 }}>
-            <h3 style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 4 }}>Khuyết điểm</h3>
-            <p style={{ fontSize: 11, color: C.m, lineHeight: 1.5, margin: 0 }}>{p.defect}</p>
-          </div>
-        </div>
+        {(() => {
+          // Danh sách tab — thêm tab mới sau này (VD: Thông số, Chính sách đổi trả...) chỉ cần thêm 1 dòng vào đây
+          const infoTabs = [
+            { key: 'desc',   label: 'Mô tả',        content: p.desc },
+            { key: 'defect', label: 'Khuyết điểm',  content: p.defect },
+          ];
+          const active = infoTabs.find(t => t.key === infoTab) || infoTabs[0];
+          return (
+            <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, marginBottom: 10, overflow: 'hidden' }}>
+              <div style={{ display: 'flex', borderBottom: '1px solid #e8def8' }}>
+                {infoTabs.map(t => (
+                  <button key={t.key} onClick={() => setInfoTab(t.key)}
+                    style={{ flex: 1, padding: '10px 8px', border: 'none', background: infoTab === t.key ? C.pl : 'transparent', color: infoTab === t.key ? C.pd : C.m, fontSize: 12, fontWeight: infoTab === t.key ? 700 : 500, cursor: 'pointer', borderBottom: infoTab === t.key ? `2px solid ${C.p}` : '2px solid transparent' }}>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+              <div style={{ padding: 12 }}>
+                <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6, margin: 0 }}>{active.content}</p>
+              </div>
+            </div>
+          );
+        })()}
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
 
         {/* Thanh hành động — gộp 1 hàng duy nhất: Giỏ hàng (icon) / Chat / Đặt giao hàng */}
