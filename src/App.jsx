@@ -469,7 +469,8 @@ function ProductScreen({ go, chkLogin, type }) {
             <span style={{ fontSize: 10, background: '#e8f5e9', color: '#2e7d32', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>🛡️ ShopX bảo vệ giao dịch</span>
           )}
           <span style={{ fontSize: 10, background: '#e3f2fd', color: '#1565c0', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>💬 Hỗ trợ khiếu nại</span>
-          <span style={{ fontSize: 10, background: '#fff3e0', color: '#e65100', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>🚩 Có thể báo cáo</span>
+          <span onClick={() => setShowReport(true)}
+            style={{ fontSize: 10, background: '#fff3e0', color: '#e65100', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer' }}>🚩 Có thể báo cáo</span>
         </div>
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
 
@@ -493,7 +494,6 @@ function ProductScreen({ go, chkLogin, type }) {
             </div>
           )}
         </div>
-        <button onClick={() => setShowReport(true)} style={{ width: '100%', background: 'none', color: C.m, border: '1px solid #e0d4f7', padding: 8, borderRadius: 10, fontSize: 12, cursor: 'pointer' }}>🚩 Báo cáo tin đăng</button>
       </div>
       <div style={{ height: 80 }} />
 
