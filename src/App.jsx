@@ -10,7 +10,7 @@ import Chat3WayScreen from './screens/Chat3WayScreen';
 import NotifScreen from './screens/NotifScreen';
 import ShipperRegisterScreen from './screens/ShipperRegisterScreen';
 import ShipperOrdersScreen from './screens/ShipperOrdersScreen';
-import { RatingBadge, RatingStats } from './screens/RatingScreen';
+import { RatingStats } from './screens/RatingScreen';
 import StoreScreen from './screens/StoreScreen';
 import QRScreen from './screens/QRScreen';
 import TermsScreen, { TermsMenuScreen } from './screens/TermsScreen';
@@ -1718,7 +1718,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
           🏪 Xem gian hàng {accType === 'business' ? 'Doanh nghiệp' : 'Cá nhân'} của tôi
         </button>
 
-        {/* 4. THỐNG KÊ HOẠT ĐỘNG — thu gọn */}
+        {/* 4. THỐNG KÊ HOẠT ĐỘNG — dùng lại RatingStats có sẵn, đồng bộ với cả app */}
         {(() => {
           const [activeTab, setActiveTab] = React.useState('seller');
           const sellerLevel  = getRatingLevel(SAMPLE_USER_RATINGS.seller.totalOrders,  SAMPLE_USER_RATINGS.seller.completionRate);
@@ -1741,70 +1741,114 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
                   </button>
                 ))}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <RatingBadge orders={d.totalOrders} rate={activeTab === 'seller' ? d.completionRate : activeTab === 'buyer' ? d.receiveRate : d.onTimeRate} size="sm" />
-                <div style={{ fontSize: 10, color: C.m }}>
-                  {d.totalOrders} đơn · 👍 {d.thumbsUp}%
-                  {activeTab === 'seller' && d.disputes > 0 && <span style={{ color: '#e65100' }}> · ⚠️ {d.disputes} tranh chấp</span>}
-                </div>
-              </div>
+              <RatingStats role={activeTab} data={d} />
+              {activeTab === 'seller' && d.disputes > 0 && (
+                <div style={{ fontSize: 10, color: '#e65100', marginTop: 6 }}>⚠️ {d.disputes} tranh chấp</div>
+              )}
             </div>
           );
         })()}
 
-        {/* SX Points */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
-          {[{ val: '1.250', lbl: 'SX Points' }, { val: '96.2%', lbl: '👍 Tích cực', color: '#f59e0b' }].map((st, i) => (
-            <div key={i} style={{ background: C.pl, borderRadius: 10, padding: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 16, fontWeight: 700, color: st.color || C.p }}>{st.val}</div>
-              <div style={{ fontSize: 10, color: C.m, marginTop: 2 }}>{st.lbl}</div>
-            </div>
-          ))}
+        {/* SX Points — thẻ đơn, đầy chiều rộng (không còn trùng lặp Tích cực) */}
+        <div style={{ background: C.pl, borderRadius: 10, padding: 10, marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 11, color: C.m }}>💎 SX Points tích lũy</span>
+          <span style={{ fontSize: 18, fontWeight: 700, color: C.p }}>1.250</span>
         </div>
 
-        {/* 5. HOẠT ĐỘNG HIỆN TẠI — màu theo vai trò: bán=xanh, mua=vàng, shipper=tím, dịch vụ/tin tìm việc=nâu */}
-        <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6 }}>🔔 Hoạt động hiện tại</div>
-
-        <div style={{ marginBottom: 8 }}>
-          <ServiceOrderAlert hoursElapsed={25} status="waiting" />
-        </div>
-
-        <div style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: '#5d4037', marginBottom: 4 }}>🟤 DỊCH VỤ & VIỆC LÀM</div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>Sửa điện phòng ngủ</div>
-              <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +25h</div>
-            </div>
-            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); go('s-service-order-hirer'); }}
-              style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
-              Xem đơn
-            </button>
-          </div>
-        </div>
-
-        <div style={{ fontSize: 10, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>🟢 TIN ĐĂNG CỦA TÔI (Người bán)</div>
-        {listings.map((l, i) => (
-          <div key={i} style={{ background: '#e8f5e9', border: `1.5px solid ${l.hasMsg ? '#2e7d32' : '#c8e6c9'}`, borderRadius: 12, padding: 10, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
-            onClick={() => l.hasMsg && go('s-chat-buy-mine')}>
-            <div style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{l.icon}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{l.title}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#2e7d32', marginBottom: 2 }}>{l.price}</div>
-              <div style={{ fontSize: 10, color: C.m }}>Đăng ngày {l.date}</div>
-            </div>
-            {l.hasMsg ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, marginBottom: 3 }}>{l.msgCount}</div>
-                <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 600 }}>Tin nhắn</div>
+        {/* 5. TAB: Hoạt động hiện tại / Tin đăng của tôi / Nhật ký giao dịch */}
+        {(() => {
+          const [accTab, setAccTab] = React.useState('activity');
+          const activityCount = 1; // số đơn/thông báo cần chú ý (demo: 1 đơn dịch vụ đang chờ quá hạn)
+          const listingCount  = listings.length;
+          const accTabs = [
+            { key: 'activity', label: '🔔 Hoạt động', count: activityCount },
+            { key: 'listings', label: '📋 Tin đăng',   count: listingCount },
+            { key: 'history',  label: '🧾 Giao dịch',  count: 0 },
+          ];
+          return (
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                {accTabs.map(t => (
+                  <button key={t.key} onClick={() => setAccTab(t.key)}
+                    style={{ flex: 1, padding: '8px 4px', borderRadius: 8, border: `1px solid ${accTab === t.key ? C.p : C.b}`, background: accTab === t.key ? C.p : C.w, color: accTab === t.key ? '#fff' : C.m, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                    {t.label}{t.count > 0 ? ` (${t.count})` : ''}
+                  </button>
+                ))}
               </div>
-            ) : (
-              <div style={{ flexShrink: 0, fontSize: 10, color: C.m, alignSelf: 'center' }}>Chưa có tin</div>
-            )}
-          </div>
-        ))}
 
-        {/* 5b. GIỎ HÀNG CỦA TÔI — xác nhận rõ giỏ hàng gắn với chính tài khoản này */}
+              {/* TAB: Hoạt động hiện tại */}
+              {accTab === 'activity' && (
+                <>
+                  <div style={{ marginBottom: 8 }}>
+                    <ServiceOrderAlert hoursElapsed={25} status="waiting" />
+                  </div>
+                  <div style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: '#5d4037', marginBottom: 4 }}>🟤 DỊCH VỤ & VIỆC LÀM</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>Sửa điện phòng ngủ</div>
+                        <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +25h</div>
+                      </div>
+                      <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); go('s-service-order-hirer'); }}
+                        style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+                        Xem đơn
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* TAB: Tin đăng của tôi */}
+              {accTab === 'listings' && listings.map((l, i) => (
+                <div key={i} style={{ background: '#e8f5e9', border: `1.5px solid ${l.hasMsg ? '#2e7d32' : '#c8e6c9'}`, borderRadius: 12, padding: 10, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
+                  onClick={() => l.hasMsg && go('s-chat-buy-mine')}>
+                  <div style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{l.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{l.title}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: '#2e7d32', marginBottom: 2 }}>{l.price}</div>
+                    <div style={{ fontSize: 10, color: C.m }}>Đăng ngày {l.date}</div>
+                  </div>
+                  {l.hasMsg ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, marginBottom: 3 }}>{l.msgCount}</div>
+                      <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 600 }}>Tin nhắn</div>
+                    </div>
+                  ) : (
+                    <div style={{ flexShrink: 0, fontSize: 10, color: C.m, alignSelf: 'center' }}>Chưa có tin</div>
+                  )}
+                </div>
+              ))}
+
+              {/* TAB: Nhật ký giao dịch */}
+              {accTab === 'history' && (
+                <>
+                  {[
+                    { icon: '📱', name: 'iPhone 12 Pro 128GB', date: '15/03/2026 • SX-00089', price: '15.500.000đ', badge: 'Đã nhận' },
+                    { icon: '🔧', name: 'Sửa điện phòng ngủ',  date: '10/06/2026 • SX-00127', price: '150.000đ',    badge: 'Hoàn thành' },
+                  ].map((tx, i) => (
+                    <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <div style={{ width: 36, height: 36, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{tx.icon}</div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{tx.name}</div>
+                        <div style={{ fontSize: 9, color: C.m }}>{tx.date}</div>
+                      </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: C.p }}>{tx.price}</div>
+                        <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{tx.badge}</div>
+                      </div>
+                    </div>
+                  ))}
+                  <button onClick={() => go('s-tx-history')}
+                    style={{ width: '100%', background: 'none', border: 'none', color: C.pd, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: '4px 0 4px', textAlign: 'center' }}>
+                    Xem tất cả lịch sử →
+                  </button>
+                </>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* GIỎ HÀNG CỦA TÔI — giữ riêng, không gộp tab (đường dẫn tắt đơn lẻ) */}
         <div onClick={() => { sessionStorage.setItem('sx_cart_return', 's-account'); go('s-cart'); }}
           style={{ background: '#fff3e0', border: '1px solid #ffe082', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
           <span style={{ fontSize: 18 }}>🛒</span>
@@ -1816,29 +1860,6 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
           </div>
           <span style={{ fontSize: 16, color: '#e65100' }}>›</span>
         </div>
-
-        {/* 6. NHẬT KÝ GIAO DỊCH — chỉ 2 gần nhất + xem tất cả */}
-        <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6, marginTop: 4 }}>🧾 Nhật ký giao dịch</div>
-        {[
-          { icon: '📱', name: 'iPhone 12 Pro 128GB', date: '15/03/2026 • SX-00089', price: '15.500.000đ', badge: 'Đã nhận' },
-          { icon: '🔧', name: 'Sửa điện phòng ngủ',  date: '10/06/2026 • SX-00127', price: '150.000đ',    badge: 'Hoàn thành' },
-        ].map((tx, i) => (
-          <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div style={{ width: 36, height: 36, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{tx.icon}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{tx.name}</div>
-              <div style={{ fontSize: 9, color: C.m }}>{tx.date}</div>
-            </div>
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: C.p }}>{tx.price}</div>
-              <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{tx.badge}</div>
-            </div>
-          </div>
-        ))}
-        <button onClick={() => go('s-tx-history')}
-          style={{ width: '100%', background: 'none', border: 'none', color: C.pd, fontSize: 11, fontWeight: 600, cursor: 'pointer', padding: '4px 0 10px', textAlign: 'center' }}>
-          Xem tất cả lịch sử →
-        </button>
 
         {/* 7. CÀI ĐẶT — gọn, danh sách hàng mỏng */}
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, overflow: 'hidden', marginBottom: 8 }}>
