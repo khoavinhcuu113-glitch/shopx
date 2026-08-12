@@ -684,15 +684,38 @@ function WorkerProfileScreen({ go }) {
           ))}
         </div>
 
-        {/* Portfolio */}
+        {/* Portfolio — hiện đúng hợp đồng thật đã ghi nhận qua ShopX (nếu có) */}
         <Sechdr num="🖼️" title="Portfolio / Công trình đã làm" />
-        <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 12, marginBottom: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
-          <div style={{ fontSize: 11, color: '#1565c0', lineHeight: 1.6 }}>
-            Chưa có hợp đồng nào hoàn thành qua ShopX để tự động cập nhật Portfolio.<br/>
-            Portfolio sẽ tự xây dựng sau mỗi đơn hoàn thành + được người thuê xác nhận.
-          </div>
-        </div>
+        {(() => {
+          const myContracts = CONTRACTS_DATA.filter(c => c.kolId === w.id);
+          if (myContracts.length === 0) {
+            return (
+              <div style={{ background: '#e3f2fd', border: '1px solid #bbdefb', borderRadius: 10, padding: 12, marginBottom: 16, textAlign: 'center' }}>
+                <div style={{ fontSize: 24, marginBottom: 6 }}>📋</div>
+                <div style={{ fontSize: 11, color: '#1565c0', lineHeight: 1.6 }}>
+                  Chưa có hợp đồng nào hoàn thành qua ShopX để tự động cập nhật Portfolio.<br/>
+                  Portfolio sẽ tự xây dựng sau mỗi đơn hoàn thành + được người thuê xác nhận.
+                </div>
+              </div>
+            );
+          }
+          return (
+            <div style={{ marginBottom: 16 }}>
+              {myContracts.map((c, i) => (
+                <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 10, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ fontSize: 20, flexShrink: 0 }}>{c.platform.split(' ')[0]}</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>{c.product}</div>
+                    <div style={{ fontSize: 10, color: C.m }}>{c.completed}/{c.orders} đơn hoàn thành {c.reviews > 0 && `• ⭐ ${c.avgRating} (${c.reviews})`}</div>
+                  </div>
+                </div>
+              ))}
+              <div style={{ fontSize: 10, color: C.m, textAlign: 'center', marginTop: 4 }}>
+                📊 Dữ liệu tự động ghi nhận từ Chiến dịch KOL đang chạy qua ShopX
+              </div>
+            </div>
+          );
+        })()}
 
         {w.trade && (
           <button onClick={() => {
@@ -762,7 +785,7 @@ const WORKERS_DATA = [
     },
     {
       av: 'TH', id: 'SX-00204', name: 'Chị Thu Hương', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '3 năm', needsAddress: false, needsContentLink: true,
-      price: '580.000đ/bài', orders: 62, completeRate: 96, cancelRate: 4, followers: 15000,
+      price: '580.000đ/bài', orders: 16, completeRate: 88, cancelRate: 12, followers: 15000,
       thumbsUp: 96.8, bg: '#e91e63',
       badges: [
         { label: '🪪 Căn cước KYC',    ok: true  },
@@ -1182,19 +1205,22 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
 
 // ─── CHIẾN DỊCH KOL — theo dõi hiệu quả cho Doanh nghiệp ────────────
 // ─── CHIẾN DỊCH KOL — 3 cấp dữ liệu: Hợp đồng (gốc) → gộp theo KOL / theo Sản phẩm ──
+// Dữ liệu hợp đồng KOL gốc — cấp module để dùng chung với WorkerProfileScreen (hiện đúng hợp đồng thật trong Portfolio)
+const CONTRACTS_DATA = [
+  { id: 'c1', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Bàn ăn gỗ sồi 6 ghế', productId: 'p7', price: 3500000, link: 'shopx.vn/s/kol-a8f3x2',
+    clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
+  { id: 'c2', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Tủ lạnh Samsung Inverter 236L', productId: 'p6', price: 4200000, link: 'shopx.vn/s/kol-a8f3x2-2',
+    clicks: 120, views: 95, carts: 15, orders: 4, completed: 4, cancelled: 0, returned: 0, reviews: 3, avgRating: 4.7 },
+  { id: 'c3', kolId: 'SX-00205', kol: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Xe đạp Trek FX3 2022', productId: 'p10', price: 8200000, link: 'shopx.vn/s/kol-b91k7p',
+    clicks: 156, views: 120, carts: 18, orders: 3, completed: 3, cancelled: 0, returned: 0, reviews: 3, avgRating: 5.0 },
+  { id: 'c4', kolId: 'SX-00206', kol: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB — Sierra Blue', productId: 'p1', price: 18500000, link: 'shopx.vn/s/kol-c4m2q8',
+    clicks: 89, views: 70, carts: 8, orders: 1, completed: 0, cancelled: 0, returned: 1, reviews: 0, avgRating: 0 },
+];
+
 function KolCampaignScreen({ go }) {
   // Cấp GỐC: mỗi dòng = 1 Hợp đồng = đúng 1 KOL + đúng 1 Sản phẩm (1 KOL có thể có nhiều hợp đồng, nhiều sản phẩm)
   const kolLiveCarts = (() => { try { return JSON.parse(sessionStorage.getItem('sx_kol_live_carts') || '{}'); } catch (e) { return {}; } })();
-  const contracts = [
-    { id: 'c1', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Bàn ăn gỗ sồi 6 ghế', productId: 'p7', price: 3500000, link: 'shopx.vn/s/kol-a8f3x2',
-      clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
-    { id: 'c2', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Tủ lạnh Samsung Inverter 236L', productId: 'p6', price: 4200000, link: 'shopx.vn/s/kol-a8f3x2-2',
-      clicks: 120, views: 95, carts: 15, orders: 4, completed: 4, cancelled: 0, returned: 0, reviews: 3, avgRating: 4.7 },
-    { id: 'c3', kolId: 'SX-00205', kol: 'Anh Minh Tuấn', platform: '📷 Instagram', product: 'Xe đạp Trek FX3 2022', productId: 'p10', price: 8200000, link: 'shopx.vn/s/kol-b91k7p',
-      clicks: 156, views: 120, carts: 18, orders: 3, completed: 3, cancelled: 0, returned: 0, reviews: 3, avgRating: 5.0 },
-    { id: 'c4', kolId: 'SX-00206', kol: 'Bé Gạo Vlog', platform: '▶️ YouTube', product: 'iPhone 13 Pro 256GB — Sierra Blue', productId: 'p1', price: 18500000, link: 'shopx.vn/s/kol-c4m2q8',
-      clicks: 89, views: 70, carts: 8, orders: 1, completed: 0, cancelled: 0, returned: 1, reviews: 0, avgRating: 0 },
-  ].map(c => {
+  const contracts = CONTRACTS_DATA.map(c => {
     const liveAdd = kolLiveCarts[c.id] || 0;
     const carts = c.carts + liveAdd;
     return { ...c, carts, liveAdd, revenueGross: c.orders * c.price, revenueNet: c.completed * c.price, fee: c.completed * calcPlatformFee(c.price), cvr: c.orders / c.clicks * 100, badRate: c.orders ? (c.cancelled + c.returned) / c.orders * 100 : 0 };
