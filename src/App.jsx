@@ -132,7 +132,7 @@ const KOL_PRODUCT_LINKS = [
 ];
 
 const PRODUCT_DATA = {
-    p1:  { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true },
+    p1:  { icon: '📱', imgs: ['📱','📦','🔌','🔋','📸','✅'], bg: C.pl, title: 'iPhone 13 Pro 256GB — Sierra Blue', price: '18.500.000đ', cond: 'Như mới (99%)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'iPhone 13 Pro 256GB Sierra Blue, mua 3/2024, còn BH Apple đến 3/2025. Nguyên zin 100%, pin 89%.', defect: 'Vết xước nhỏ góc trên bên phải khung máy.', count: '1/6 ảnh', cat: 'Đồ điện tử', shippable: true, hasVideo: true },
     p2:  { icon: '🏍️', imgs: ['🏍️','🔑','🪪','📋','🛞','⛽','🔧','✅'], bg: '#e8def8', title: 'Honda SH 125i 2021 — Đen bóng láng', price: '62.000.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Long Khánh', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.9 • 67 giao dịch', desc: 'SH 125i 2021 đen bóng, 12.000km, bảo dưỡng định kỳ, giấy tờ đầy đủ, sang tên ngay.', defect: 'Không có', count: '1/8 ảnh', cat: 'Xe cộ', shippable: true },
     p3:  { icon: '🏢', imgs: ['🏢','🛏️','🚪','🚽','🅿️'], bg: '#e0f2f1', title: 'Phòng trọ có gác lửng, gần KCN Biên Hòa 2', price: '2.500.000đ/tháng', cond: 'Đang cho thuê', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.7 • 12 giao dịch', desc: 'Phòng 25m², có gác lửng, WC riêng, chỗ để xe, gần KCN Biên Hòa 2, an ninh khu vực tốt.', defect: 'Không có', count: '1/5 ảnh', cat: 'Bất động sản', shippable: false },
     p4:  { icon: '🐾', imgs: ['🐾','🐕','💉','📋'], bg: '#fff3e0', title: 'Chó Poodle Tiny 2 tháng tuổi, đã tiêm phòng', price: '4.500.000đ', cond: 'Khỏe mạnh, đã tiêm phòng', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 9 giao dịch', desc: 'Poodle Tiny lông xoăn màu socola, 2 tháng tuổi, đã tiêm phòng mũi 1, có sổ khám thú y.', defect: 'Không có', count: '1/4 ảnh', cat: 'Thú cưng', shippable: true },
@@ -404,6 +404,7 @@ function ProductScreen({ go, chkLogin, type }) {
   const [reportNote, setReportNote] = useState('');
   const [reportSent, setReportSent] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
+  const [mediaMode, setMediaMode] = useState('photo'); // photo | video
   const [touchStartX, setTouchStartX] = useState(null);
   const data = PRODUCT_DATA;
   const p = data[type] || data.p1;
@@ -419,29 +420,47 @@ function ProductScreen({ go, chkLogin, type }) {
       <div
         onTouchStart={e => setTouchStartX(e.touches[0].clientX)}
         onTouchEnd={e => {
-          if (touchStartX === null) return;
+          if (touchStartX === null || mediaMode !== 'photo') return;
           const dx = e.changedTouches[0].clientX - touchStartX;
           const imgs = p.imgs || [p.icon];
           if (dx < -40) setImgIdx(i => Math.min(i + 1, imgs.length - 1));   // vuốt trái -> ảnh sau
           if (dx > 40)  setImgIdx(i => Math.max(i - 1, 0));                  // vuốt phải -> ảnh trước
           setTouchStartX(null);
         }}
-        style={{ background: p.bg, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: 60, overflow: 'hidden' }}>
-        {(p.imgs || [p.icon])[imgIdx]}
-        <span style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 11, padding: '3px 8px', borderRadius: 10 }}>{imgIdx + 1}/{(p.imgs || [p.icon]).length} ảnh</span>
-        {(p.imgs || [p.icon]).length > 1 && (
+        style={{ background: mediaMode === 'photo' ? p.bg : 'linear-gradient(135deg,#1a1a2e,#16213e)', height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', fontSize: 60, overflow: 'hidden' }}>
+
+        {p.hasVideo && (
+          <div style={{ position: 'absolute', top: 8, left: 8, zIndex: 5, display: 'flex', gap: 4, background: 'rgba(0,0,0,0.4)', borderRadius: 20, padding: 3 }}>
+            <button onClick={() => setMediaMode('photo')} style={{ border: 'none', borderRadius: 16, padding: '4px 10px', fontSize: 10, fontWeight: 600, cursor: 'pointer', background: mediaMode === 'photo' ? '#fff' : 'transparent', color: mediaMode === 'photo' ? C.p : '#fff' }}>📷 Ảnh</button>
+            <button onClick={() => setMediaMode('video')} style={{ border: 'none', borderRadius: 16, padding: '4px 10px', fontSize: 10, fontWeight: 600, cursor: 'pointer', background: mediaMode === 'video' ? '#fff' : 'transparent', color: mediaMode === 'video' ? C.p : '#fff' }}>🎬 Video</button>
+          </div>
+        )}
+
+        {mediaMode === 'photo' ? (
           <>
-            <button onClick={() => setImgIdx(i => Math.max(i - 1, 0))} disabled={imgIdx === 0}
-              style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 16, cursor: imgIdx === 0 ? 'default' : 'pointer', opacity: imgIdx === 0 ? 0.3 : 1 }}>‹</button>
-            <button onClick={() => setImgIdx(i => Math.min(i + 1, (p.imgs || [p.icon]).length - 1))} disabled={imgIdx === (p.imgs || [p.icon]).length - 1}
-              style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 16, cursor: imgIdx === (p.imgs || [p.icon]).length - 1 ? 'default' : 'pointer', opacity: imgIdx === (p.imgs || [p.icon]).length - 1 ? 0.3 : 1 }}>›</button>
-            <div style={{ position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 4 }}>
-              {(p.imgs || [p.icon]).map((_, i) => (
-                <div key={i} onClick={() => setImgIdx(i)}
-                  style={{ width: i === imgIdx ? 14 : 6, height: 6, borderRadius: 3, background: i === imgIdx ? '#fff' : 'rgba(255,255,255,0.5)', cursor: 'pointer', transition: 'width 0.2s' }} />
-              ))}
-            </div>
+            {(p.imgs || [p.icon])[imgIdx]}
+            <span style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: '#fff', fontSize: 11, padding: '3px 8px', borderRadius: 10 }}>{imgIdx + 1}/{(p.imgs || [p.icon]).length} ảnh</span>
+            {(p.imgs || [p.icon]).length > 1 && (
+              <>
+                <button onClick={() => setImgIdx(i => Math.max(i - 1, 0))} disabled={imgIdx === 0}
+                  style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 16, cursor: imgIdx === 0 ? 'default' : 'pointer', opacity: imgIdx === 0 ? 0.3 : 1 }}>‹</button>
+                <button onClick={() => setImgIdx(i => Math.min(i + 1, (p.imgs || [p.icon]).length - 1))} disabled={imgIdx === (p.imgs || [p.icon]).length - 1}
+                  style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', width: 30, height: 30, borderRadius: '50%', border: 'none', background: 'rgba(0,0,0,0.35)', color: '#fff', fontSize: 16, cursor: imgIdx === (p.imgs || [p.icon]).length - 1 ? 'default' : 'pointer', opacity: imgIdx === (p.imgs || [p.icon]).length - 1 ? 0.3 : 1 }}>›</button>
+                <div style={{ position: 'absolute', bottom: 8, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 4 }}>
+                  {(p.imgs || [p.icon]).map((_, i) => (
+                    <div key={i} onClick={() => setImgIdx(i)}
+                      style={{ width: i === imgIdx ? 14 : 6, height: 6, borderRadius: 3, background: i === imgIdx ? '#fff' : 'rgba(255,255,255,0.5)', cursor: 'pointer', transition: 'width 0.2s' }} />
+                  ))}
+                </div>
+              </>
+            )}
           </>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: 50, height: 50, background: C.p, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', fontSize: 20 }}>▶️</div>
+            <div style={{ fontSize: 12, color: '#fff', fontWeight: 600 }}>Clip giới thiệu sản phẩm</div>
+            <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>15-30 giây · người bán tự quay</div>
+          </div>
         )}
       </div>
       <div style={{ padding: 12 }}>
@@ -451,7 +470,6 @@ function ProductScreen({ go, chkLogin, type }) {
           <span style={{ fontSize: 11, background: C.pl, color: C.pd, padding: '3px 9px', borderRadius: 10 }}>{p.cond}</span>
           <span style={{ fontSize: 11, color: C.m }}>📍 {p.loc}</span>
         </div>
-        <VidPlaceholder title="Clip giới thiệu sản phẩm" desc="Sắp ra mắt — người bán quay clip 15-30s thực tế" />
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -468,13 +486,15 @@ function ProductScreen({ go, chkLogin, type }) {
             </button>
           </div>
         </div>
-        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Mô tả</h3>
-          <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6 }}>{p.desc}</p>
-        </div>
-        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
-          <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Khuyết điểm</h3>
-          <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6 }}>{p.defect}</p>
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', gap: 12 }}>
+          <div style={{ flex: 1.4 }}>
+            <h3 style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 4 }}>Mô tả</h3>
+            <p style={{ fontSize: 11, color: C.m, lineHeight: 1.5, margin: 0 }}>{p.desc}</p>
+          </div>
+          <div style={{ flex: 1, borderLeft: '1px solid #f0ebfa', paddingLeft: 12 }}>
+            <h3 style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 4 }}>Khuyết điểm</h3>
+            <p style={{ fontSize: 11, color: C.m, lineHeight: 1.5, margin: 0 }}>{p.defect}</p>
+          </div>
         </div>
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
 
@@ -900,6 +920,7 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
   const saved = (() => { try { return JSON.parse(sessionStorage.getItem('postData') || '{}'); } catch(e) { return {}; } })();
   const [method, setMethod] = useState(saved.method || 'ship');
   const [photos, setPhotos] = useState(saved.photos ? Array.from({ length: saved.photos }, (_, i) => ['📱','📦','🛋️','👕','🚗','❄️','🔧','🏡'][i % 8]) : []);
+  const [hasVideo, setHasVideo] = useState(saved.hasVideo || false);
   const [title, setTitle] = useState(saved.title || '');
   const [price, setPrice] = useState(saved.price || '');
   const [cat, setCat] = useState(saved.cat || '');
@@ -915,7 +936,7 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
     if (!cat)                 { alert('Vui lòng chọn Danh mục.'); return; }
     if (!price || Number(price) <= 0) { alert('Vui lòng nhập Giá bán hợp lệ.'); return; }
     if (photos.length === 0)  { alert('Vui lòng thêm ít nhất 1 ảnh sản phẩm.'); return; }
-    sessionStorage.setItem('postData', JSON.stringify({ title, price, cat, method, photos: photos.length }));
+    sessionStorage.setItem('postData', JSON.stringify({ title, price, cat, method, photos: photos.length, hasVideo }));
     go('s-preview-post');
   }
 
@@ -957,7 +978,22 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
         </Fg>
 
         <Fg label="Clip giới thiệu sản phẩm">
-          <VidPlaceholder title="Quay clip 15-30 giây" desc="Giới thiệu sản phẩm thực tế — sắp ra mắt" />
+          {!hasVideo ? (
+            <div onClick={() => setHasVideo(true)} style={{ border: `2px dashed ${C.p}`, borderRadius: 12, padding: 14, textAlign: 'center', cursor: 'pointer', background: '#faf7ff' }}>
+              <div style={{ fontSize: 26, marginBottom: 4 }}>🎬</div>
+              <p style={{ fontSize: 12, color: C.m }}>Bấm để quay/tải clip giới thiệu (15-30 giây)</p>
+            </div>
+          ) : (
+            <div style={{ background: 'linear-gradient(135deg,#1a1a2e,#16213e)', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', gap: 12, border: `1.5px solid ${C.p}` }}>
+              <div style={{ width: 44, height: 44, background: C.p, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18 }}>▶️</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>Clip đã chọn</div>
+                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Sẵn sàng đăng cùng tin</div>
+              </div>
+              <button onClick={() => setHasVideo(false)} style={{ background: '#e53935', color: '#fff', border: 'none', borderRadius: '50%', width: 22, height: 22, fontSize: 12, cursor: 'pointer', flexShrink: 0 }}>×</button>
+            </div>
+          )}
+          <div style={{ fontSize: 10, color: C.m, marginTop: 4 }}>Không bắt buộc • Tăng độ tin cậy tin đăng rõ rệt</div>
         </Fg>
         <Fg label="Tiêu đề" req><Fi value={title} onChange={e => setTitle(e.target.value)} placeholder="VD: iPhone 13 Pro 256GB còn bảo hành" /></Fg>
         <Fg label="Danh mục" req>
