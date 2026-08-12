@@ -410,6 +410,7 @@ function ProductScreen({ go, chkLogin, type }) {
   return (
     <div>
       <Shdr title="Chi tiết sản phẩm" onBack={() => go(sessionStorage.getItem('sx_product_return') || 's-categories')}>
+        <button onClick={() => setShowReport(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, fontSize: 18 }}>🚩</button>
         <button onClick={() => { sessionStorage.setItem('sx_cart_return', `s-prod${type.slice(1)}`); go('s-cart'); }}
           style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative', padding: 4, fontSize: 18 }}>
           🛒{(() => { const n = getCart().reduce((s, c) => s + c.qty, 0); return n > 0 ? <span style={{ position: 'absolute', top: 0, right: 0, background: '#e53935', color: '#fff', borderRadius: '50%', width: 14, height: 14, fontSize: 9, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n > 9 ? '9+' : n}</span> : null; })()}
@@ -444,16 +445,23 @@ function ProductScreen({ go, chkLogin, type }) {
         )}
       </div>
       <div style={{ padding: 12 }}>
-        <div style={{ fontSize: 16, fontWeight: 600, color: C.t, marginBottom: 4 }}>{p.title}</div>
-        <div style={{ fontSize: 22, fontWeight: 700, color: C.p, marginBottom: 8 }}>{p.price}</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-          <span style={{ fontSize: 11, background: C.pl, color: C.pd, padding: '4px 10px', borderRadius: 10 }}>{p.cond}</span>
-          <span style={{ fontSize: 11, background: C.pl, color: C.pd, padding: '4px 10px', borderRadius: 10 }}>📍 {p.loc}</span>
+        <div style={{ fontSize: 14, fontWeight: 600, color: C.t, marginBottom: 4 }}>{p.title}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 10 }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: C.p }}>{p.price}</span>
+          <span style={{ fontSize: 11, background: C.pl, color: C.pd, padding: '3px 9px', borderRadius: 10 }}>{p.cond}</span>
+          <span style={{ fontSize: 11, color: C.m }}>📍 {p.loc}</span>
         </div>
         <VidPlaceholder title="Clip giới thiệu sản phẩm" desc="Sắp ra mắt — người bán quay clip 15-30s thực tế" />
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
           <Avatar initials={p.av} size={40} />
-          <div><div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{p.seller}</div><div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai</div><div style={{ fontSize: 11, color: C.p, marginTop: 2 }}>{p.stats}</div><div onClick={() => go(p.storeRoute || 's-store-personal')} style={{ fontSize: 11, color: C.pd, marginTop: 2, cursor: 'pointer', textDecoration: 'underline' }}>🏪 Xem gian hàng</div></div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{p.seller}</div>
+            <div style={{ fontSize: 11, color: C.m }}>{p.loc}, Đồng Nai · <span style={{ color: C.p }}>{p.stats}</span></div>
+          </div>
+          <button onClick={() => go(p.storeRoute || 's-store-personal')}
+            style={{ flexShrink: 0, fontSize: 11, color: C.pd, background: C.pl, border: 'none', borderRadius: 8, padding: '6px 10px', cursor: 'pointer', fontWeight: 600 }}>
+            🏪 Gian hàng
+          </button>
         </div>
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Mô tả</h3>
@@ -462,15 +470,6 @@ function ProductScreen({ go, chkLogin, type }) {
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 10 }}>
           <h3 style={{ fontSize: 13, fontWeight: 600, color: C.t, marginBottom: 6 }}>Khuyết điểm</h3>
           <p style={{ fontSize: 12, color: C.m, lineHeight: 1.6 }}>{p.defect}</p>
-        </div>
-        {/* Huy hiệu tin cậy — gộp 1 hàng ngang, chỉ nêu đúng những gì ShopX thật sự đảm bảo */}
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-          {p.shippable && (
-            <span style={{ fontSize: 10, background: '#e8f5e9', color: '#2e7d32', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>🛡️ ShopX bảo vệ giao dịch</span>
-          )}
-          <span style={{ fontSize: 10, background: '#e3f2fd', color: '#1565c0', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3 }}>💬 Hỗ trợ khiếu nại</span>
-          <span onClick={() => setShowReport(true)}
-            style={{ fontSize: 10, background: '#fff3e0', color: '#e65100', padding: '4px 8px', borderRadius: 8, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 3, cursor: 'pointer' }}>🚩 Có thể báo cáo</span>
         </div>
         <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
 
