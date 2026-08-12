@@ -15,6 +15,16 @@ const FAULT_INFO = {
   shipper: { label: 'Shipper',   color: '#1565c0', feeNote: 'Shipper không được tính phí công do lỗi thuộc về Shipper.' },
 };
 
+// Lý do hoàn trả SAU KHI đã nhận hàng — trong 15 ngày, bắt buộc ảnh bằng chứng (theo đúng mô hình TikTok Shop)
+const RETURN_REASONS = [
+  { id: 'rt1', label: 'Hàng không đúng mô tả/hình ảnh đăng tin' },
+  { id: 'rt2', label: 'Hàng bị lỗi/hư hỏng (không phải do vận chuyển)' },
+  { id: 'rt3', label: 'Thiếu phụ kiện/không đúng số lượng đã đặt' },
+  { id: 'rt4', label: 'Hàng giả, hàng nhái' },
+];
+const RETURN_WINDOW_DAYS = 15;   // hạn nộp yêu cầu hoàn trả sau khi nhận hàng
+const SELLER_RESPONSE_HOURS = 72; // hạn người bán phản hồi trước khi tự động duyệt
+
 function StarRating({ value, onChange }) {
   return (
     <div style={{ display: 'flex', gap: 6 }}>
@@ -136,6 +146,53 @@ function RefuseReasonPicker({ onConfirm }) {
         style={{ width: '100%', background: '#c62828', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
         Xác nhận lý do
       </button>
+    </div>
+  );
+}
+
+// Yêu cầu hoàn trả SAU KHI đã nhận hàng — bắt buộc lý do + ảnh bằng chứng (khác Từ chối tại cửa)
+function ReturnRequestPanel({ onSubmit, onCancel }) {
+  const [reasonId, setReasonId] = useState('');
+  const [note, setNote] = useState('');
+  const [photoAdded, setPhotoAdded] = useState(false);
+  return (
+    <div style={{ background: '#fff3e0', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ffb74d' }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100', marginBottom: 4 }}>↩️ Yêu cầu hoàn trả hàng</div>
+      <div style={{ fontSize: 10, color: '#bf360c', marginBottom: 8 }}>Trong vòng {RETURN_WINDOW_DAYS} ngày kể từ khi nhận hàng. Cần lý do + ảnh bằng chứng cụ thể.</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
+        {RETURN_REASONS.map(r => (
+          <label key={r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: C.t, cursor: 'pointer', padding: '8px 10px', borderRadius: 8, background: reasonId === r.id ? '#fff' : 'transparent', border: `1px solid ${reasonId === r.id ? '#ffb74d' : '#ffe0b2'}` }}>
+            <input type="radio" name="returnReason" checked={reasonId === r.id} onChange={() => setReasonId(r.id)} style={{ accentColor: '#e65100' }} />
+            {r.label}
+          </label>
+        ))}
+      </div>
+      <textarea value={note} onChange={e => setNote(e.target.value)} placeholder="Mô tả cụ thể vấn đề (bắt buộc)..."
+        style={{ width: '100%', border: '1.5px solid #ffb74d', borderRadius: 8, padding: '8px 10px', fontSize: 12, marginBottom: 8, resize: 'none', boxSizing: 'border-box' }} rows={2} />
+      {!photoAdded ? (
+        <div onClick={() => setPhotoAdded(true)} style={{ border: '2px dashed #e65100', borderRadius: 8, padding: 10, textAlign: 'center', cursor: 'pointer', marginBottom: 10, background: '#fff' }}>
+          <div style={{ fontSize: 20 }}>📷</div>
+          <div style={{ fontSize: 11, color: '#e65100' }}>Bấm để đính kèm ảnh bằng chứng (bắt buộc)</div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', border: '1px solid #ffb74d', borderRadius: 8, padding: 8, marginBottom: 10 }}>
+          <span style={{ fontSize: 18 }}>🖼️</span>
+          <span style={{ fontSize: 11, color: C.t, flex: 1 }}>Đã đính kèm 1 ảnh</span>
+          <button onClick={() => setPhotoAdded(false)} style={{ background: 'none', border: 'none', color: '#e53935', cursor: 'pointer', fontSize: 12 }}>Xóa</button>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={onCancel} style={{ flex: 1, background: 'none', border: '1px solid #ffb74d', color: '#e65100', padding: 9, borderRadius: 8, fontSize: 12, cursor: 'pointer' }}>Hủy</button>
+        <button onClick={() => {
+            if (!reasonId) { alert('Vui lòng chọn lý do.'); return; }
+            if (!note.trim()) { alert('Vui lòng mô tả cụ thể vấn đề.'); return; }
+            if (!photoAdded) { alert('Bắt buộc đính kèm ảnh bằng chứng.'); return; }
+            onSubmit({ reason: RETURN_REASONS.find(r => r.id === reasonId), note });
+          }}
+          style={{ flex: 2, background: '#e65100', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+          Gửi yêu cầu hoàn trả
+        </button>
+      </div>
     </div>
   );
 }
@@ -306,6 +363,12 @@ export default function Chat3WayScreen({ go }) {
   const [refusePhotoTaken, setRefusePhotoTaken] = useState(false);
   const [showReasonPicker, setShowReasonPicker] = useState(false);
 
+  // Luồng Hoàn trả SAU KHI đã nhận hàng — độc lập với luồng Từ chối tại cửa ở trên
+  const [showReturnPanel, setShowReturnPanel] = useState(false);
+  const [returnStatus, setReturnStatus] = useState(null); // null | 'pending' | 'approved' | 'auto_approved' | 'rejected'
+  const [returnInfo, setReturnInfo] = useState(null);      // { reason, note }
+  const [returnHours, setReturnHours] = useState(0);        // giờ giả lập chờ người bán phản hồi (demo)
+
   function sendMsg() {
     if (!input.trim()) return;
     const nameMap = { buyer: 'Nguyễn Văn Bình • SX-00234', seller: 'Anh Trần Minh Tuấn • SX-00127', shipper: 'Trần Văn Cường • SP-001' };
@@ -334,6 +397,26 @@ export default function Chat3WayScreen({ go }) {
     setRefusePhotoTaken(true);
     setOrderStatus('refused');
     setMsgs(m => [...m, { from: 'system', text: '📷 Shipper đã chụp ảnh bằng chứng. Đơn chuyển trạng thái: Từ chối nhận — Đang hoàn về người bán.' }]);
+  }
+
+  // Giai đoạn 4 — Hoàn trả sau khi đã nhận hàng
+  function submitReturnRequest(info) {
+    setReturnInfo(info);
+    setReturnStatus('pending');
+    setReturnHours(0);
+    setShowReturnPanel(false);
+    setMsgs(m => [...m, { from: 'buyer', name: 'SX-00001 (Bạn)', text: `↩️ Yêu cầu hoàn trả — Lý do: ${info.reason.label}. ${info.note}` }]);
+  }
+  function sellerRespondReturn(approve) {
+    setReturnStatus(approve ? 'approved' : 'rejected');
+    setMsgs(m => [...m, { from: 'system', text: approve ? '✅ Người bán đã đồng ý hoàn trả. Vui lòng gửi hàng về theo hướng dẫn.' : '❌ Người bán từ chối yêu cầu hoàn trả. Có thể liên hệ ShopX nếu không đồng ý.' }]);
+  }
+  function simulateReturnHours(h) {
+    setReturnHours(h);
+    if (h >= SELLER_RESPONSE_HOURS && returnStatus === 'pending') {
+      setReturnStatus('auto_approved');
+      setMsgs(m => [...m, { from: 'system', text: `⏰ Người bán không phản hồi trong ${SELLER_RESPONSE_HOURS} giờ. Hệ thống TỰ ĐỘNG DUYỆT yêu cầu hoàn trả để bảo vệ người mua.` }]);
+    }
   }
 
   const bgMap = { seller: '#e8f0fe', shipper: '#fff3e0', buyer: C.p };
@@ -478,16 +561,85 @@ export default function Chat3WayScreen({ go }) {
         )}
 
         {/* Thông báo đơn hoàn tất */}
-        {otpDone && (
+        {otpDone && !returnStatus && (
           <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 12, margin: '8px 0', border: '1px solid #c8e6c9', textAlign: 'center' }}>
             <div style={{ fontSize: 28, marginBottom: 6 }}>🎉</div>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>Giao hàng thành công!</div>
-            {role === 'buyer' && (
-              <button onClick={() => setShowRating(true)}
-                style={{ background: C.p, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600, marginTop: 6 }}>
-                ⭐ Đánh giá → nhận 5 SX Points
-              </button>
+            {role === 'buyer' && !showReturnPanel && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 6 }}>
+                <button onClick={() => setShowRating(true)}
+                  style={{ background: C.p, color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+                  ⭐ Hài lòng, đánh giá ngay → nhận 5 SX Points
+                </button>
+                <button onClick={() => setShowReturnPanel(true)}
+                  style={{ background: 'none', color: '#e65100', border: '1px solid #ffb74d', padding: '8px 16px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontWeight: 600 }}>
+                  ↩️ Có vấn đề, muốn hoàn trả hàng
+                </button>
+              </div>
             )}
+          </div>
+        )}
+
+        {/* Panel gửi yêu cầu hoàn trả */}
+        {role === 'buyer' && showReturnPanel && !returnStatus && (
+          <ReturnRequestPanel onSubmit={submitReturnRequest} onCancel={() => setShowReturnPanel(false)} />
+        )}
+
+        {/* Đang chờ người bán phản hồi — NGƯỜI MUA xem */}
+        {role === 'buyer' && returnStatus === 'pending' && (
+          <div style={{ background: '#fff3e0', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ffb74d' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100', marginBottom: 4 }}>⏳ Đang chờ người bán phản hồi</div>
+            <div style={{ fontSize: 11, color: '#bf360c', marginBottom: 8 }}>
+              Đã gửi yêu cầu: {returnInfo.reason.label}. Người bán có {SELLER_RESPONSE_HOURS}h để phản hồi — quá hạn hệ thống tự động duyệt.
+            </div>
+            <div style={{ fontSize: 10, color: C.m, marginBottom: 4 }}>🧪 Demo — giả lập thời gian chờ:</div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {[0, 24, 48, 72].map(h => (
+                <button key={h} onClick={() => simulateReturnHours(h)}
+                  style={{ fontSize: 10, padding: '3px 8px', borderRadius: 6, border: `1px solid ${returnHours === h ? '#e65100' : '#ccc'}`, background: returnHours === h ? '#ffe0b2' : '#fff', color: returnHours === h ? '#e65100' : C.m, cursor: 'pointer' }}>
+                  +{h}h
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Đang chờ phản hồi — NGƯỜI BÁN xem, có nút duyệt/từ chối */}
+        {role === 'seller' && returnStatus === 'pending' && (
+          <div style={{ background: '#fff3e0', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ffb74d' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#e65100', marginBottom: 4 }}>↩️ Người mua yêu cầu hoàn trả</div>
+            <div style={{ fontSize: 11, color: '#bf360c', marginBottom: 10 }}>
+              Lý do: {returnInfo.reason.label}<br/>Mô tả: {returnInfo.note}<br/>📷 Đã có ảnh bằng chứng đính kèm
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => sellerRespondReturn(true)}
+                style={{ flex: 1, background: '#2e7d32', color: '#fff', border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                ✅ Đồng ý hoàn trả
+              </button>
+              <button onClick={() => sellerRespondReturn(false)}
+                style={{ flex: 1, background: '#fff', color: '#c62828', border: '1px solid #ef9a9a', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                ❌ Từ chối
+              </button>
+            </div>
+            <div style={{ fontSize: 10, color: '#e65100', marginTop: 8, textAlign: 'center' }}>⚠️ Không phản hồi trong {SELLER_RESPONSE_HOURS}h sẽ tự động được duyệt</div>
+          </div>
+        )}
+
+        {/* Kết quả cuối cùng — hiện cho cả 2 vai trò */}
+        {(returnStatus === 'approved' || returnStatus === 'auto_approved') && (
+          <div style={{ background: '#e8f5e9', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #a5d6a7' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#2e7d32', marginBottom: 4 }}>
+              ✅ Hoàn trả đã được duyệt {returnStatus === 'auto_approved' ? '(tự động do quá hạn phản hồi)' : ''}
+            </div>
+            <div style={{ fontSize: 11, color: '#388e3c' }}>
+              Vui lòng gửi hàng về cho người bán. ShopX ghi nhận kết quả này — việc hoàn tiền thực hiện trực tiếp giữa 2 bên (chưa qua giữ tiền ShopX).
+            </div>
+          </div>
+        )}
+        {returnStatus === 'rejected' && (
+          <div style={{ background: '#ffebee', borderRadius: 10, padding: 12, margin: '8px 0', border: '1.5px solid #ef9a9a' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#c62828', marginBottom: 4 }}>❌ Người bán từ chối yêu cầu hoàn trả</div>
+            <div style={{ fontSize: 11, color: '#e53935' }}>Không đồng ý với kết quả? Có thể liên hệ ShopX hỗ trợ xem xét thêm (dựa trên bằng chứng đã nộp).</div>
           </div>
         )}
       </div>
