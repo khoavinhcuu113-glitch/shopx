@@ -184,7 +184,7 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
         {nganh === 'noikhu' && (
           <Fg label="Tên chung cư / tòa nhà cụ thể" req>
             <Fi value={form.toaNha || ''} onChange={e => upd('toaNha', e.target.value)} placeholder="VD: Chung cư Sky View, Tòa B — chỉ nhận việc trong đúng tòa nhà này" />
-            <div style={{ fontSize: 10, color: C.m, marginTop: 4 }}>💡 Dịch vụ nội khu chỉ phục vụ đúng trong phạm vi 1 tòa nhà/khu dân cư — ghi rõ để người thuê tìm đúng người ở gần.</div>
+            <div style={{ fontSize: 10, color: C.m, marginTop: 4 }}>💡 Dịch vụ làm thuê bán thời gian — ghi rõ phạm vi tòa nhà/khu dân cư để người thuê tìm đúng người ở gần.</div>
           </Fg>
         )}
         <Fg label="Bán kính di chuyển">

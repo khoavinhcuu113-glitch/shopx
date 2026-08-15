@@ -28,7 +28,7 @@ const CATEGORY_ROUTES = [
   's-prod2',   // Xe cộ
   's-prod1',   // Đồ điện tử
   's-service', // Dịch vụ & Việc làm
-  's-service', // Dịch vụ nội khu & Chung cư
+  's-service', // Dịch vụ làm thuê bán thời gian
   's-service', // Chăm sóc người thân
   's-service', // Vệ sinh & Giặt ủi
   's-prod4',   // Thú cưng
@@ -775,6 +775,22 @@ const WORKERS_DATA = [
       ],
     },
     {
+      av: 'TL2', id: 'SX-00207', name: 'Chị Nguyễn Thị Lan', trade: 'Mua hộ - đi chợ hộ', nganh: 'noikhu', exp: '6 tháng', needsAddress: true, needsContentLink: false,
+      price: '30.000đ/lần', orders: 24, completeRate: 100, cancelRate: 0,
+      thumbsUp: 99.0, bg: '#00897b', toaNha: 'Chung cư Sky View, Tòa B — Biên Hòa',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+      ],
+    },
+    {
+      av: 'VH', id: 'SX-00208', name: 'Anh Phạm Văn Hòa', trade: 'Giao hàng nội khu - nội tòa nhà', nganh: 'noikhu', exp: '1 năm', needsAddress: true, needsContentLink: false,
+      price: '15.000đ/lần', orders: 89, completeRate: 97, cancelRate: 3,
+      thumbsUp: 97.5, bg: '#00897b', toaNha: 'Chung cư Green Valley — Trảng Bom',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+      ],
+    },
+    {
       av: 'MT', id: 'SX-00203', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '2 năm', needsAddress: false, needsContentLink: true,
       price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3, followers: 12500,
       thumbsUp: 97.5, bg: '#ad1457',
@@ -820,6 +836,7 @@ function ServiceScreen({ go, chkLogin }) {
   });
   const [nganh, setNganh] = useState('');
   const [ngheCuThe, setNgheCuThe] = useState('');
+  const [khuVucSearch, setKhuVucSearch] = useState('');
   const workers = WORKERS_DATA;
 
   const jobs = [
@@ -870,8 +887,16 @@ function ServiceScreen({ go, chkLogin }) {
               </select>
             </div>
           )}
+          {nganh === 'noikhu' && (
+            <div style={{ margin: '0 12px 10px' }}>
+              <input value={khuVucSearch} onChange={e => setKhuVucSearch(e.target.value)}
+                placeholder="🔍 Tìm theo chung cư/tòa nhà/khu vực..."
+                style={{ width: '100%', border: `1px solid ${C.b}`, borderRadius: 10, padding: '9px 14px', fontSize: 12, color: C.t, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 10, color: C.m, marginTop: 4 }}>💡 Nhập đúng tên chung cư/khu vực bạn cần để tìm người ở gần nhất</div>
+            </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 12px 12px' }}>
-            {workers.filter(w => (!nganh || w.nganh === nganh) && (!ngheCuThe || w.trade === ngheCuThe)).map((w, i) => (
+            {workers.filter(w => (!nganh || w.nganh === nganh) && (!ngheCuThe || w.trade === ngheCuThe) && (nganh !== 'noikhu' || !khuVucSearch.trim() || (w.toaNha || '').toLowerCase().includes(khuVucSearch.trim().toLowerCase()))).map((w, i) => (
               <div key={i} onClick={() => { sessionStorage.setItem('sx_view_profile', JSON.stringify(w)); sessionStorage.setItem('sx_profile_return', 's-service'); go('s-worker-profile'); }}
                 style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', cursor: 'pointer' }}>
 
@@ -888,6 +913,9 @@ function ServiceScreen({ go, chkLogin }) {
                     <div style={{ fontSize: 11, color: C.m, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {w.trade} • {w.exp} • <span style={{ color: C.p, fontWeight: 600 }}>{w.price}</span>
                     </div>
+                    {w.toaNha && (
+                      <div style={{ fontSize: 10, color: '#00897b', marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>📍 {w.toaNha}</div>
+                    )}
                   </div>
                   <button onClick={e => { e.stopPropagation(); sessionStorage.setItem('sx_chat_contact', JSON.stringify({ name: w.name, trade: w.trade, exp: w.exp, price: w.price, sxId: w.id, needsAddress: w.needsAddress, needsContentLink: w.needsContentLink })); chkLogin('s-chat-worker'); }}
                     style={{ background: C.p, color: '#fff', border: 'none', padding: '7px 12px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer', flexShrink: 0 }}>
@@ -1020,6 +1048,15 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
   const [title, setTitle] = useState(saved.title || '');
   const [price, setPrice] = useState(saved.price || '');
   const [cat, setCat] = useState(saved.cat || '');
+  const [condition, setCondition] = useState(saved.condition || '');
+  // Trường riêng cho Bất động sản — khác hẳn "Tình trạng" hàng hóa thường (theo đúng chuẩn Chợ Tốt)
+  const [reType, setReType] = useState(saved.reType || '');
+  const [dienTich, setDienTich] = useState(saved.dienTich || '');
+  const [phapLy, setPhapLy] = useState(saved.phapLy || '');
+  const [huongNha, setHuongNha] = useState(saved.huongNha || '');
+  const [soPhong, setSoPhong] = useState(saved.soPhong || '');
+  const [noiThat, setNoiThat] = useState(saved.noiThat || '');
+  const isRealEstate = cat === 'Bất động sản';
   const emojis = ['📱','📦','🛋️','👕','🚗','❄️','🔧','🏡'];
 
   function addPhoto() {
@@ -1032,7 +1069,15 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
     if (!cat)                 { alert('Vui lòng chọn Danh mục.'); return; }
     if (!price || Number(price) <= 0) { alert('Vui lòng nhập Giá bán hợp lệ.'); return; }
     if (photos.length === 0)  { alert('Vui lòng thêm ít nhất 1 ảnh sản phẩm.'); return; }
-    sessionStorage.setItem('postData', JSON.stringify({ title, price, cat, method, photos: photos.length, hasVideo }));
+    if (isRealEstate) {
+      if (!reType)   { alert('Vui lòng chọn Loại giao dịch.'); return; }
+      if (!dienTich) { alert('Vui lòng nhập Diện tích.'); return; }
+      if (!phapLy)   { alert('Vui lòng chọn Pháp lý.'); return; }
+      if (!soPhong)  { alert('Vui lòng nhập Số phòng ngủ.'); return; }
+    } else {
+      if (!condition) { alert('Vui lòng chọn Tình trạng.'); return; }
+    }
+    sessionStorage.setItem('postData', JSON.stringify({ title, price, cat, method, photos: photos.length, hasVideo, condition, reType, dienTich, phapLy, huongNha, soPhong, noiThat }));
     go('s-preview-post');
   }
 
@@ -1103,9 +1148,38 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
             </optgroup>
           </Fs>
         </Fg>
-        <Fg label="Tình trạng" req>
-          <Fs><option>-- Chọn --</option><option>Mới (còn nguyên seal)</option><option>Như mới (99%)</option><option>Đã dùng (còn tốt)</option><option>Cần sửa chữa nhỏ</option></Fs>
-        </Fg>
+        {isRealEstate ? (
+          <>
+            <Fg label="Loại giao dịch" req>
+              <Fs value={reType} onChange={e => setReType(e.target.value)}>
+                <option value="">-- Chọn --</option><option>Bán</option><option>Cho thuê</option>
+              </Fs>
+            </Fg>
+            <Fg label="Diện tích (m²)" req><Fi value={dienTich} onChange={e => setDienTich(e.target.value)} type="number" placeholder="VD: 65" /></Fg>
+            <Fg label="Pháp lý" req>
+              <Fs value={phapLy} onChange={e => setPhapLy(e.target.value)}>
+                <option value="">-- Chọn --</option><option>Sổ đỏ/Sổ hồng</option><option>Hợp đồng mua bán</option><option>Giấy tờ viết tay</option><option>Đang chờ sổ</option>
+              </Fs>
+            </Fg>
+            <Fg label="Hướng nhà">
+              <Fs value={huongNha} onChange={e => setHuongNha(e.target.value)}>
+                <option value="">-- Chọn --</option><option>Đông</option><option>Tây</option><option>Nam</option><option>Bắc</option><option>Đông Nam</option><option>Đông Bắc</option><option>Tây Nam</option><option>Tây Bắc</option>
+              </Fs>
+            </Fg>
+            <Fg label="Số phòng ngủ" req><Fi value={soPhong} onChange={e => setSoPhong(e.target.value)} type="number" placeholder="VD: 2" /></Fg>
+            <Fg label="Nội thất">
+              <Fs value={noiThat} onChange={e => setNoiThat(e.target.value)}>
+                <option value="">-- Chọn --</option><option>Đầy đủ nội thất</option><option>Nội thất cơ bản</option><option>Nhà trống, không nội thất</option>
+              </Fs>
+            </Fg>
+          </>
+        ) : (
+          <Fg label="Tình trạng" req>
+            <Fs value={condition} onChange={e => setCondition(e.target.value)}>
+              <option value="">-- Chọn --</option><option>Mới (còn nguyên seal)</option><option>Như mới (99%)</option><option>Đã dùng (còn tốt)</option><option>Cần sửa chữa nhỏ</option>
+            </Fs>
+          </Fg>
+        )}
         <Fg label="Mô tả chi tiết" req>
           <textarea style={{ width: '100%', border: `1.5px solid ${C.b}`, borderRadius: 10, padding: '9px 12px', fontSize: 13, color: C.t, background: C.w, outline: 'none', resize: 'none' }} rows={3} placeholder="Mô tả tình trạng thực tế..." />
         </Fg>

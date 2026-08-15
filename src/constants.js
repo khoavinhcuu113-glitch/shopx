@@ -80,7 +80,7 @@ export const NGHES = {
   cn:   ['Cài đặt phần mềm','Lắp đặt camera','Thiết kế đồ họa','Chụp ảnh sản phẩm','Kế toán theo giờ','Đánh máy - soạn thảo'],
   dam:  ['Chăm sóc cá cảnh - hồ thủy sinh','Chăm sóc chim cảnh','Trồng & chăm sóc cây cảnh','Tạo dáng bon sai','Chăm sóc thú cưng','Nấu ăn - làm bánh theo đặt','Thêu - móc len','Quay video - dựng phim ngắn','KOL/KOC quảng bá sản phẩm'],
 
-  // DANH MỤC MỚI — Dịch vụ nội khu & Gia đình
+  // DANH MỤC MỚI — Dịch vụ làm thuê bán thời gian
   noikhu: [
     'Mua hộ - đi chợ hộ',
     'Nhận hàng online hộ',
@@ -120,7 +120,7 @@ export const NGANH_LIST = [
   { value: 'cn',          label: '💻 Công nghệ & Văn phòng' },
   { value: 'dam',         label: '🌟 Kỹ năng & Đam mê bán thời gian' },
   // Ngành mới — Nội khu & Gia đình
-  { value: 'noikhu',      label: '🏢 Dịch vụ nội khu & Chung cư' },
+  { value: 'noikhu',      label: '🏢 Dịch vụ làm thuê bán thời gian' },
   { value: 'chamsoc',     label: '❤️ Chăm sóc người thân & Y tế' },
   { value: 'vesinhgiatre',label: '🧹 Vệ sinh & Giặt ủi theo giờ' },
 ];
@@ -130,7 +130,7 @@ export const CATEGORIES = [
   { icon: '🚗', name: 'Xe cộ' },
   { icon: '📱', name: 'Đồ điện tử' },
   { icon: '🔧', name: 'Dịch vụ & Việc làm' },
-  { icon: '🏢', name: 'Dịch vụ nội khu & Chung cư' },
+  { icon: '🏢', name: 'Dịch vụ làm thuê bán thời gian' },
   { icon: '❤️', name: 'Chăm sóc người thân' },
   { icon: '🧹', name: 'Vệ sinh & Giặt ủi' },
   { icon: '🐾', name: 'Thú cưng' },
