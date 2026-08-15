@@ -1816,16 +1816,12 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#1565c0' }}>🏢 {businessInfo.name}</div>
               )}
               <div style={{ fontSize: accType === 'business' ? 12 : 15, fontWeight: accType === 'business' ? 400 : 600, color: accType === 'business' ? C.m : C.t }}>Khoavinhcuu113</div>
-              <div style={{ fontSize: 11, color: C.m, display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+              <div style={{ fontSize: 11, color: C.m, display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
                 <span>SX-00001</span>
                 <span style={{ color: '#f59e0b' }}>⭐ 4.8 (34)</span>
-                <span title="SĐT đã xác minh">✅</span>
-                {hasCCCD ? (
-                  <span title="Căn cước KYC đã xác minh">🪪</span>
-                ) : (
-                  <span title="Căn cước KYC chưa xác minh" style={{ opacity: 0.5 }}>🪪</span>
-                )}
-                <span title="Pi chưa xác minh" style={{ opacity: 0.5 }}>🟣</span>
+                <span title="SĐT đã xác minh" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 15, height: 15, borderRadius: '50%', background: '#1976d2', color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>
+                <span title={hasCCCD ? 'Căn cước đã xác minh' : 'Căn cước chưa xác minh'}
+                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 15, height: 15, borderRadius: '50%', background: hasCCCD ? '#1976d2' : '#ccc', color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>
               </div>
             </div>
           </div>
