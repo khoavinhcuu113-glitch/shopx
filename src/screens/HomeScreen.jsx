@@ -42,8 +42,8 @@ export default function HomeScreen({ go, chkLogin, nav }) {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, padding: '14px 12px 8px' }}>
         {[
           { icon: '🏷️', label: 'Đăng tin bán',   action: () => chkLogin('s-post') },
-          { icon: '🔧', label: 'Tìm dịch vụ',    action: () => { go('s-service'); nav('ni-cat'); } },
-          { icon: '💼', label: 'Tìm công việc',  action: () => { go('s-service'); nav('ni-cat'); } },
+          { icon: '🔧', label: 'Tìm dịch vụ',    action: () => { sessionStorage.setItem('sx_service_initial_tab', 'cv'); go('s-service'); nav('ni-cat'); } },
+          { icon: '💼', label: 'Tìm công việc',  action: () => { sessionStorage.setItem('sx_service_initial_tab', 'job'); go('s-service'); nav('ni-cat'); } },
         ].map((b, i) => (
           <button key={i} onClick={b.action} style={{ background: C.w, border: `1.5px solid ${C.b}`, borderRadius: 14, padding: '12px 6px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, cursor: 'pointer', width: '100%' }}>
             <span style={{ fontSize: 22 }}>{b.icon}</span>

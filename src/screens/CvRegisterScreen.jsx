@@ -181,6 +181,12 @@ export default function CvRegisterScreen({ go, hasCCCD, hasAgreedTerms }) {
             <option>Bình Dương</option>
           </Fs>
         </Fg>
+        {nganh === 'noikhu' && (
+          <Fg label="Tên chung cư / tòa nhà cụ thể" req>
+            <Fi value={form.toaNha || ''} onChange={e => upd('toaNha', e.target.value)} placeholder="VD: Chung cư Sky View, Tòa B — chỉ nhận việc trong đúng tòa nhà này" />
+            <div style={{ fontSize: 10, color: C.m, marginTop: 4 }}>💡 Dịch vụ nội khu chỉ phục vụ đúng trong phạm vi 1 tòa nhà/khu dân cư — ghi rõ để người thuê tìm đúng người ở gần.</div>
+          </Fg>
+        )}
         <Fg label="Bán kính di chuyển">
           <Fs value={form.banKinh || ''} onChange={e => upd('banKinh', e.target.value)}>
             <option>Trong vòng 10km</option><option>Trong vòng 20km</option><option>Trong vòng 50km</option><option>Toàn tỉnh</option>

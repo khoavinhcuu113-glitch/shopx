@@ -813,7 +813,11 @@ const WORKERS_DATA = [
   ];
 
 function ServiceScreen({ go, chkLogin }) {
-  const [tab, setTab] = useState('cv');
+  const [tab, setTab] = useState(() => {
+    const initial = sessionStorage.getItem('sx_service_initial_tab');
+    sessionStorage.removeItem('sx_service_initial_tab');
+    return initial || 'cv';
+  });
   const [nganh, setNganh] = useState('');
   const [ngheCuThe, setNgheCuThe] = useState('');
   const workers = WORKERS_DATA;
@@ -1091,7 +1095,12 @@ function PostScreen({ go, chkLogin, hasCCCD }) {
         <Fg label="Danh mục" req>
           <Fs value={cat} onChange={e => setCat(e.target.value)}>
             <option value="">-- Chọn danh mục --</option>
-            {CATEGORIES.map(c => <option key={c.name}>{c.name}</option>)}
+            <optgroup label="🛍️ Sản phẩm">
+              {CATEGORIES.filter((c, i) => CATEGORY_ROUTES[i] !== 's-service').map(c => <option key={c.name}>{c.name}</option>)}
+            </optgroup>
+            <optgroup label="🔧 Dịch vụ">
+              {CATEGORIES.filter((c, i) => CATEGORY_ROUTES[i] === 's-service').map(c => <option key={c.name}>{c.name}</option>)}
+            </optgroup>
           </Fs>
         </Fg>
         <Fg label="Tình trạng" req>
