@@ -633,6 +633,14 @@ function ProductScreen({ go, chkLogin, type }) {
 // ─── CHAT SCREEN ─────────────────────────────────────────────────────
 // ─── SERVICE SCREEN (Fix E: 3 tab mới) ────────────────────────────────
 // ─── HỒ SƠ CV ĐẦY ĐỦ — xem chi tiết Thợ/Shipper/KOL-KOC ──────────────
+// Tích màu gọn — thay chữ dài "Đã xác minh Căn cước KYC" bằng 1 icon nhỏ, giống Facebook/Pi Network
+function getVerifyBadge(w, hasCCCD) {
+  if (!hasCCCD) return null; // chưa xác minh gì thì không hiện tích
+  if (w.disputed) return { color: '#e53935', title: 'Đang có tranh chấp/cảnh báo' };
+  if (w.orders >= 20) return { color: '#2e7d32', title: 'Đã xác minh Căn cước • Uy tín cao (20+ đơn hoàn thành)' };
+  return { color: '#1976d2', title: 'Đã xác minh Căn cước' };
+}
+
 function WorkerProfileScreen({ go }) {
   const w = (() => {
     try { return JSON.parse(sessionStorage.getItem('sx_view_profile') || 'null'); } catch (e) { return null; }
@@ -646,6 +654,7 @@ function WorkerProfileScreen({ go }) {
   );
   const tier = w.orders >= 20 ? '🏅 Chuyên nghiệp' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới';
   const hasCCCD = (w.badges || []).some(b => b.label.includes('Căn cước') && b.ok);
+  const verifyBadge = getVerifyBadge(w, hasCCCD);
 
   return (
     <div>
@@ -655,7 +664,12 @@ function WorkerProfileScreen({ go }) {
         {/* Header hồ sơ */}
         <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: 14, marginBottom: 12, textAlign: 'center' }}>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: w.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', color: '#fff', fontSize: 22, fontWeight: 700 }}>{w.av}</div>
-          <div style={{ fontSize: 16, fontWeight: 700, color: C.t, marginBottom: 2 }}>{w.name}</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, marginBottom: 2 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: C.t }}>{w.name}</span>
+            {verifyBadge && (
+              <span title={verifyBadge.title} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 17, height: 17, borderRadius: '50%', background: verifyBadge.color, color: '#fff', fontSize: 11, lineHeight: 1 }}>✓</span>
+            )}
+          </div>
           <div style={{ fontSize: 12, color: C.m, marginBottom: 6 }}>{w.trade ? `${w.trade} • ${w.exp} kinh nghiệm` : `Shipper cộng đồng • ${w.route || ''}`}</div>
           <span style={{ fontSize: 11, background: C.pl, color: C.pd, padding: '3px 10px', borderRadius: 10, fontWeight: 600 }}>{tier}</span>
         </div>
@@ -941,6 +955,11 @@ function ServiceScreen({ go, chkLogin }) {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1 }}>
                       <span style={{ fontSize: 13, fontWeight: 600, color: C.t }}>{w.name}</span>
+                      {(() => {
+                        const hasCCCD = (w.badges || []).some(b => b.label.includes('Căn cước') && b.ok);
+                        const vb = getVerifyBadge(w, hasCCCD);
+                        return vb ? <span title={vb.title} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 14, height: 14, borderRadius: '50%', background: vb.color, color: '#fff', fontSize: 9, lineHeight: 1, flexShrink: 0 }}>✓</span> : null;
+                      })()}
                       <span style={{ fontSize: 10, background: C.pl, color: C.pd, padding: '1px 6px', borderRadius: 8, flexShrink: 0 }}>
                         {w.orders >= 20 ? '🏅 Chuyên nghiệp' : w.orders >= 5 ? '✅ Uy tín' : '🆕 Mới'}
                       </span>
