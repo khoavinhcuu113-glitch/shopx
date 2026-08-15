@@ -7,7 +7,7 @@ function getCartCount() {
   } catch (e) { return 0; }
 }
 
-export default function HomeScreen({ go, chkLogin, nav }) {
+export default function HomeScreen({ go, chkLogin, nav, isLoggedIn }) {
   const cartCount = getCartCount();
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH',    price: '18.500.000đ', loc: 'Biên Hòa',  scr: 's-prod1' },
@@ -35,7 +35,11 @@ export default function HomeScreen({ go, chkLogin, nav }) {
       <div style={{ background: C.p, padding: 16 }}>
         <h1 style={{ color: '#fff', fontSize: 17, fontWeight: 600, marginBottom: 4, lineHeight: 1.3 }}>Đồng hành - Tiết kiệm<br />Cùng kiếm tiền</h1>
         <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: 12, marginBottom: 10 }}>Chợ đồ cũ trực tuyến nhộn nhịp nhất của người Việt • shopx.pi</p>
-        <button onClick={() => chkLogin('s-post')} style={{ background: '#fff', color: C.p, border: 'none', padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>📝 Đăng tin ngay</button>
+        {isLoggedIn ? (
+          <button onClick={() => chkLogin('s-post')} style={{ background: '#fff', color: C.p, border: 'none', padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>📝 Đăng tin ngay</button>
+        ) : (
+          <button onClick={() => chkLogin('s-post')} style={{ background: '#fff', color: C.p, border: 'none', padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🔑 Đăng nhập / Đăng ký</button>
+        )}
       </div>
 
       {/* 3 nút */}

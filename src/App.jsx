@@ -44,13 +44,29 @@ function CategoriesScreen({ go, nav }) {
   // Tách 2 nhóm dựa trên chính CATEGORY_ROUTES đã có — route 's-service' = Dịch vụ, còn lại = Sản phẩm
   const productItems = CATEGORIES.map((c, i) => ({ ...c, route: CATEGORY_ROUTES[i] })).filter(c => c.route !== 's-service');
   const serviceItems = CATEGORIES.map((c, i) => ({ ...c, route: CATEGORY_ROUTES[i] })).filter(c => c.route === 's-service');
+  // Tên danh mục dịch vụ → đúng mã ngành trong NGANH_LIST, để bấm vào là lọc sẵn luôn, không phải chọn lại
+  const CATEGORY_TO_NGANH = {
+    'Dịch vụ làm thuê bán thời gian': 'noikhu',
+    'Chăm sóc người thân': 'chamsoc',
+    'Vệ sinh & Giặt ủi': 'vesinhgiatre',
+  };
 
   function renderGrid(items, iconBg) {
     return (
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {items.map((c, i) => (
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: '14px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
-            onClick={() => { sessionStorage.setItem('sx_product_return', 's-categories'); go(c.route === 's-service' ? 's-service' : (c.route || 's-prod1')); }}>
+            onClick={() => {
+              sessionStorage.setItem('sx_product_return', 's-categories');
+              if (c.route === 's-service') {
+                sessionStorage.setItem('sx_service_initial_tab', 'cv');
+                if (CATEGORY_TO_NGANH[c.name]) sessionStorage.setItem('sx_service_initial_nganh', CATEGORY_TO_NGANH[c.name]);
+                else sessionStorage.removeItem('sx_service_initial_nganh');
+                go('s-service');
+              } else {
+                go(c.route || 's-prod1');
+              }
+            }}>
             <div style={{ width: 44, height: 44, background: iconBg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{c.icon}</div>
             <span style={{ fontSize: 12, fontWeight: 600, color: C.t, lineHeight: 1.3 }}>{c.name}</span>
           </div>
@@ -834,7 +850,12 @@ function ServiceScreen({ go, chkLogin }) {
     sessionStorage.removeItem('sx_service_initial_tab');
     return initial || 'cv';
   });
-  const [nganh, setNganh] = useState('');
+  const [mainTab, setMainTab] = useState(tab === 'job' ? 'congviec' : 'dichvu');
+  const [nganh, setNganh] = useState(() => {
+    const initial = sessionStorage.getItem('sx_service_initial_nganh') || '';
+    sessionStorage.removeItem('sx_service_initial_nganh');
+    return initial;
+  });
   const [ngheCuThe, setNgheCuThe] = useState('');
   const [khuVucSearch, setKhuVucSearch] = useState('');
   const workers = WORKERS_DATA;
@@ -847,11 +868,11 @@ function ServiceScreen({ go, chkLogin }) {
     { title: 'Cần thợ sơn nhà 3 phòng ngủ', desc: 'Sơn lại nội thất ~80m2, có sẵn sơn. Ưu tiên thợ làm cuối tuần.', price: 'Thỏa thuận', loc: 'Trảng Bom', icon: '🏠' },
     { title: 'Cần nhận hàng online hộ', desc: 'Hay đặt hàng online nhưng không có nhà ban ngày. Cần người nhận và giữ hộ.', price: '15.000đ/lần', loc: 'Hố Nai', icon: '📦' },
   ];
-  const tabs = [
-    { id: 'cv',      label: 'Đăng ký nghề cần việc' },
-    { id: 'job',     label: 'Tin tìm thợ' },
+  // Tin cần việc / Đăng ký Shipper / Nhận quảng cáo — đều thuộc bên CUNG ("Tìm dịch vụ"), khác "Tin tìm thợ" (bên CẦU)
+  const subTabs = [
+    { id: 'cv',      label: 'Tin cần việc' },
     { id: 'shipper', label: 'Đăng ký nhận Shipper' },
-    { id: 'kol',     label: '🎥 KOL/KOC' },
+    { id: 'kol',     label: 'Nhận quảng cáo (KOC/KOL)' },
   ];
   function goRegisterKol() {
     sessionStorage.setItem('sx_cv_form', JSON.stringify({ nganh: 'dam', ngheCuThe: 'KOL/KOC quảng bá sản phẩm' }));
@@ -860,15 +881,29 @@ function ServiceScreen({ go, chkLogin }) {
   return (
     <div>
       <Shdr title="Dịch vụ & Việc làm" onBack={() => go('s-home')} />
-      {/* 3 tab mới */}
+      {/* Tầng 1 — Cung (Tìm dịch vụ) / Cầu (Tìm công việc) */}
       <div style={{ display: 'flex', background: '#f0ebfa', padding: 4, margin: '10px 12px 6px', borderRadius: 10, gap: 2 }}>
-        {tabs.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{ flex: 1, textAlign: 'center', padding: '7px 4px', borderRadius: 8, fontSize: 10, fontWeight: 500, cursor: 'pointer', border: 'none', background: tab === t.id ? C.w : 'none', color: tab === t.id ? C.p : C.m, lineHeight: 1.2 }}>
+        {[
+          { id: 'dichvu',   label: '🔧 Tìm dịch vụ' },
+          { id: 'congviec', label: '💼 Tìm công việc' },
+        ].map(t => (
+          <button key={t.id} onClick={() => { setMainTab(t.id); setTab(t.id === 'congviec' ? 'job' : 'cv'); }}
+            style={{ flex: 1, textAlign: 'center', padding: '9px 4px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: 'none', background: mainTab === t.id ? C.w : 'none', color: mainTab === t.id ? C.p : C.m }}>
             {t.label}
           </button>
         ))}
       </div>
-
+      {/* Tầng 2 — chỉ hiện khi "Tìm dịch vụ" (3 mục: Tin cần việc / Shipper / Quảng cáo) */}
+      {mainTab === 'dichvu' && (
+        <div style={{ display: 'flex', margin: '0 12px 6px', gap: 2 }}>
+          {subTabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{ flex: 1, textAlign: 'center', padding: '7px 4px', borderRadius: 8, fontSize: 10, fontWeight: 500, cursor: 'pointer', border: `1px solid ${tab === t.id ? C.p : '#e8def8'}`, background: tab === t.id ? C.pl : 'none', color: tab === t.id ? C.pd : C.m, lineHeight: 1.2 }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
       {/* Tab 1 — Đăng ký nghề cần việc */}
       {tab === 'cv' && (
         <div>
@@ -2467,7 +2502,7 @@ export default function App() {
 
   const renderScreen = () => {
     switch (screen) {
-      case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
+      case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} isLoggedIn={isLoggedIn} />;;
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
       case 's-all-listings':     return <AllListingsScreen      go={go} />;
       case 's-search':           return <SearchScreen           go={go} />;
