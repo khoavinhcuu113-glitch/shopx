@@ -7,7 +7,7 @@ function getCartCount() {
   } catch (e) { return 0; }
 }
 
-export default function HomeScreen({ go, chkLogin, nav, isLoggedIn }) {
+export default function HomeScreen({ go, chkLogin, nav, isLoggedIn, doLogin }) {
   const cartCount = getCartCount();
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH',    price: '18.500.000đ', loc: 'Biên Hòa',  scr: 's-prod1' },
@@ -38,7 +38,10 @@ export default function HomeScreen({ go, chkLogin, nav, isLoggedIn }) {
         {isLoggedIn ? (
           <button onClick={() => chkLogin('s-post')} style={{ background: '#fff', color: C.p, border: 'none', padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>📝 Đăng tin ngay</button>
         ) : (
-          <button onClick={() => chkLogin('s-post')} style={{ background: '#fff', color: C.p, border: 'none', padding: '7px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>🔑 Đăng nhập / Đăng ký</button>
+          <div style={{ display: 'flex', gap: 6 }}>
+            <button onClick={doLogin} style={{ background: '#fff', color: C.p, border: 'none', padding: '7px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>Đăng nhập</button>
+            <button onClick={() => go('s-register')} style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', border: '1px solid #fff', padding: '7px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>Đăng ký</button>
+          </div>
         )}
       </div>
 

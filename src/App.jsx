@@ -2502,7 +2502,7 @@ export default function App() {
 
   const renderScreen = () => {
     switch (screen) {
-      case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} isLoggedIn={isLoggedIn} />;;
+      case 's-home':             return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} isLoggedIn={isLoggedIn} doLogin={doLogin} />;;
       case 's-categories':       return <CategoriesScreen       go={go} nav={nav} />;
       case 's-all-listings':     return <AllListingsScreen      go={go} />;
       case 's-search':           return <SearchScreen           go={go} />;
