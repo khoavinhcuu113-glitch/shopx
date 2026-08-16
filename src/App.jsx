@@ -1419,6 +1419,172 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
 // ─── CHIẾN DỊCH KOL — theo dõi hiệu quả cho Doanh nghiệp ────────────
 // ─── CHIẾN DỊCH KOL — 3 cấp dữ liệu: Hợp đồng (gốc) → gộp theo KOL / theo Sản phẩm ──
 // Dữ liệu hợp đồng KOL gốc — cấp module để dùng chung với WorkerProfileScreen (hiện đúng hợp đồng thật trong Portfolio)
+// Đơn hàng của tôi — demo, phản ánh đủ các trạng thái đã xây trong Chat3WayScreen
+const ORDERS_DATA = [
+  { id: 'DH-001', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'return', status: 'pending', reason: 'Hàng không đúng mô tả', hoursLeft: 46,
+    timeline: ['12/08 09:15 — Người mua nhận hàng qua OTP', '13/08 14:20 — Người mua gửi yêu cầu hoàn trả kèm ảnh', 'Đang chờ bạn phản hồi (còn 46h trước khi tự động duyệt)'] },
+  { id: 'DH-002', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'return', status: 'auto_approved', reason: 'Quá hạn phản hồi 72h',
+    timeline: ['08/08 10:00 — Người mua nhận hàng qua OTP', '09/08 08:30 — Người mua gửi yêu cầu hoàn trả', '12/08 08:30 — Quá 72h không phản hồi → hệ thống tự động duyệt'] },
+  { id: 'DH-003', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'cancel', status: 'cancelled', reason: 'Hủy trước khi giao — không phát sinh phí',
+    timeline: ['05/08 16:00 — Đặt hàng', '05/08 16:40 — Người mua hủy trước khi Shipper nhận hàng'] },
+  { id: 'DH-004', product: 'Tủ lạnh Samsung Inverter 236L', icon: '❄️', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'normal', status: 'shipping',
+    timeline: ['14/08 09:00 — Đặt hàng', '14/08 10:15 — Shipper đã nhận hàng, đang giao'] },
+  { id: 'DH-005', product: 'iPhone 13 Pro 256GB', icon: '📱', role: 'seller', counterpart: 'Bé Gạo Vlog (KOC)', type: 'normal', status: 'completed',
+    timeline: ['01/08 08:00 — Đặt hàng', '01/08 15:30 — Giao thành công, đã đánh giá'] },
+];
+function getResolvedOrders() {
+  try { return JSON.parse(sessionStorage.getItem('sx_orders_resolved') || '[]'); } catch (e) { return []; }
+}
+function markOrderResolved(id) {
+  const list = getResolvedOrders();
+  if (!list.includes(id)) { list.push(id); sessionStorage.setItem('sx_orders_resolved', JSON.stringify(list)); }
+}
+
+// Đơn "có vấn đề" (cần chú ý) — dùng chung cho tab lọc và banner Chiến dịch KOL
+function isIssueOrder(o) { return o.type === 'return' || o.type === 'cancel'; }
+
+function MyOrdersScreen({ go }) {
+  const initialTab = sessionStorage.getItem('sx_orders_initial_tab') || 'all';
+  sessionStorage.removeItem('sx_orders_initial_tab');
+  const [tab, setTab] = useState(initialTab);
+  const [expandedId, setExpandedId] = useState(null);
+  const [, forceRender] = useState(0); // ép render lại sau khi đổi trạng thái đã xử lý
+  const resolved = getResolvedOrders();
+
+  const tabs = [
+    { id: 'all',      label: 'Tất cả' },
+    { id: 'shipping', label: 'Đang giao' },
+    { id: 'issue',     label: 'Vấn đề' },
+    { id: 'resolved', label: 'Đã xử lý' },
+  ];
+  const filtered = ORDERS_DATA.filter(o => {
+    const isResolved = resolved.includes(o.id);
+    if (tab === 'all') return true;
+    if (tab === 'shipping') return o.status === 'shipping';
+    if (tab === 'issue') return isIssueOrder(o) && !isResolved;
+    if (tab === 'resolved') return isResolved;
+    return true;
+  });
+  const issueCount = ORDERS_DATA.filter(o => isIssueOrder(o) && !resolved.includes(o.id)).length;
+
+  const statusInfo = {
+    pending:       { label: 'Chờ người bán', bg: '#fff3e0', color: '#e65100' },
+    auto_approved: { label: 'Đã duyệt (tự động)', bg: '#e8f5e9', color: '#2e7d32' },
+    cancelled:     { label: 'Đã hủy', bg: '#ffebee', color: '#c62828' },
+    shipping:      { label: 'Đang giao', bg: '#e3f2fd', color: '#1565c0' },
+    completed:     { label: 'Hoàn thành', bg: '#e8f5e9', color: '#2e7d32' },
+  };
+
+  return (
+    <div>
+      <Shdr title="📦 Đơn hàng của tôi" onBack={() => go('s-account')} />
+      <div style={{ padding: 12 }}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{ flex: 1, padding: '8px 4px', borderRadius: 8, border: `1px solid ${tab === t.id ? C.p : C.b}`, background: tab === t.id ? C.p : C.w, color: tab === t.id ? '#fff' : C.m, fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>
+              {t.label}{t.id === 'issue' && issueCount > 0 ? ` (${issueCount})` : ''}
+            </button>
+          ))}
+        </div>
+        <div style={{ marginBottom: 10 }}>
+          <button onClick={() => go('s-order-report')}
+            style={{ width: '100%', background: C.pl, color: C.pd, border: 'none', padding: 9, borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            📊 Xem báo cáo tổng hợp
+          </button>
+        </div>
+
+        {filtered.length === 0 && (
+          <div style={{ textAlign: 'center', color: C.m, fontSize: 12, padding: '30px 0' }}>Không có đơn nào ở mục này.</div>
+        )}
+
+        {filtered.map(o => {
+          const si = statusInfo[o.status];
+          const isResolved = resolved.includes(o.id);
+          const expanded = expandedId === o.id;
+          return (
+            <div key={o.id} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
+              <div onClick={() => setExpandedId(expanded ? null : o.id)} style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                <div style={{ width: 36, height: 36, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{o.icon}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: C.t, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{o.product}</div>
+                  <div style={{ fontSize: 10, color: C.m }}>{o.counterpart}</div>
+                </div>
+                <span style={{ fontSize: 9, background: isResolved ? '#e8f5e9' : si.bg, color: isResolved ? '#2e7d32' : si.color, padding: '3px 8px', borderRadius: 8, fontWeight: 600, flexShrink: 0, whiteSpace: 'nowrap' }}>
+                  {isResolved ? '✅ Đã xử lý' : si.label}
+                </span>
+              </div>
+              {expanded && (
+                <div style={{ marginTop: 10, paddingTop: 10, borderTop: '1px solid #f0ebfa' }}>
+                  {o.reason && <div style={{ fontSize: 11, color: C.m, marginBottom: 6 }}>Lý do: {o.reason}</div>}
+                  {o.hoursLeft && !isResolved && (
+                    <div style={{ fontSize: 10, color: '#e65100', marginBottom: 6 }}>⏳ Còn {o.hoursLeft}h trước khi tự động duyệt</div>
+                  )}
+                  <div style={{ marginBottom: 8 }}>
+                    {o.timeline.map((t, i) => (
+                      <div key={i} style={{ fontSize: 10, color: C.m, marginBottom: 3 }}>• {t}</div>
+                    ))}
+                  </div>
+                  {isIssueOrder(o) && !isResolved && (
+                    <button onClick={() => { markOrderResolved(o.id); forceRender(n => n + 1); }}
+                      style={{ width: '100%', background: '#2e7d32', color: '#fff', border: 'none', padding: 8, borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                      ✅ Hoàn thành xử lý
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ height: 80 }} />
+    </div>
+  );
+}
+
+function OrderReportScreen({ go }) {
+  const resolved = getResolvedOrders();
+  const issues = ORDERS_DATA.filter(isIssueOrder);
+  const resolvedIssues = issues.filter(o => resolved.includes(o.id));
+  const pendingIssues = issues.filter(o => !resolved.includes(o.id));
+  const byType = {
+    return: ORDERS_DATA.filter(o => o.type === 'return').length,
+    cancel: ORDERS_DATA.filter(o => o.type === 'cancel').length,
+  };
+  return (
+    <div>
+      <Shdr title="📊 Báo cáo đơn hàng" onBack={() => go('s-my-orders')} />
+      <div style={{ padding: 12 }}>
+        <Infobox text="Tổng hợp từ toàn bộ đơn hàng có vấn đề — dùng để theo dõi hiệu quả xử lý và báo cáo khi cần." />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
+          {[
+            { val: issues.length, lbl: 'Tổng đơn vấn đề', color: C.p },
+            { val: resolvedIssues.length, lbl: 'Đã xử lý', color: '#2e7d32' },
+            { val: pendingIssues.length, lbl: 'Còn chờ', color: '#e65100' },
+          ].map((s, i) => (
+            <div key={i} style={{ background: C.pl, borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
+              <div style={{ fontSize: 18, fontWeight: 700, color: s.color }}>{s.val}</div>
+              <div style={{ fontSize: 9, color: C.m, marginTop: 2 }}>{s.lbl}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 8 }}>Phân loại theo nguyên nhân</div>
+          {[{ lbl: '↩️ Hoàn trả', val: byType.return }, { lbl: '❌ Hủy đơn', val: byType.cancel }].map((r, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '5px 0', borderBottom: i === 0 ? '1px solid #f0ebfa' : 'none' }}>
+              <span style={{ color: C.m }}>{r.lbl}</span><span style={{ fontWeight: 600, color: C.t }}>{r.val}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: 10, padding: '10px 12px', fontSize: 11, color: '#795500', lineHeight: 1.5 }}>
+          💡 Muốn nhận báo cáo này tự động qua email hàng tháng? Tính năng đang được phát triển, sẽ có trong bản cập nhật sau.
+        </div>
+      </div>
+      <div style={{ height: 80 }} />
+    </div>
+  );
+}
+
 const CONTRACTS_DATA = [
   { id: 'c1', kolId: 'SX-00204', kol: 'Chị Thu Hương', platform: '🎵 TikTok', product: 'Bàn ăn gỗ sồi 6 ghế', productId: 'p7', price: 3500000, link: 'shopx.vn/s/kol-a8f3x2',
     clicks: 342, views: 280, carts: 45, orders: 12, completed: 10, cancelled: 1, returned: 1, reviews: 9, avgRating: 4.8 },
@@ -1524,10 +1690,14 @@ function KolCampaignScreen({ go }) {
           ))}
         </div>
 
-        {/* Cảnh báo rủi ro hủy/hoàn trả */}
-        <div style={{ background: badRateTotal > 15 ? '#ffebee' : '#fff8e1', border: `1px solid ${badRateTotal > 15 ? '#ef9a9a' : '#ffe082'}`, borderRadius: 10, padding: '8px 12px', marginBottom: 14, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: 11, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>⚠️ Tỷ lệ hủy/hoàn trả chung</span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>{badRateTotal}% ({total.cancelled} hủy, {total.returned} hoàn trả)</span>
+        {/* Cảnh báo rủi ro hủy/hoàn trả — dẫn thẳng vào Đơn hàng của tôi, lọc sẵn tab Vấn đề */}
+        <div onClick={() => { sessionStorage.setItem('sx_orders_initial_tab', 'issue'); go('s-my-orders'); }}
+          style={{ background: badRateTotal > 15 ? '#ffebee' : '#fff8e1', border: `1px solid ${badRateTotal > 15 ? '#ef9a9a' : '#ffe082'}`, borderRadius: 10, padding: '8px 12px', marginBottom: 14, cursor: 'pointer' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>⚠️ Tỷ lệ hủy/hoàn trả chung</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>{badRateTotal}% ({total.cancelled} hủy, {total.returned} hoàn trả)</span>
+          </div>
+          <div style={{ fontSize: 10, color: badRateTotal > 15 ? '#c62828' : '#e65100', textAlign: 'right', marginTop: 4, fontWeight: 600, textDecoration: 'underline' }}>Xem chi tiết & xử lý ›</div>
         </div>
 
         {/* Doanh thu — 3 tầng: tạm tính / thực / thực về tay */}
@@ -2165,6 +2335,19 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
           );
         })()}
 
+        {/* ĐƠN HÀNG CỦA TÔI — theo dõi tập trung tất cả trạng thái đơn */}
+        <div onClick={() => go('s-my-orders')}
+          style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+          <span style={{ fontSize: 18 }}>📦</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Đơn hàng của tôi</div>
+            <div style={{ fontSize: 10, color: C.m }}>
+              {(() => { const n = ORDERS_DATA.filter(o => isIssueOrder(o) && !getResolvedOrders().includes(o.id)).length; return n > 0 ? `${n} đơn cần chú ý` : 'Không có đơn nào cần chú ý'; })()}
+            </div>
+          </div>
+          <span style={{ fontSize: 16, color: C.m }}>›</span>
+        </div>
+
         {/* GIỎ HÀNG CỦA TÔI — giữ riêng, không gộp tab (đường dẫn tắt đơn lẻ) */}
         <div onClick={() => { sessionStorage.setItem('sx_cart_return', 's-account'); go('s-cart'); }}
           style={{ background: '#fff3e0', border: '1px solid #ffe082', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
@@ -2679,6 +2862,8 @@ export default function App() {
       case 's-cv-register':      return <CvRegisterScreen   go={go} hasCCCD={hasCCCD} hasAgreedTerms={hasAgreedWorkerTerms} />;
       case 's-cv-success':       return <CvSuccessScreen    go={go} />;
       case 's-kol-campaign':      return <KolCampaignScreen      go={go} />;
+      case 's-my-orders':         return <MyOrdersScreen         go={go} />;
+      case 's-order-report':      return <OrderReportScreen      go={go} />;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
   };
