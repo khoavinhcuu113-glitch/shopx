@@ -1,5 +1,5 @@
 import { C, SAMPLE_SHIPPERS } from '../constants';
-import { Shdr, Btn, Avatar } from '../components/UI';
+import { Shdr, Btn, Btn2, Avatar } from '../components/UI';
 import ShipperCard from './../../src/components/ShipperCard';
 
 export default function ShipperCommunityScreen({ go, chkLogin }) {
@@ -113,7 +113,8 @@ export function ShipperSuccessScreen({ go }) {
             <div key={i} style={{ fontSize: 12, color: C.t, marginBottom: 6 }}>{t}</div>
           ))}
         </div>
-        <Btn onClick={() => go('s-service')}>Về trang Dịch vụ & Việc làm</Btn>
+        <Btn onClick={() => go('s-shipper-orders')}>📦 Xem đơn hàng ngay (demo)</Btn>
+        <Btn2 onClick={() => go('s-service')}>Về trang Dịch vụ & Việc làm</Btn2>
         <div style={{ height: 80 }} />
       </div>
     </div>

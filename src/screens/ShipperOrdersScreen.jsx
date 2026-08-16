@@ -59,7 +59,7 @@ export default function ShipperOrdersScreen({ go }) {
 
   return (
     <div>
-      <Shdr title="Đơn hàng cần Shipper" onBack={() => go('s-service')} />
+      <Shdr title="Đơn hàng cần Shipper" onBack={() => go(sessionStorage.getItem('sx_shipper_orders_return') || 's-service')} />
 
       <div style={{ padding: 12 }}>
 

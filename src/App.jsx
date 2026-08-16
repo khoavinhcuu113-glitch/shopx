@@ -2348,6 +2348,17 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
           <span style={{ fontSize: 16, color: C.m }}>›</span>
         </div>
 
+        {/* ĐƠN HÀNG SHIPPER — dành cho ai đã đăng ký làm Shipper, xem/nhận/từ chối đơn giao hàng */}
+        <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); go('s-shipper-orders'); }}
+          style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+          <span style={{ fontSize: 18 }}>🚚</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Đơn hàng Shipper</div>
+            <div style={{ fontSize: 10, color: C.m }}>Xem, nhận hoặc từ chối đơn giao hàng</div>
+          </div>
+          <span style={{ fontSize: 16, color: C.m }}>›</span>
+        </div>
+
         {/* GIỎ HÀNG CỦA TÔI — giữ riêng, không gộp tab (đường dẫn tắt đơn lẻ) */}
         <div onClick={() => { sessionStorage.setItem('sx_cart_return', 's-account'); go('s-cart'); }}
           style={{ background: '#fff3e0', border: '1px solid #ffe082', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
