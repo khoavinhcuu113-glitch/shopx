@@ -1618,7 +1618,7 @@ function KolCampaignScreen({ go }) {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#2e7d32' }}>{fmt(p.revenueNet)}</div>
-                <div style={{ fontSize: 9, color: C.m }}>{p.orders} đơn</div>
+                <div style={{ fontSize: 9, color: C.m }}>{p.completed}/{p.orders} đơn thành công</div>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 4, textAlign: 'center' }}>
@@ -1655,7 +1655,7 @@ function KolCampaignScreen({ go }) {
               </div>
               <div style={{ textAlign: 'right' }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#2e7d32' }}>{fmt(c.revenueNet)}</div>
-                <div style={{ fontSize: 9, color: C.m }}>{c.orders} đơn</div>
+                <div style={{ fontSize: 9, color: C.m }}>{c.completed}/{c.orders} đơn thành công</div>
               </div>
             </div>
             <div style={{ fontSize: 10, color: C.pd, marginBottom: 8, wordBreak: 'break-all' }}>🔗 {c.link}</div>
