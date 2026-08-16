@@ -40,6 +40,15 @@ const CATEGORY_ROUTES = [
   's-prod10',  // Giải trí & Thể thao
   's-prod11',  // Văn phòng & Nông nghiệp
 ];
+// Nhóm sản phẩm dùng tên cat con chi tiết hơn (VD: gian hàng Minh Anh) — cần khớp về đúng 1 danh mục chính thức khi lọc/gợi ý
+const CATEGORY_SUBCATS = {
+  'Đồ điện tử': ['Đồ điện tử', 'Điện thoại', 'Laptop', 'Phụ kiện', 'Đồng hồ'],
+};
+function matchesCategory(productCat, officialCat) {
+  if (productCat === officialCat) return true;
+  const subcats = CATEGORY_SUBCATS[officialCat];
+  return subcats ? subcats.includes(productCat) : false;
+}
 function CategoriesScreen({ go, nav }) {
   // Tách 2 nhóm dựa trên chính CATEGORY_ROUTES đã có — route 's-service' = Dịch vụ, còn lại = Sản phẩm
   const productItems = CATEGORIES.map((c, i) => ({ ...c, route: CATEGORY_ROUTES[i] })).filter(c => c.route !== 's-service');
@@ -57,14 +66,14 @@ function CategoriesScreen({ go, nav }) {
         {items.map((c, i) => (
           <div key={i} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 14, padding: '14px 12px', display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}
             onClick={() => {
-              sessionStorage.setItem('sx_product_return', 's-categories');
               if (c.route === 's-service') {
                 sessionStorage.setItem('sx_service_initial_tab', 'cv');
                 if (CATEGORY_TO_NGANH[c.name]) sessionStorage.setItem('sx_service_initial_nganh', CATEGORY_TO_NGANH[c.name]);
                 else sessionStorage.removeItem('sx_service_initial_nganh');
                 go('s-service');
               } else {
-                go(c.route || 's-prod1');
+                sessionStorage.setItem('sx_listing_filter_cat', c.name);
+                go('s-all-listings');
               }
             }}>
             <div style={{ width: 44, height: 44, background: iconBg, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 22 }}>{c.icon}</div>
@@ -176,14 +185,20 @@ const PRODUCT_DATA = {
     p14: { icon: '💻', imgs: ['💻','📦','🔌','⌨️','✅'], bg: '#e3f2fd', title: 'MacBook Air M2 8GB/256GB', price: '26.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'MacBook Air M2 8GB/256GB chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/5 ảnh', cat: 'Laptop', shippable: true, storeRoute: 's-store-business' },
     p15: { icon: '🎧', imgs: ['🎧','📦','🔋','✅'], bg: '#f3e5f5', title: 'AirPods Pro 2nd Gen', price: '5.490.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'AirPods Pro thế hệ 2 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Không có', count: '1/4 ảnh', cat: 'Phụ kiện', shippable: true, storeRoute: 's-store-business' },
     p16: { icon: '⌚', imgs: ['⌚','📦','🔋','✅'], bg: '#fff8e1', title: 'Apple Watch Series 9', price: '9.990.000đ', cond: 'Mới 100%, nguyên seal', loc: 'Biên Hòa', av: 'MA', seller: 'Cửa hàng Điện tử Minh Anh', stats: '⭐ 4.9 • 1.248 giao dịch', desc: 'Apple Watch Series 9 chính hãng, nguyên seal, bảo hành 12 tháng tại cửa hàng.', defect: 'Tạm hết hàng, có thể đặt trước.', count: '1/4 ảnh', cat: 'Đồng hồ', shippable: false, storeRoute: 's-store-business' },
+    p17: { icon: '🎧', imgs: ['🎧','📦','🔋'], bg: '#e8f5e9', title: 'Tai nghe Bluetooth JBL Tune 510BT', price: '890.000đ', cond: 'Đã dùng (còn tốt)', loc: 'Biên Hòa', av: 'TT', seller: 'Anh Trần Minh Tuấn', stats: '⭐ 4.8 • 34 giao dịch', desc: 'Tai nghe chụp tai không dây, tương thích mọi hệ điều hành (Android/iOS), pin 40h, dùng 6 tháng còn bảo hành.', defect: 'Đệm tai hơi mòn nhẹ.', count: '1/3 ảnh', cat: 'Phụ kiện', shippable: true, storeRoute: 's-store-personal' },
 };
 
 // ─── TẤT CẢ TIN ĐĂNG — danh sách phẳng toàn bộ sản phẩm ───────────────
 function AllListingsScreen({ go }) {
-  const items = Object.entries(PRODUCT_DATA);
+  const filterCat = sessionStorage.getItem('sx_listing_filter_cat') || '';
+  sessionStorage.removeItem('sx_listing_filter_cat');
+  const items = Object.entries(PRODUCT_DATA).filter(([, p]) => !filterCat || matchesCategory(p.cat, filterCat));
   return (
     <div>
-      <Shdr title={`Tất cả tin đăng (${items.length})`} onBack={() => go('s-home')} />
+      <Shdr title={filterCat ? `${filterCat} (${items.length})` : `Tất cả tin đăng (${items.length})`} onBack={() => go('s-home')} />
+      {items.length === 0 && (
+        <div style={{ padding: 30, textAlign: 'center', color: C.m, fontSize: 12 }}>Chưa có tin đăng nào trong danh mục này.</div>
+      )}
       <div style={{ padding: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {items.map(([id, p]) => (
           <div key={id} onClick={() => { sessionStorage.setItem('sx_product_return', 's-all-listings'); go(`s-prod${id.slice(1)}`); }}
@@ -192,7 +207,7 @@ function AllListingsScreen({ go }) {
             <div style={{ padding: 8 }}>
               <div style={{ fontSize: 11, fontWeight: 500, color: C.t, marginBottom: 2, lineHeight: 1.3 }}>{p.title}</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: C.p, marginBottom: 2 }}>{p.price}</div>
-              <div style={{ fontSize: 10, color: C.m }}>📍 {p.loc} · {p.cat}</div>
+              <div style={{ fontSize: 10, color: C.m }}>📍 {p.loc} · {p.seller}</div>
             </div>
           </div>
         ))}
@@ -574,6 +589,33 @@ function ProductScreen({ go, chkLogin, type }) {
           )}
         </div>
       </div>
+
+      {/* Sản phẩm liên quan — cùng danh mục, từ NGƯỜI BÁN KHÁC (đã có nút Xem gian hàng cho cùng người bán rồi) */}
+      {(() => {
+        const related = Object.entries(PRODUCT_DATA)
+          .filter(([id, rp]) => id !== type && rp.seller !== p.seller && matchesCategory(rp.cat, p.cat))
+          .slice(0, 4);
+        if (related.length === 0) return null;
+        return (
+          <div style={{ padding: '0 12px 12px' }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 8 }}>🔎 Sản phẩm liên quan</div>
+            <div style={{ fontSize: 10, color: C.m, marginBottom: 8 }}>Cùng loại, từ người bán khác — để so sánh</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              {related.map(([id, rp]) => (
+                <div key={id} onClick={() => { sessionStorage.setItem('sx_product_return', `s-prod${type.slice(1)}`); go(`s-prod${id.slice(1)}`); }}
+                  style={{ background: C.w, borderRadius: 10, overflow: 'hidden', border: '1px solid #e8def8', cursor: 'pointer' }}>
+                  <div style={{ width: '100%', height: 64, background: rp.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>{rp.icon}</div>
+                  <div style={{ padding: 7 }}>
+                    <div style={{ fontSize: 10, fontWeight: 500, color: C.t, marginBottom: 2, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rp.title}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: C.p, marginBottom: 2 }}>{rp.price}</div>
+                    <div style={{ fontSize: 9, color: C.m, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{rp.seller}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
       <div style={{ height: 80 }} />
 
       {showReport && (
