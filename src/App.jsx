@@ -2033,7 +2033,7 @@ function LoginScreen({ go, doLogin }) {
 }
 
 // ─── ACCOUNT SCREEN (Fix A: chỉ hiện khi đã đăng nhập + Fix I: nhật ký tin đăng) ──
-function AccountScreen({ go, nav, doLogout, hasCCCD }) {
+function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
   const [accType, setAccType] = React.useState('personal'); // personal | business (đã nâng cấp)
   const [showUpgrade, setShowUpgrade] = React.useState(false);
   const [avatarImg, setAvatarImg] = React.useState(null); // ảnh thật đọc từ máy — chỉ tồn tại trong phiên, chưa lưu vĩnh viễn
@@ -2348,16 +2348,18 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
           <span style={{ fontSize: 16, color: C.m }}>›</span>
         </div>
 
-        {/* ĐƠN HÀNG SHIPPER — dành cho ai đã đăng ký làm Shipper, xem/nhận/từ chối đơn giao hàng */}
-        <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); go('s-shipper-orders'); }}
-          style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-          <span style={{ fontSize: 18 }}>🚚</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Đơn hàng Shipper</div>
-            <div style={{ fontSize: 10, color: C.m }}>Xem, nhận hoặc từ chối đơn giao hàng</div>
+        {/* ĐƠN HÀNG SHIPPER — chỉ hiện cho ai ĐÃ thật sự đăng ký làm Shipper, không hiện mặc định cho mọi tài khoản */}
+        {isShipper && (
+          <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); go('s-shipper-orders'); }}
+            style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+            <span style={{ fontSize: 18 }}>🚚</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Đơn hàng Shipper</div>
+              <div style={{ fontSize: 10, color: C.m }}>Xem, nhận hoặc từ chối đơn giao hàng</div>
+            </div>
+            <span style={{ fontSize: 16, color: C.m }}>›</span>
           </div>
-          <span style={{ fontSize: 16, color: C.m }}>›</span>
-        </div>
+        )}
 
         {/* GIỎ HÀNG CỦA TÔI — giữ riêng, không gộp tab (đường dẫn tắt đơn lẻ) */}
         <div onClick={() => { sessionStorage.setItem('sx_cart_return', 's-account'); go('s-cart'); }}
@@ -2844,7 +2846,7 @@ export default function App() {
       case 's-post-success':     return <PostSuccessScreen      go={go} />;
       case 's-delivery':         return <DeliveryScreen         go={go} chkLogin={chkLogin} hasCCCD={hasCCCD} buyCount={buyCount} incrementBuyCount={incrementBuyCount} />;
       case 's-login':            return <LoginScreen            go={go} doLogin={doLogin} />;
-      case 's-account':          return <AccountScreen          go={go} nav={nav} doLogout={doLogout} hasCCCD={hasCCCD} />;
+      case 's-account':          return <AccountScreen          go={go} nav={nav} doLogout={doLogout} hasCCCD={hasCCCD} isShipper={hasAgreedShipperTerms} />;
       case 's-tx-history':       return <TxHistoryScreen        go={go} />;
       case 's-register':         return <RegisterScreen         go={go} />;
       case 's-pledge':           return <PledgeScreen           go={go} doLogin={doLogin} />;
