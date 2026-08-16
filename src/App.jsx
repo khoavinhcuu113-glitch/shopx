@@ -1819,9 +1819,10 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
               <div style={{ fontSize: 11, color: C.m, display: 'flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
                 <span>SX-00001</span>
                 <span style={{ color: '#f59e0b' }}>⭐ 4.8 (34)</span>
-                <span title="SĐT đã xác minh" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 15, height: 15, borderRadius: '50%', background: '#1976d2', color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>
-                <span title={hasCCCD ? 'Căn cước đã xác minh' : 'Căn cước chưa xác minh'}
-                  style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 15, height: 15, borderRadius: '50%', background: hasCCCD ? '#1976d2' : '#ccc', color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>
+                {hasCCCD && (
+                  <span title="Đã xác minh đầy đủ: Số điện thoại + Căn cước"
+                    style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 15, height: 15, borderRadius: '50%', background: '#1976d2', color: '#fff', fontSize: 9, lineHeight: 1 }}>✓</span>
+                )}
               </div>
             </div>
           </div>
