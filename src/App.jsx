@@ -44,10 +44,16 @@ const CATEGORY_ROUTES = [
 const CATEGORY_SUBCATS = {
   'Đồ điện tử': ['Đồ điện tử', 'Điện thoại', 'Laptop', 'Phụ kiện', 'Đồng hồ'],
 };
-function matchesCategory(productCat, officialCat) {
-  if (productCat === officialCat) return true;
-  const subcats = CATEGORY_SUBCATS[officialCat];
-  return subcats ? subcats.includes(productCat) : false;
+// Tìm đúng "nhóm chính thức" mà 1 tên danh mục bất kỳ (kể cả tên nhóm con) thuộc về — để so khớp đối xứng 2 chiều
+function getCategoryGroup(cat) {
+  if (CATEGORY_SUBCATS[cat]) return cat; // chính nó đã là nhóm chính thức
+  for (const [official, subs] of Object.entries(CATEGORY_SUBCATS)) {
+    if (subs.includes(cat)) return official;
+  }
+  return cat; // không thuộc nhóm đặc biệt nào, coi như tự nó là 1 nhóm
+}
+function matchesCategory(catA, catB) {
+  return getCategoryGroup(catA) === getCategoryGroup(catB);
 }
 function CategoriesScreen({ go, nav }) {
   // Tách 2 nhóm dựa trên chính CATEGORY_ROUTES đã có — route 's-service' = Dịch vụ, còn lại = Sản phẩm
