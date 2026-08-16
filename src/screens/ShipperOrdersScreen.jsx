@@ -185,8 +185,8 @@ export default function ShipperOrdersScreen({ go }) {
         )}
 
         {declined.length > 0 && (
-          <div style={{ background: '#fff3e0', borderRadius: 10, padding: 10, marginTop: 8, fontSize: 11, color: '#e65100' }}>
-            ⚠️ Bạn đã từ chối {declined.length} đơn. Từ chối nhiều lần sẽ bị trừ điểm tín nhiệm.
+          <div style={{ background: '#f5f5f5', borderRadius: 10, padding: 10, marginTop: 8, fontSize: 11, color: C.m }}>
+            Đã từ chối {declined.length} đơn. Bạn có toàn quyền từ chối bất kỳ đơn nào — điều này không ảnh hưởng điểm tín nhiệm của bạn.
           </div>
         )}
 
