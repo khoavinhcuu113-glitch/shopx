@@ -39,7 +39,13 @@ export function RatingStats({ role = 'seller', data }) {
     { val: `${data.onTimeRate}%`,        lbl: 'Đúng giờ',        color: '#2e7d32' },
     { val: `${data.thumbsUp}%`,          lbl: '👍 Tích cực',     color: '#f59e0b' },
   ];
-  const stats = role === 'buyer' ? statsByBuyer : role === 'shipper' ? statsByShipper : statsBySeller;
+  const statsByKoc = [
+    { val: `${data.totalOrders}`,        lbl: 'Hợp đồng',          color: C.p },
+    { val: `${data.completionRate}%`,    lbl: 'Hoàn thành',      color: '#2e7d32' },
+    { val: `${data.thumbsUp}%`,          lbl: '👍 Tích cực',     color: '#f59e0b' },
+    { val: `${data.followers}`,          lbl: 'Follower',        color: C.pd },
+  ];
+  const stats = role === 'buyer' ? statsByBuyer : role === 'shipper' ? statsByShipper : role === 'koc' ? statsByKoc : statsBySeller;
   return (
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${stats.length}, 1fr)`, gap: 6 }}>
       {stats.map((s, i) => (

@@ -214,6 +214,9 @@ export const SAMPLE_USER_RATINGS = {
   shipper: {
     totalOrders: 156, onTimeRate: 96.8, thumbsUp: 97.5,
   },
+  koc: {
+    totalOrders: 5, completionRate: 100, thumbsUp: 100, followers: 800,
+  },
 };
 
 // ─── NHÂN VẬT DEMO ────────────────────────────────────────────────────

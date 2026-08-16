@@ -2217,20 +2217,24 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
         {/* 4. THỐNG KÊ HOẠT ĐỘNG — dùng lại RatingStats có sẵn, đồng bộ với cả app */}
         {(() => {
           const [activeTab, setActiveTab] = React.useState('seller');
+          const isKoc = WORKERS_DATA.some(w => w.id === 'SX-00001');
           const sellerLevel  = getRatingLevel(SAMPLE_USER_RATINGS.seller.totalOrders,  SAMPLE_USER_RATINGS.seller.completionRate);
           const buyerLevel   = getRatingLevel(SAMPLE_USER_RATINGS.buyer.totalOrders,   SAMPLE_USER_RATINGS.buyer.receiveRate);
           const shipperLevel = getRatingLevel(SAMPLE_USER_RATINGS.shipper.totalOrders, SAMPLE_USER_RATINGS.shipper.onTimeRate);
-          const dataMap = { seller: SAMPLE_USER_RATINGS.seller, buyer: SAMPLE_USER_RATINGS.buyer, shipper: SAMPLE_USER_RATINGS.shipper };
+          const kocLevel     = getRatingLevel(SAMPLE_USER_RATINGS.koc.totalOrders,     SAMPLE_USER_RATINGS.koc.completionRate);
+          const dataMap = { seller: SAMPLE_USER_RATINGS.seller, buyer: SAMPLE_USER_RATINGS.buyer, shipper: SAMPLE_USER_RATINGS.shipper, koc: SAMPLE_USER_RATINGS.koc };
           const d = dataMap[activeTab];
+          const tabs = [
+            { key: 'seller',  label: 'Bán',     level: sellerLevel  },
+            { key: 'buyer',   label: 'Mua',     level: buyerLevel   },
+            { key: 'shipper', label: 'Shipper', level: shipperLevel },
+          ];
+          if (isKoc) tabs.push({ key: 'koc', label: 'KOC/KOL', level: kocLevel });
           return (
             <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 10, marginBottom: 8 }}>
               <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 6 }}>📊 Thống kê hoạt động</div>
               <div style={{ display: 'flex', background: '#f0ebfa', padding: 2, borderRadius: 8, marginBottom: 8, gap: 2 }}>
-                {[
-                  { key: 'seller',  label: 'Bán',     level: sellerLevel  },
-                  { key: 'buyer',   label: 'Mua',     level: buyerLevel   },
-                  { key: 'shipper', label: 'Shipper', level: shipperLevel },
-                ].map(t => (
+                {tabs.map(t => (
                   <button key={t.key} onClick={() => setActiveTab(t.key)}
                     style={{ flex: 1, padding: '4px 4px', borderRadius: 6, border: 'none', fontSize: 10, cursor: 'pointer', fontWeight: activeTab === t.key ? 600 : 400, background: activeTab === t.key ? C.w : 'none', color: activeTab === t.key ? C.p : C.m }}>
                     {t.label} · {t.level.label}
