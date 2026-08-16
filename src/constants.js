@@ -146,6 +146,13 @@ export const CATEGORIES = [
 // --- DỮ LIỆU MẪU SHIPPER ---
 export const SAMPLE_SHIPPERS = [
   {
+    id: 'SP-100', initials: 'KV', name: 'Khoavinhcuu113',
+    level: 'vang', badge: '🥇 Vàng',
+    orders: 47, rate: 96.8, stars: 4.8,
+    route: 'Biên Hòa ↔ Trấn Biên', time: 'Linh hoạt',
+    maxValue: 20000000, color: '#7B2FBE', priority: false,
+  },
+  {
     id: 'SP-101', initials: 'TH', name: 'Chị Thu Hương',
     level: 'saoVang', badge: '⭐ Sao Vàng',
     orders: 1250, rate: 98.5, stars: 4.9,

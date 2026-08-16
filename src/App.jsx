@@ -897,6 +897,15 @@ const WORKERS_DATA = [
       ],
     },
     {
+      av: 'KV', id: 'SX-00001', name: 'Khoavinhcuu113', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '3 tháng', needsAddress: false, needsContentLink: true,
+      price: '200.000đ/bài', orders: 5, completeRate: 100, cancelRate: 0, followers: 800,
+      thumbsUp: 100, bg: '#7B2FBE',
+      badges: [
+        { label: '🪪 Căn cước KYC',    ok: true  },
+        { label: '📷 800 followers',   ok: true },
+      ],
+    },
+    {
       av: 'MT', id: 'SX-00203', name: 'Chị Đặng Minh Thư', trade: 'KOL/KOC quảng bá sản phẩm', nganh: 'dam', exp: '2 năm', needsAddress: false, needsContentLink: true,
       price: '500.000đ/bài', orders: 47, completeRate: 97, cancelRate: 3, followers: 12500,
       thumbsUp: 97.5, bg: '#ad1457',
@@ -2740,7 +2749,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => sessionStorage.getItem('sx_login') === '1');
   const [hasPhone,   setHasPhone]   = useState(() => sessionStorage.getItem('sx_hasphone') !== '0');
   const [hasCCCD,    setHasCCCD]    = useState(() => sessionStorage.getItem('sx_hascccd') === '1');
-  const [hasAgreedShipperTerms, setHasAgreedShipperTerms] = useState(() => sessionStorage.getItem('sx_agreed_shipper') === '1');
+  const [hasAgreedShipperTerms, setHasAgreedShipperTerms] = useState(() => sessionStorage.getItem('sx_agreed_shipper') !== '0');
   const [hasAgreedWorkerTerms,  setHasAgreedWorkerTerms]  = useState(() => sessionStorage.getItem('sx_agreed_worker') === '1');
   const [buyCount,   setBuyCount]   = useState(() => parseInt(sessionStorage.getItem('sx_buycount') || '0'));
   const [showPopup,  setShowPopup]  = useState(false);
