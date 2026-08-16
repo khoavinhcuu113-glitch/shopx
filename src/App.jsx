@@ -1790,7 +1790,18 @@ function LoginScreen({ go, doLogin }) {
 function AccountScreen({ go, nav, doLogout, hasCCCD }) {
   const [accType, setAccType] = React.useState('personal'); // personal | business (đã nâng cấp)
   const [showUpgrade, setShowUpgrade] = React.useState(false);
+  const [avatarImg, setAvatarImg] = React.useState(null); // ảnh thật đọc từ máy — chỉ tồn tại trong phiên, chưa lưu vĩnh viễn
   const businessInfo = { name: 'CTY TNHH MTV ABC', mst: '000000001-ABC', address: '123 KP Nhị Hòa, P. Trấn Biên, TP. Đồng Nai' };
+
+  function pickAvatar(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { alert('Vui lòng chọn đúng file ảnh.'); return; }
+    if (file.size > 5 * 1024 * 1024) { alert('Ảnh quá lớn — vui lòng chọn ảnh dưới 5MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => setAvatarImg(ev.target.result); // data URL — trình duyệt tự đọc, không upload đâu cả
+    reader.readAsDataURL(file);
+  }
 
   const listings = [
     { icon: '📱', title: 'iPhone 13 Pro 256GB còn BH', price: '18.500.000đ', date: '26/07/2026', hasMsg: true,  msgCount: 2 },
@@ -1810,7 +1821,15 @@ function AccountScreen({ go, nav, doLogout, hasCCCD }) {
         {/* 1. HỒ SƠ — gọn, 1 dòng rating + badge icon nhỏ */}
         <div style={{ background: C.w, padding: 12, borderRadius: 12, border: '1px solid #e8def8', marginBottom: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Avatar initials="KV" size={48} />
+            <label style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }}>
+              <input type="file" accept="image/*" onChange={pickAvatar} style={{ display: 'none' }} />
+              {avatarImg ? (
+                <img src={avatarImg} alt="Ảnh đại diện" style={{ width: 48, height: 48, borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <Avatar initials="KV" size={48} />
+              )}
+              <div style={{ position: 'absolute', bottom: -2, right: -2, width: 18, height: 18, borderRadius: '50%', background: C.p, border: '2px solid #fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9 }}>📷</div>
+            </label>
             <div style={{ flex: 1, minWidth: 0 }}>
               {accType === 'business' && (
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#1565c0' }}>🏢 {businessInfo.name}</div>
