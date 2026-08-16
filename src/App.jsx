@@ -449,6 +449,7 @@ function SearchScreen({ go }) {
 
 function ProductScreen({ go, chkLogin, type }) {
   const [showReport, setShowReport] = useState(false);
+  const [showProtection, setShowProtection] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportNote, setReportNote] = useState('');
   const [reportSent, setReportSent] = useState(false);
@@ -572,7 +573,34 @@ function ProductScreen({ go, chkLogin, type }) {
             </div>
           );
         })()}
-        <Warnbox text="Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ." />
+        <div style={{ background: '#fff8e1', border: '1px solid #ffe082', borderRadius: 10, padding: '10px 12px', marginBottom: 10 }}>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <span style={{ flexShrink: 0 }}>⚠️</span>
+            <div style={{ flex: 1 }}>
+              <span style={{ fontSize: 11, color: '#f57f17' }}>Gặp trực tiếp: ShopX không can thiệp. Dùng giao hàng cộng đồng để được bảo vệ.</span>{' '}
+              <span onClick={() => setShowProtection(v => !v)} style={{ fontSize: 11, color: '#e65100', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', whiteSpace: 'nowrap' }}>
+                {showProtection ? 'Ẩn bớt ‹' : 'Xem chi tiết ›'}
+              </span>
+            </div>
+          </div>
+          {showProtection && (
+            <div style={{ marginTop: 8, paddingTop: 8, borderTop: '1px solid #ffe082' }}>
+              {[
+                'Shipper đã xác minh Căn cước (KYC), không phải người lạ bất kỳ',
+                'OTP xác nhận 2 đầu — chỉ giao/nhận đúng khi có mã, tránh nhầm người',
+                'Chat 3 bên minh bạch — mọi trao đổi đều lưu lại, không ai giấu ai',
+                'Có ảnh bằng chứng khi giao/nhận, khi từ chối nhận hàng',
+                'Có cơ chế hoàn trả trong 15 ngày nếu hàng lỗi/sai mô tả',
+                'Có nơi khiếu nại nếu xảy ra tranh chấp',
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: 6, fontSize: 11, color: '#795500', marginBottom: 4, alignItems: 'flex-start' }}>
+                  <span style={{ color: '#2e7d32', flexShrink: 0 }}>✓</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Thanh hành động — gộp 1 hàng duy nhất: Giỏ hàng (icon) / Chat / Đặt giao hàng */}
         <div style={{ display: 'flex', gap: 8, marginTop: 10, marginBottom: 8 }}>
