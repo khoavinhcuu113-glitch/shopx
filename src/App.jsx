@@ -2227,8 +2227,8 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
           const tabs = [
             { key: 'seller',  label: 'Bán',     level: sellerLevel  },
             { key: 'buyer',   label: 'Mua',     level: buyerLevel   },
-            { key: 'shipper', label: 'Shipper', level: shipperLevel },
           ];
+          if (isShipper) tabs.push({ key: 'shipper', label: 'Shipper', level: shipperLevel });
           if (isKoc) tabs.push({ key: 'koc', label: 'KOC/KOL', level: kocLevel });
           return (
             <div style={{ background: C.w, borderRadius: 12, border: '1px solid #e8def8', padding: 10, marginBottom: 8 }}>
