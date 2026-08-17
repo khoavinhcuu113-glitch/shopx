@@ -3,7 +3,7 @@ import { C } from '../constants';
 import { Shdr, Btn } from '../components/UI';
 
 // Danh sách đơn hàng cần shipper nhận
-const PENDING_ORDERS = [
+export const PENDING_ORDERS = [
   {
     id: 'ORD-001',
     item: 'iPhone 13 Pro 256GB',
