@@ -1462,10 +1462,6 @@ function isIssueOrder(o) { return o.type === 'return' || o.type === 'cancel'; }
 const LABOR_HIRING_ACTIVE = [
   { id: 'LD-001', title: 'Sửa điện phòng ngủ', icon: '🔧', status: 'waiting', hoursElapsed: 25 },
 ];
-const LABOR_HIRING_HISTORY = [
-  { id: 'LD-002', title: 'Sửa điện phòng ngủ', icon: '🔧', price: '150.000đ', date: '10/06/2026', badge: 'Hoàn thành' },
-  { id: 'LD-003', title: 'Dọn dẹp nhà theo giờ', icon: '🧹', price: '120.000đ', date: '18/04/2026', badge: 'Hoàn thành' },
-];
 
 // Tin đăng của tôi — module-level để dùng chung giữa AccountScreen (đếm tóm tắt) và MyListingsScreen (danh sách đầy đủ)
 const LISTINGS_DATA = [
@@ -1501,81 +1497,50 @@ function ListingsContent({ go }) {
 }
 
 function LaborContent({ go }) {
-  const [filter, setFilter] = useState('active');
   const [side, setSide] = useState('hiring');
-  const filters = [
-    { id: 'active', label: 'Đang chờ', count: LABOR_HIRING_ACTIVE.length + PENDING_ORDERS.length },
-    { id: 'done',   label: 'Đã hoàn thành', count: LABOR_HIRING_HISTORY.length },
-  ];
   const sides = [
     { id: 'hiring',  label: 'Đang thuê người', count: LABOR_HIRING_ACTIVE.length },
-    { id: 'shipper', label: 'Đang nhận việc (Shipper)', count: PENDING_ORDERS.length },
+    { id: 'shipper', label: 'Đang nhận việc', count: PENDING_ORDERS.length },
   ];
   return (
     <div style={{ padding: 12 }}>
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-        {filters.map(f => (
-          <button key={f.id} onClick={() => setFilter(f.id)}
-            style={{ flex: 1, padding: '7px 4px', borderRadius: 8, border: `1px solid ${filter === f.id ? C.p : C.b}`, background: filter === f.id ? C.p : C.w, color: filter === f.id ? '#fff' : C.m, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
-            {f.label} ({f.count})
+        {sides.map(s => (
+          <button key={s.id} onClick={() => setSide(s.id)}
+            style={{ flex: 1, padding: '8px 4px', borderRadius: 8, border: `1px solid ${side === s.id ? C.p : C.b}`, background: side === s.id ? C.p : C.w, color: side === s.id ? '#fff' : C.m, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+            {s.label} ({s.count})
           </button>
         ))}
       </div>
 
-      {filter === 'active' && (
-        <>
-          {/* 2 tab ngang hàng — Đang thuê người / Đang nhận việc (Shipper) */}
-          <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
-            {sides.map(s => (
-              <button key={s.id} onClick={() => setSide(s.id)}
-                style={{ flex: 1, padding: '7px 4px', borderRadius: 8, border: `1px solid ${side === s.id ? '#5d4037' : '#e8def8'}`, background: side === s.id ? '#efebe9' : C.w, color: side === s.id ? '#4e342e' : C.m, fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>
-                {s.label} ({s.count})
-              </button>
-            ))}
-          </div>
-
-          {side === 'hiring' && LABOR_HIRING_ACTIVE.map(l => (
-            <div key={l.id} style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
-                  <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
-                </div>
-                <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-service-order-hirer'); }}
-                  style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
-                  Xem đơn
-                </button>
-              </div>
+      {side === 'hiring' && (LABOR_HIRING_ACTIVE.length > 0 ? LABOR_HIRING_ACTIVE.map(l => (
+        <div key={l.id} style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
+              <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
             </div>
-          ))}
-
-          {side === 'shipper' && (
-            <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-shipper-orders'); }}
-              style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <span style={{ fontSize: 20 }}>🚚</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>{PENDING_ORDERS.length} đơn giao hàng đang chờ nhận</div>
-                <div style={{ fontSize: 10, color: '#3949ab' }}>Xem, nhận hoặc từ chối đơn</div>
-              </div>
-              <span style={{ fontSize: 16, color: '#1a237e' }}>›</span>
-            </div>
-          )}
-        </>
-      )}
-
-      {filter === 'done' && LABOR_HIRING_HISTORY.map(l => (
-        <div key={l.id} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
-          <div style={{ width: 32, height: 32, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14 }}>{l.icon}</div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{l.title}</div>
-            <div style={{ fontSize: 9, color: C.m }}>{l.date}</div>
-          </div>
-          <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: C.p }}>{l.price}</div>
-            <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{l.badge}</div>
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-service-order-hirer'); }}
+              style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+              Xem đơn
+            </button>
           </div>
         </div>
+      )) : (
+        <div style={{ textAlign: 'center', color: C.m, fontSize: 12, padding: '20px 0' }}>Chưa có đơn thuê người nào đang chờ.</div>
       ))}
+
+      {side === 'shipper' && (
+        <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-shipper-orders'); }}
+          style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 20 }}>🚚</span>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>{PENDING_ORDERS.length} đơn giao hàng đang chờ nhận</div>
+            <div style={{ fontSize: 10, color: '#3949ab' }}>Xem, nhận hoặc từ chối đơn</div>
+          </div>
+          <span style={{ fontSize: 16, color: '#1a237e' }}>›</span>
+        </div>
+      )}
     </div>
   );
 }
