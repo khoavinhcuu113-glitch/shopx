@@ -206,7 +206,7 @@ export function getRatingLevel(totalOrders, completionRate) {
 export const SAMPLE_USER_RATINGS = {
   seller: {
     totalOrders: 34, completionRate: 97, thumbsUp: 96.2,
-    responseTime: '< 30 phút', disputes: 1,
+    responseTime: '< 30 phút',
   },
   buyer: {
     totalOrders: 28, receiveRate: 98.5, thumbsUp: 95.0,

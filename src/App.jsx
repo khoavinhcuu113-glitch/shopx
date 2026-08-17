@@ -1430,22 +1430,26 @@ function PhoneGateScreen({ go, onVerified, backTo, actionLabel }) {
 // Dữ liệu hợp đồng KOL gốc — cấp module để dùng chung với WorkerProfileScreen (hiện đúng hợp đồng thật trong Portfolio)
 // Đơn hàng của tôi — demo, phản ánh đủ các trạng thái đã xây trong Chat3WayScreen
 const ORDERS_DATA = [
-  { id: 'DH-001', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'return', status: 'pending', reason: 'Hàng không đúng mô tả', hoursLeft: 46,
+  { id: 'DH-001', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', category: 'goods', type: 'return', status: 'pending', reason: 'Hàng không đúng mô tả', hoursLeft: 46,
     timeline: ['12/08 09:15 — Người mua nhận hàng qua OTP', '13/08 14:20 — Người mua gửi yêu cầu hoàn trả kèm ảnh', 'Đang chờ bạn phản hồi (còn 46h trước khi tự động duyệt)'] },
-  { id: 'DH-002', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'return', status: 'auto_approved', reason: 'Quá hạn phản hồi 72h',
+  { id: 'DH-002', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', category: 'goods', type: 'return', status: 'auto_approved', reason: 'Quá hạn phản hồi 72h',
     timeline: ['08/08 10:00 — Người mua nhận hàng qua OTP', '09/08 08:30 — Người mua gửi yêu cầu hoàn trả', '12/08 08:30 — Quá 72h không phản hồi → hệ thống tự động duyệt'] },
-  { id: 'DH-003', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'cancel', status: 'cancelled', reason: 'Hủy trước khi giao — không phát sinh phí',
+  { id: 'DH-003', product: 'Bàn ăn gỗ sồi 6 ghế', icon: '🪑', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', category: 'goods', type: 'cancel', status: 'cancelled', reason: 'Hủy trước khi giao — không phát sinh phí',
     timeline: ['05/08 16:00 — Đặt hàng', '05/08 16:40 — Người mua hủy trước khi Shipper nhận hàng'] },
-  { id: 'DH-004', product: 'Tủ lạnh Samsung Inverter 236L', icon: '❄️', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', type: 'normal', status: 'shipping',
+  { id: 'DH-004', product: 'Tủ lạnh Samsung Inverter 236L', icon: '❄️', role: 'seller', counterpart: 'Chị Thu Hương (KOL)', category: 'goods', type: 'normal', status: 'shipping',
     timeline: ['14/08 09:00 — Đặt hàng', '14/08 10:15 — Shipper đã nhận hàng, đang giao'] },
-  { id: 'DH-005', product: 'iPhone 13 Pro 256GB', icon: '📱', role: 'seller', counterpart: 'Bé Gạo Vlog (KOC)', type: 'normal', status: 'completed',
+  { id: 'DH-005', product: 'iPhone 13 Pro 256GB', icon: '📱', role: 'seller', counterpart: 'Bé Gạo Vlog (KOC)', category: 'goods', type: 'normal', status: 'completed',
     timeline: ['01/08 08:00 — Đặt hàng', '01/08 15:30 — Giao thành công, đã đánh giá'] },
-  { id: 'DH-006', product: 'iPhone 12 Pro 128GB', icon: '📱', role: 'buyer', counterpart: 'SX-00089', type: 'normal', status: 'completed', date: '15/03/2026',
+  { id: 'DH-006', product: 'iPhone 12 Pro 128GB', icon: '📱', role: 'buyer', counterpart: 'SX-00089', category: 'goods', type: 'normal', status: 'completed', date: '15/03/2026',
     timeline: ['15/03 09:00 — Đặt hàng', '15/03 14:20 — Đã nhận hàng qua OTP'] },
-  { id: 'DH-007', product: 'Honda SH 125i 2021', icon: '🏍️', role: 'seller', counterpart: 'SX-00234', type: 'normal', status: 'completed', date: '02/05/2026',
+  { id: 'DH-007', product: 'Honda SH 125i 2021', icon: '🏍️', role: 'seller', counterpart: 'SX-00234', category: 'goods', type: 'normal', status: 'completed', date: '02/05/2026',
     timeline: ['02/05 10:00 — Đặt hàng', '02/05 16:00 — Đã giao thành công'] },
-  { id: 'DH-008', product: 'Samsung S23 256GB', icon: '📱', role: 'buyer', counterpart: 'SX-00312', type: 'normal', status: 'completed', date: '22/02/2026',
+  { id: 'DH-008', product: 'Samsung S23 256GB', icon: '📱', role: 'buyer', counterpart: 'SX-00312', category: 'goods', type: 'normal', status: 'completed', date: '22/02/2026',
     timeline: ['22/02 08:30 — Đặt hàng', '22/02 13:10 — Đã nhận hàng qua OTP'] },
+  { id: 'DH-009', product: 'Sửa điện phòng ngủ', icon: '🔧', role: 'hirer', counterpart: 'Anh Trần Văn Nhân (Thợ điện)', category: 'labor', type: 'normal', status: 'completed', date: '10/06/2026',
+    timeline: ['10/06 08:00 — Thuê thợ qua Dịch vụ & Việc làm', '10/06 11:30 — Thợ hoàn thành, đã thanh toán'] },
+  { id: 'DH-010', product: 'Dọn dẹp nhà theo giờ', icon: '🧹', role: 'hirer', counterpart: 'Chị Hồng Thắm (Vệ sinh)', category: 'labor', type: 'normal', status: 'completed', date: '18/04/2026',
+    timeline: ['18/04 09:00 — Thuê qua Dịch vụ & Việc làm', '18/04 12:00 — Hoàn thành, đã thanh toán'] },
 ];
 function getResolvedOrders() {
   try { return JSON.parse(sessionStorage.getItem('sx_orders_resolved') || '[]'); } catch (e) { return []; }
@@ -1652,11 +1656,15 @@ function OrderReportScreen({ go }) {
     return: ORDERS_DATA.filter(o => o.type === 'return').length,
     cancel: ORDERS_DATA.filter(o => o.type === 'cancel').length,
   };
+  const byCategory = {
+    goods: ORDERS_DATA.filter(o => o.category === 'goods').length,
+    labor: ORDERS_DATA.filter(o => o.category === 'labor').length,
+  };
   return (
     <div>
       <Shdr title="📊 Báo cáo đơn hàng" onBack={() => { sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-account'); }} />
       <div style={{ padding: 12 }}>
-        <Infobox text="Tổng hợp từ toàn bộ đơn hàng có vấn đề — dùng để theo dõi hiệu quả xử lý và báo cáo khi cần." />
+        <Infobox text="Tổng hợp TOÀN BỘ hoạt động đã xử lý của tài khoản — cả hàng hóa (mua/bán) lẫn lao động (thuê người/nhận việc)." />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
           {[
             { val: issues.length, lbl: 'Tổng đơn vấn đề', color: C.p },
@@ -1666,6 +1674,14 @@ function OrderReportScreen({ go }) {
             <div key={i} style={{ background: C.pl, borderRadius: 10, padding: '10px 6px', textAlign: 'center' }}>
               <div style={{ fontSize: 18, fontWeight: 700, color: s.color }}>{s.val}</div>
               <div style={{ fontSize: 9, color: C.m, marginTop: 2 }}>{s.lbl}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: 12, marginBottom: 12 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 8 }}>Phân loại theo hoạt động</div>
+          {[{ lbl: '📦 Hàng hóa (mua/bán)', val: byCategory.goods }, { lbl: '🔧 Lao động (thuê/nhận việc)', val: byCategory.labor }].map((r, i) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, padding: '5px 0', borderBottom: i === 0 ? '1px solid #f0ebfa' : 'none' }}>
+              <span style={{ color: C.m }}>{r.lbl}</span><span style={{ fontWeight: 600, color: C.t }}>{r.val}</span>
             </div>
           ))}
         </div>
@@ -2138,6 +2154,8 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
   const [accType, setAccType] = React.useState('personal'); // personal | business (đã nâng cấp)
   const [showUpgrade, setShowUpgrade] = React.useState(false);
   const [avatarImg, setAvatarImg] = React.useState(null); // ảnh thật đọc từ máy — chỉ tồn tại trong phiên, chưa lưu vĩnh viễn
+  const [subTab, setSubTab] = React.useState(() => sessionStorage.getItem('sx_activity_initial_tab') || 'listings');
+  React.useEffect(() => { sessionStorage.removeItem('sx_activity_initial_tab'); }, []);
   const businessInfo = { name: 'CTY TNHH MTV ABC', mst: '000000001-ABC', address: '123 KP Nhị Hòa, P. Trấn Biên, TP. Đồng Nai' };
 
   function pickAvatar(e) {
@@ -2329,9 +2347,15 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
                 ))}
               </div>
               <RatingStats role={activeTab} data={d} />
-              {activeTab === 'seller' && d.disputes > 0 && (
-                <div style={{ fontSize: 10, color: '#e65100', marginTop: 6 }}>⚠️ {d.disputes} tranh chấp</div>
-              )}
+              {activeTab === 'seller' && (() => {
+                const activeDisputes = ORDERS_DATA.filter(o => o.role === 'seller' && o.type === 'return' && o.status === 'pending').length;
+                return activeDisputes > 0 && (
+                  <div onClick={() => { sessionStorage.setItem('sx_orders_initial_tab', 'issue'); setSubTab('orders'); }}
+                    style={{ fontSize: 10, color: '#e65100', marginTop: 6, cursor: 'pointer', textDecoration: 'underline' }}>
+                    ⚠️ {activeDisputes} tranh chấp — xem trong "Đơn hàng của tôi" ›
+                  </div>
+                );
+              })()}
             </div>
           );
         })()}
@@ -2344,13 +2368,12 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
 
         {/* 3 TAB NGANG HÀNG — Tin đăng / Đơn hàng / Lao động — NẰM NGAY TRONG TÀI KHOẢN, không điều hướng ra màn khác */}
         {(() => {
-          const [subTab, setSubTab] = React.useState(() => sessionStorage.getItem('sx_activity_initial_tab') || 'listings');
-          React.useEffect(() => { sessionStorage.removeItem('sx_activity_initial_tab'); }, []);
           const resolved = getResolvedOrders();
           const issueCount = ORDERS_DATA.filter(o => isIssueOrder(o) && !resolved.includes(o.id)).length;
           const laborCount = LABOR_HIRING_ACTIVE.length + PENDING_ORDERS.length;
+          const listingMsgCount = LISTINGS_DATA.filter(l => l.hasMsg).length;
           const subTabs = [
-            { id: 'listings', label: '📋 Tin đăng' },
+            { id: 'listings', label: '📋 Tin đăng', count: listingMsgCount },
             { id: 'orders',   label: '📦 Đơn hàng', count: issueCount },
             { id: 'labor',    label: '🔧 Công việc', count: laborCount },
           ];
