@@ -1474,38 +1474,6 @@ const LISTINGS_DATA = [
 ];
 
 // Màn tổng — 3 tab ngang hàng (Tin đăng/Đơn hàng/Lao động), thay cho 3 màn riêng biệt trước đó
-function MyActivityScreen({ go }) {
-  const initialTab = sessionStorage.getItem('sx_activity_initial_tab') || 'listings';
-  sessionStorage.removeItem('sx_activity_initial_tab');
-  const [tab, setTab] = useState(initialTab);
-  const resolved = getResolvedOrders();
-  const issueCount = ORDERS_DATA.filter(o => isIssueOrder(o) && !resolved.includes(o.id)).length;
-  const tabs = [
-    { id: 'listings', label: '📋 Tin đăng' },
-    { id: 'orders',   label: '📦 Đơn hàng', count: issueCount },
-    { id: 'labor',    label: '🔧 Lao động' },
-  ];
-  return (
-    <div>
-      <Shdr title="Tài khoản" onBack={() => go('s-account')} />
-      <div style={{ padding: '10px 12px 0' }}>
-        <div style={{ display: 'flex', background: '#f0ebfa', padding: 2, borderRadius: 8, gap: 2 }}>
-          {tabs.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: 'none', background: tab === t.id ? C.w : 'none', color: tab === t.id ? C.p : C.m }}>
-              {t.label}{t.count > 0 ? ` (${t.count})` : ''}
-            </button>
-          ))}
-        </div>
-      </div>
-      {tab === 'listings' && <ListingsContent go={go} />}
-      {tab === 'orders'   && <OrdersContent go={go} />}
-      {tab === 'labor'    && <LaborContent go={go} />}
-      <div style={{ height: 80 }} />
-    </div>
-  );
-}
-
 function ListingsContent({ go }) {
   return (
     <div style={{ padding: 12 }}>
@@ -1546,7 +1514,7 @@ function LaborContent({ go }) {
               <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
               <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
             </div>
-            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-my-activity'); go('s-service-order-hirer'); }}
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-service-order-hirer'); }}
               style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
               Xem đơn
             </button>
@@ -1571,7 +1539,7 @@ function LaborContent({ go }) {
 
       {/* KHỐI DƯỚI — Đang nhận việc làm (Shipper) */}
       <Sechdr num="🔽" title="Đang nhận việc làm (Shipper)" />
-      <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-my-activity'); go('s-shipper-orders'); }}
+      <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-shipper-orders'); }}
         style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontSize: 20 }}>🚚</span>
         <div style={{ flex: 1 }}>
@@ -1693,7 +1661,7 @@ function OrderReportScreen({ go }) {
   };
   return (
     <div>
-      <Shdr title="📊 Báo cáo đơn hàng" onBack={() => { sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-my-activity'); }} />
+      <Shdr title="📊 Báo cáo đơn hàng" onBack={() => { sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-account'); }} />
       <div style={{ padding: 12 }}>
         <Infobox text="Tổng hợp từ toàn bộ đơn hàng có vấn đề — dùng để theo dõi hiệu quả xử lý và báo cáo khi cần." />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
@@ -1831,7 +1799,7 @@ function KolCampaignScreen({ go }) {
         </div>
 
         {/* Cảnh báo rủi ro hủy/hoàn trả — dẫn thẳng vào Đơn hàng của tôi, lọc sẵn tab Vấn đề */}
-        <div onClick={() => { sessionStorage.setItem('sx_orders_initial_tab', 'issue'); sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-my-activity'); }}
+        <div onClick={() => { sessionStorage.setItem('sx_orders_initial_tab', 'issue'); sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-account'); }}
           style={{ background: badRateTotal > 15 ? '#ffebee' : '#fff8e1', border: `1px solid ${badRateTotal > 15 ? '#ef9a9a' : '#ffe082'}`, borderRadius: 10, padding: '8px 12px', marginBottom: 14, cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>⚠️ Tỷ lệ hủy/hoàn trả chung</span>
@@ -2381,42 +2349,33 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
           <span style={{ fontSize: 18, fontWeight: 700, color: C.p }}>1.250</span>
         </div>
 
-        {/* TIN ĐĂNG CỦA TÔI — sản phẩm/dịch vụ đang bán, khác hẳn "đơn hàng" */}
-        <div onClick={() => { sessionStorage.setItem('sx_activity_initial_tab', 'listings'); go('s-my-activity'); }}
-          style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-          <span style={{ fontSize: 18 }}>📋</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Tin đăng của tôi</div>
-            <div style={{ fontSize: 10, color: C.m }}>
-              {(() => { const n = LISTINGS_DATA.filter(l => l.hasMsg).length; return n > 0 ? `${n} tin có khách nhắn tin` : `${LISTINGS_DATA.length} tin đang đăng`; })()}
+        {/* 3 TAB NGANG HÀNG — Tin đăng / Đơn hàng / Lao động — NẰM NGAY TRONG TÀI KHOẢN, không điều hướng ra màn khác */}
+        {(() => {
+          const [subTab, setSubTab] = React.useState(() => sessionStorage.getItem('sx_activity_initial_tab') || 'listings');
+          React.useEffect(() => { sessionStorage.removeItem('sx_activity_initial_tab'); }, []);
+          const resolved = getResolvedOrders();
+          const issueCount = ORDERS_DATA.filter(o => isIssueOrder(o) && !resolved.includes(o.id)).length;
+          const subTabs = [
+            { id: 'listings', label: '📋 Tin đăng' },
+            { id: 'orders',   label: '📦 Đơn hàng', count: issueCount },
+            { id: 'labor',    label: '🔧 Lao động' },
+          ];
+          return (
+            <div style={{ marginBottom: 10 }}>
+              <div style={{ display: 'flex', background: '#f0ebfa', padding: 2, borderRadius: 8, gap: 2, marginBottom: 10 }}>
+                {subTabs.map(t => (
+                  <button key={t.id} onClick={() => setSubTab(t.id)}
+                    style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: 'none', background: subTab === t.id ? C.w : 'none', color: subTab === t.id ? C.p : C.m }}>
+                    {t.label}{t.count > 0 ? ` (${t.count})` : ''}
+                  </button>
+                ))}
+              </div>
+              {subTab === 'listings' && <ListingsContent go={go} />}
+              {subTab === 'orders'   && <OrdersContent go={go} />}
+              {subTab === 'labor'    && <LaborContent go={go} />}
             </div>
-          </div>
-          <span style={{ fontSize: 16, color: C.m }}>›</span>
-        </div>
-
-        {/* ĐƠN HÀNG CỦA TÔI — chỉ giao dịch HÀNG HÓA (mua/bán), theo dõi tập trung tất cả trạng thái đơn */}
-        <div onClick={() => { sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-my-activity'); }}
-          style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-          <span style={{ fontSize: 18 }}>📦</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Đơn hàng của tôi</div>
-            <div style={{ fontSize: 10, color: C.m }}>
-              {(() => { const n = ORDERS_DATA.filter(o => isIssueOrder(o) && !getResolvedOrders().includes(o.id)).length; return n > 0 ? `${n} đơn cần chú ý` : 'Không có đơn nào cần chú ý'; })()}
-            </div>
-          </div>
-          <span style={{ fontSize: 16, color: C.m }}>›</span>
-        </div>
-
-        {/* HOẠT ĐỘNG LAO ĐỘNG — gộp Dịch vụ&Việc làm (thuê người) + Đơn hàng Shipper (nhận việc), cùng bản chất LAO ĐỘNG khác hàng hóa */}
-        <div onClick={() => { sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-my-activity'); }}
-          style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
-          <span style={{ fontSize: 18 }}>🔧</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: C.t }}>Hoạt động lao động</div>
-            <div style={{ fontSize: 10, color: C.m }}>Thuê người làm & nhận việc làm (Shipper)</div>
-          </div>
-          <span style={{ fontSize: 16, color: C.m }}>›</span>
-        </div>
+          );
+        })()}
 
         {/* GIỎ HÀNG CỦA TÔI — giữ riêng, không gộp tab (đường dẫn tắt đơn lẻ) */}
         <div onClick={() => { sessionStorage.setItem('sx_cart_return', 's-account'); go('s-cart'); }}
@@ -2898,7 +2857,6 @@ export default function App() {
       case 's-cv-register':      return <CvRegisterScreen   go={go} hasCCCD={hasCCCD} hasAgreedTerms={hasAgreedWorkerTerms} />;
       case 's-cv-success':       return <CvSuccessScreen    go={go} />;
       case 's-kol-campaign':      return <KolCampaignScreen      go={go} />;
-      case 's-my-activity':       return <MyActivityScreen       go={go} />;
       case 's-order-report':      return <OrderReportScreen      go={go} />;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
