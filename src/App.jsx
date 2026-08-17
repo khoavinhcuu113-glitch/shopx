@@ -2355,10 +2355,11 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
           React.useEffect(() => { sessionStorage.removeItem('sx_activity_initial_tab'); }, []);
           const resolved = getResolvedOrders();
           const issueCount = ORDERS_DATA.filter(o => isIssueOrder(o) && !resolved.includes(o.id)).length;
+          const laborCount = LABOR_HIRING_ACTIVE.length + PENDING_ORDERS.length;
           const subTabs = [
             { id: 'listings', label: '📋 Tin đăng' },
             { id: 'orders',   label: '📦 Đơn hàng', count: issueCount },
-            { id: 'labor',    label: '🔧 Lao động' },
+            { id: 'labor',    label: '🔧 Công việc', count: laborCount },
           ];
           return (
             <div style={{ marginBottom: 10 }}>
