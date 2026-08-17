@@ -1473,93 +1473,118 @@ const LISTINGS_DATA = [
   { icon: '🏍️', title: 'Honda SH 125i 2021 đen bóng', price: '62.000.000đ', date: '25/07/2026', hasMsg: false, msgCount: 0 },
 ];
 
-function MyListingsScreen({ go }) {
+// Màn tổng — 3 tab ngang hàng (Tin đăng/Đơn hàng/Lao động), thay cho 3 màn riêng biệt trước đó
+function MyActivityScreen({ go }) {
+  const initialTab = sessionStorage.getItem('sx_activity_initial_tab') || 'listings';
+  sessionStorage.removeItem('sx_activity_initial_tab');
+  const [tab, setTab] = useState(initialTab);
+  const resolved = getResolvedOrders();
+  const issueCount = ORDERS_DATA.filter(o => isIssueOrder(o) && !resolved.includes(o.id)).length;
+  const tabs = [
+    { id: 'listings', label: '📋 Tin đăng' },
+    { id: 'orders',   label: '📦 Đơn hàng', count: issueCount },
+    { id: 'labor',    label: '🔧 Lao động' },
+  ];
   return (
     <div>
-      <Shdr title="📋 Tin đăng của tôi" onBack={() => go('s-account')} />
-      <div style={{ padding: 12 }}>
-        {LISTINGS_DATA.map((l, i) => (
-          <div key={i} style={{ background: '#e8f5e9', border: `1.5px solid ${l.hasMsg ? '#2e7d32' : '#c8e6c9'}`, borderRadius: 12, padding: 10, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
-            onClick={() => l.hasMsg && go('s-chat-buy-mine')}>
-            <div style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{l.icon}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{l.title}</div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#2e7d32', marginBottom: 2 }}>{l.price}</div>
-              <div style={{ fontSize: 10, color: C.m }}>Đăng ngày {l.date}</div>
-            </div>
-            {l.hasMsg ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, marginBottom: 3 }}>{l.msgCount}</div>
-                <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 600 }}>Tin nhắn</div>
-              </div>
-            ) : (
-              <div style={{ flexShrink: 0, fontSize: 10, color: C.m, alignSelf: 'center' }}>Chưa có tin</div>
-            )}
-          </div>
-        ))}
-      </div>
-      <div style={{ height: 80 }} />
-    </div>
-  );
-}
-
-function HoatDongLaoDongScreen({ go }) {
-  return (
-    <div>
-      <Shdr title="🔧 Hoạt động lao động" onBack={() => go('s-account')} />
-      <div style={{ padding: 12 }}>
-        <Infobox text="Gộp chung mọi hoạt động LAO ĐỘNG (thuê người làm việc / nhận việc làm) — khác với 'Đơn hàng của tôi' chỉ dành cho mua bán HÀNG HÓA." />
-
-        {/* KHỐI TRÊN — Đang thuê người làm (Dịch vụ & Việc làm) */}
-        <Sechdr num="🔼" title="Đang thuê người làm" />
-        {LABOR_HIRING_ACTIVE.map(l => (
-          <div key={l.id} style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
-                <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
-              </div>
-              <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-labor'); go('s-service-order-hirer'); }}
-                style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
-                Xem đơn
-              </button>
-            </div>
-          </div>
-        ))}
-        {LABOR_HIRING_HISTORY.map(l => (
-          <div key={l.id} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div style={{ width: 32, height: 32, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14 }}>{l.icon}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{l.title}</div>
-              <div style={{ fontSize: 9, color: C.m }}>{l.date}</div>
-            </div>
-            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: C.p }}>{l.price}</div>
-              <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{l.badge}</div>
-            </div>
-          </div>
-        ))}
-
-        <div style={{ height: 14 }} />
-
-        {/* KHỐI DƯỚI — Đang nhận việc làm (Shipper) */}
-        <Sechdr num="🔽" title="Đang nhận việc làm (Shipper)" />
-        <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-labor'); go('s-shipper-orders'); }}
-          style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 20 }}>🚚</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>{PENDING_ORDERS.length} đơn giao hàng đang chờ nhận</div>
-            <div style={{ fontSize: 10, color: '#3949ab' }}>Xem, nhận hoặc từ chối đơn</div>
-          </div>
-          <span style={{ fontSize: 16, color: '#1a237e' }}>›</span>
+      <Shdr title="Tài khoản" onBack={() => go('s-account')} />
+      <div style={{ padding: '10px 12px 0' }}>
+        <div style={{ display: 'flex', background: '#f0ebfa', padding: 2, borderRadius: 8, gap: 2 }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{ flex: 1, textAlign: 'center', padding: '8px 4px', borderRadius: 6, fontSize: 11, fontWeight: 600, cursor: 'pointer', border: 'none', background: tab === t.id ? C.w : 'none', color: tab === t.id ? C.p : C.m }}>
+              {t.label}{t.count > 0 ? ` (${t.count})` : ''}
+            </button>
+          ))}
         </div>
       </div>
+      {tab === 'listings' && <ListingsContent go={go} />}
+      {tab === 'orders'   && <OrdersContent go={go} />}
+      {tab === 'labor'    && <LaborContent go={go} />}
       <div style={{ height: 80 }} />
     </div>
   );
 }
 
-function MyOrdersScreen({ go }) {
+function ListingsContent({ go }) {
+  return (
+    <div style={{ padding: 12 }}>
+      {LISTINGS_DATA.map((l, i) => (
+        <div key={i} style={{ background: '#e8f5e9', border: `1.5px solid ${l.hasMsg ? '#2e7d32' : '#c8e6c9'}`, borderRadius: 12, padding: 10, marginBottom: 8, display: 'flex', gap: 10, cursor: l.hasMsg ? 'pointer' : 'default' }}
+          onClick={() => l.hasMsg && go('s-chat-buy-mine')}>
+          <div style={{ width: 44, height: 44, background: '#fff', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 20 }}>{l.icon}</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.t, marginBottom: 2 }}>{l.title}</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: '#2e7d32', marginBottom: 2 }}>{l.price}</div>
+            <div style={{ fontSize: 10, color: C.m }}>Đăng ngày {l.date}</div>
+          </div>
+          {l.hasMsg ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ background: '#e53935', color: '#fff', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, marginBottom: 3 }}>{l.msgCount}</div>
+              <div style={{ fontSize: 9, color: '#2e7d32', fontWeight: 600 }}>Tin nhắn</div>
+            </div>
+          ) : (
+            <div style={{ flexShrink: 0, fontSize: 10, color: C.m, alignSelf: 'center' }}>Chưa có tin</div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function LaborContent({ go }) {
+  return (
+    <div style={{ padding: 12 }}>
+      <Infobox text="Gộp chung mọi hoạt động LAO ĐỘNG (thuê người làm việc / nhận việc làm) — khác với 'Đơn hàng của tôi' chỉ dành cho mua bán HÀNG HÓA." />
+
+      {/* KHỐI TRÊN — Đang thuê người làm (Dịch vụ & Việc làm) */}
+      <Sechdr num="🔼" title="Đang thuê người làm" />
+      {LABOR_HIRING_ACTIVE.map(l => (
+        <div key={l.id} style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
+              <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
+            </div>
+            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-my-activity'); go('s-service-order-hirer'); }}
+              style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+              Xem đơn
+            </button>
+          </div>
+        </div>
+      ))}
+      {LABOR_HIRING_HISTORY.map(l => (
+        <div key={l.id} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ width: 32, height: 32, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14 }}>{l.icon}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: C.t }}>{l.title}</div>
+            <div style={{ fontSize: 9, color: C.m }}>{l.date}</div>
+          </div>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: C.p }}>{l.price}</div>
+            <div style={{ fontSize: 9, background: '#e8f5e9', color: '#2e7d32', padding: '1px 6px', borderRadius: 8 }}>{l.badge}</div>
+          </div>
+        </div>
+      ))}
+
+      <div style={{ height: 14 }} />
+
+      {/* KHỐI DƯỚI — Đang nhận việc làm (Shipper) */}
+      <Sechdr num="🔽" title="Đang nhận việc làm (Shipper)" />
+      <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-my-activity'); go('s-shipper-orders'); }}
+        style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ fontSize: 20 }}>🚚</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>{PENDING_ORDERS.length} đơn giao hàng đang chờ nhận</div>
+          <div style={{ fontSize: 10, color: '#3949ab' }}>Xem, nhận hoặc từ chối đơn</div>
+        </div>
+        <span style={{ fontSize: 16, color: '#1a237e' }}>›</span>
+      </div>
+    </div>
+  );
+}
+
+function OrdersContent({ go }) {
   const initialTab = sessionStorage.getItem('sx_orders_initial_tab') || 'all';
   sessionStorage.removeItem('sx_orders_initial_tab');
   const [tab, setTab] = useState(initialTab);
@@ -1592,8 +1617,7 @@ function MyOrdersScreen({ go }) {
   };
 
   return (
-    <div>
-      <Shdr title="📦 Đơn hàng của tôi" onBack={() => go('s-account')} />
+    <>
       <div style={{ padding: 12 }}>
         <div style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
           {tabs.map(t => (
@@ -1654,7 +1678,7 @@ function MyOrdersScreen({ go }) {
         })}
       </div>
       <div style={{ height: 80 }} />
-    </div>
+    </>
   );
 }
 
@@ -1669,7 +1693,7 @@ function OrderReportScreen({ go }) {
   };
   return (
     <div>
-      <Shdr title="📊 Báo cáo đơn hàng" onBack={() => go('s-my-orders')} />
+      <Shdr title="📊 Báo cáo đơn hàng" onBack={() => { sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-my-activity'); }} />
       <div style={{ padding: 12 }}>
         <Infobox text="Tổng hợp từ toàn bộ đơn hàng có vấn đề — dùng để theo dõi hiệu quả xử lý và báo cáo khi cần." />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
@@ -1807,7 +1831,7 @@ function KolCampaignScreen({ go }) {
         </div>
 
         {/* Cảnh báo rủi ro hủy/hoàn trả — dẫn thẳng vào Đơn hàng của tôi, lọc sẵn tab Vấn đề */}
-        <div onClick={() => { sessionStorage.setItem('sx_orders_initial_tab', 'issue'); go('s-my-orders'); }}
+        <div onClick={() => { sessionStorage.setItem('sx_orders_initial_tab', 'issue'); sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-my-activity'); }}
           style={{ background: badRateTotal > 15 ? '#ffebee' : '#fff8e1', border: `1px solid ${badRateTotal > 15 ? '#ef9a9a' : '#ffe082'}`, borderRadius: 10, padding: '8px 12px', marginBottom: 14, cursor: 'pointer' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: 11, color: badRateTotal > 15 ? '#c62828' : '#e65100' }}>⚠️ Tỷ lệ hủy/hoàn trả chung</span>
@@ -2358,7 +2382,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
         </div>
 
         {/* TIN ĐĂNG CỦA TÔI — sản phẩm/dịch vụ đang bán, khác hẳn "đơn hàng" */}
-        <div onClick={() => go('s-my-listings')}
+        <div onClick={() => { sessionStorage.setItem('sx_activity_initial_tab', 'listings'); go('s-my-activity'); }}
           style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
           <span style={{ fontSize: 18 }}>📋</span>
           <div style={{ flex: 1 }}>
@@ -2371,7 +2395,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
         </div>
 
         {/* ĐƠN HÀNG CỦA TÔI — chỉ giao dịch HÀNG HÓA (mua/bán), theo dõi tập trung tất cả trạng thái đơn */}
-        <div onClick={() => go('s-my-orders')}
+        <div onClick={() => { sessionStorage.setItem('sx_activity_initial_tab', 'orders'); go('s-my-activity'); }}
           style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
           <span style={{ fontSize: 18 }}>📦</span>
           <div style={{ flex: 1 }}>
@@ -2384,7 +2408,7 @@ function AccountScreen({ go, nav, doLogout, hasCCCD, isShipper }) {
         </div>
 
         {/* HOẠT ĐỘNG LAO ĐỘNG — gộp Dịch vụ&Việc làm (thuê người) + Đơn hàng Shipper (nhận việc), cùng bản chất LAO ĐỘNG khác hàng hóa */}
-        <div onClick={() => go('s-labor')}
+        <div onClick={() => { sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-my-activity'); }}
           style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 12, padding: '10px 12px', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
           <span style={{ fontSize: 18 }}>🔧</span>
           <div style={{ flex: 1 }}>
@@ -2874,9 +2898,7 @@ export default function App() {
       case 's-cv-register':      return <CvRegisterScreen   go={go} hasCCCD={hasCCCD} hasAgreedTerms={hasAgreedWorkerTerms} />;
       case 's-cv-success':       return <CvSuccessScreen    go={go} />;
       case 's-kol-campaign':      return <KolCampaignScreen      go={go} />;
-      case 's-my-orders':         return <MyOrdersScreen         go={go} />;
-      case 's-my-listings':       return <MyListingsScreen       go={go} />;
-      case 's-labor':             return <HoatDongLaoDongScreen  go={go} />;
+      case 's-my-activity':       return <MyActivityScreen       go={go} />;
       case 's-order-report':      return <OrderReportScreen      go={go} />;
       default:                   return <HomeScreen             go={go} chkLogin={chkLogin} nav={nav} />;
     }
