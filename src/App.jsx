@@ -1501,27 +1501,69 @@ function ListingsContent({ go }) {
 }
 
 function LaborContent({ go }) {
+  const [filter, setFilter] = useState('active');
+  const [side, setSide] = useState('hiring');
+  const filters = [
+    { id: 'active', label: 'Đang chờ', count: LABOR_HIRING_ACTIVE.length + PENDING_ORDERS.length },
+    { id: 'done',   label: 'Đã hoàn thành', count: LABOR_HIRING_HISTORY.length },
+  ];
+  const sides = [
+    { id: 'hiring',  label: 'Đang thuê người', count: LABOR_HIRING_ACTIVE.length },
+    { id: 'shipper', label: 'Đang nhận việc (Shipper)', count: PENDING_ORDERS.length },
+  ];
   return (
     <div style={{ padding: 12 }}>
-      <Infobox text="Gộp chung mọi hoạt động LAO ĐỘNG (thuê người làm việc / nhận việc làm) — khác với 'Đơn hàng của tôi' chỉ dành cho mua bán HÀNG HÓA." />
+      <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+        {filters.map(f => (
+          <button key={f.id} onClick={() => setFilter(f.id)}
+            style={{ flex: 1, padding: '7px 4px', borderRadius: 8, border: `1px solid ${filter === f.id ? C.p : C.b}`, background: filter === f.id ? C.p : C.w, color: filter === f.id ? '#fff' : C.m, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+            {f.label} ({f.count})
+          </button>
+        ))}
+      </div>
 
-      {/* KHỐI TRÊN — Đang thuê người làm (Dịch vụ & Việc làm) */}
-      <Sechdr num="🔼" title="Đang thuê người làm" />
-      {LABOR_HIRING_ACTIVE.map(l => (
-        <div key={l.id} style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
-              <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
-            </div>
-            <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-service-order-hirer'); }}
-              style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
-              Xem đơn
-            </button>
+      {filter === 'active' && (
+        <>
+          {/* 2 tab ngang hàng — Đang thuê người / Đang nhận việc (Shipper) */}
+          <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+            {sides.map(s => (
+              <button key={s.id} onClick={() => setSide(s.id)}
+                style={{ flex: 1, padding: '7px 4px', borderRadius: 8, border: `1px solid ${side === s.id ? '#5d4037' : '#e8def8'}`, background: side === s.id ? '#efebe9' : C.w, color: side === s.id ? '#4e342e' : C.m, fontSize: 10, fontWeight: 600, cursor: 'pointer' }}>
+                {s.label} ({s.count})
+              </button>
+            ))}
           </div>
-        </div>
-      ))}
-      {LABOR_HIRING_HISTORY.map(l => (
+
+          {side === 'hiring' && LABOR_HIRING_ACTIVE.map(l => (
+            <div key={l.id} style={{ background: '#efebe9', border: '1px solid #d7ccc8', borderRadius: 12, padding: 10, marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#4e342e' }}>{l.icon} {l.title}</div>
+                  <div style={{ fontSize: 11, color: '#6d4c41' }}>⏳ Chờ thợ đến • +{l.hoursElapsed}h</div>
+                </div>
+                <button onClick={() => { sessionStorage.setItem('sx_service_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-service-order-hirer'); }}
+                  style={{ background: '#5d4037', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: 8, fontSize: 11, cursor: 'pointer', fontWeight: 600 }}>
+                  Xem đơn
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {side === 'shipper' && (
+            <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-shipper-orders'); }}
+              style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 20 }}>🚚</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>{PENDING_ORDERS.length} đơn giao hàng đang chờ nhận</div>
+                <div style={{ fontSize: 10, color: '#3949ab' }}>Xem, nhận hoặc từ chối đơn</div>
+              </div>
+              <span style={{ fontSize: 16, color: '#1a237e' }}>›</span>
+            </div>
+          )}
+        </>
+      )}
+
+      {filter === 'done' && LABOR_HIRING_HISTORY.map(l => (
         <div key={l.id} style={{ background: C.w, border: '1px solid #e8def8', borderRadius: 10, padding: 8, marginBottom: 6, display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ width: 32, height: 32, background: C.pl, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 14 }}>{l.icon}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -1534,20 +1576,6 @@ function LaborContent({ go }) {
           </div>
         </div>
       ))}
-
-      <div style={{ height: 14 }} />
-
-      {/* KHỐI DƯỚI — Đang nhận việc làm (Shipper) */}
-      <Sechdr num="🔽" title="Đang nhận việc làm (Shipper)" />
-      <div onClick={() => { sessionStorage.setItem('sx_shipper_orders_return', 's-account'); sessionStorage.setItem('sx_activity_initial_tab', 'labor'); go('s-shipper-orders'); }}
-        style={{ background: '#e8f0fe', border: '1px solid #c5d8ff', borderRadius: 12, padding: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <span style={{ fontSize: 20 }}>🚚</span>
-        <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#1a237e' }}>{PENDING_ORDERS.length} đơn giao hàng đang chờ nhận</div>
-          <div style={{ fontSize: 10, color: '#3949ab' }}>Xem, nhận hoặc từ chối đơn</div>
-        </div>
-        <span style={{ fontSize: 16, color: '#1a237e' }}>›</span>
-      </div>
     </div>
   );
 }
